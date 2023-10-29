@@ -1,0 +1,1 @@
+// here constants can be write which will be use in the components like header navbar etc. 
