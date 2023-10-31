@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Routes, Route } from 'react-router-dom';
+import { Home, NoPage, Footer, Navbar } from './modules'
+import styles from './styles';
 import './App.css'
 
 function App() {
@@ -8,9 +9,17 @@ function App() {
 
   return (
     <>
-      <p className="">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className={`${styles.flexCenter}`}>
+        <div className={`${styles.boxWidth}  overflow-hidden`}>
+          <Navbar />
+          <Routes>
+            <Route index element={<Home />} />
+            <Route path="*" element={<NoPage />} />
+          </Routes>
+          <Footer />
+
+        </div>
+      </div>
     </>
   )
 }
