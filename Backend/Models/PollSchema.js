@@ -25,6 +25,7 @@ const pollSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'
     },
+    
     startDate:{
         type:Date,
         default:Date.now
