@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import styles from '../../styles'
 import { navLinks } from '../../constants'
 import { menu, close } from '../../assets'
 
 function Navbar() {
+    const navigate = useNavigate();
     const [toggle, setToggle] = useState(false);
     return (
         <nav className={`${styles.paddingX} md:py-5 py-3 bg-gray-900`}>
@@ -32,7 +33,7 @@ function Navbar() {
                 </div>
                 {/* div for login signup button  */}
                 <div className='hidden md:block'>
-                    <button type="button" className=" bg-green-500 text-black hover:bg-blue-400  font-semibold py-2 px-5 rounded text-base">LogIn/SignUp</button>
+                    <button type="button" className=" bg-green-500 text-black hover:bg-blue-400  font-semibold py-2 px-5 rounded text-base" onClick={() => { navigate('/login') }}>LogIn/SignUp</button>
                 </div>
                 {/* div for the mobile menu*/}
                 <div className="flex md:hidden items-center">
@@ -57,7 +58,7 @@ function Navbar() {
                                 )
                             }
                             <li className='mt-4'>
-                                <button type="button" className=" bg-green-500 text-black hover:bg-blue-400  font-semibold py-2 px-5 rounded text-base">LogIn/SignUp</button>
+                                <button type="button" className=" bg-green-500 text-black hover:bg-blue-400  font-semibold py-2 px-5 rounded text-base" onClick={() => { navigate('/login') }}>LogIn/SignUp</button>
                             </li>
                         </ul>
                     </div>
