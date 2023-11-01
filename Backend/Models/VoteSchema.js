@@ -19,9 +19,9 @@ const voteSchema=new mongoose.Schema({
         type:Date,
         default:Date.now
     },
-    comments:{
-        type:String,
-    }
+    // comments:{
+    //     type:String,
+    // }
 })
 const Vote = mongoose.model('Vote', voteSchema);
 

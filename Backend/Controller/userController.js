@@ -161,10 +161,7 @@ exports.resetPassword = async (req, res) => {
       .createHash("sha256")
       .update(req.params.token)
       .digest("hex");
-    const resetToken = await User.findOne({
-      resetPasswordToken,
-      resetPasswordExpire: { $gt: Date.now() },
-    });
+    const resetToken = await User.findOne({resetPasswordToken});
     if (!resetToken) {
       return sendErrorResponse(res, 404, "Token not found");
     }

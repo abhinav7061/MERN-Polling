@@ -11,26 +11,33 @@ const pollSchema=new mongoose.Schema({
     },
     options:[
         {
-            optionText:{
+            subject:{
                 type:String,
                 required:true
             },
             votes:{
                 type:Number,
                 default:0
+            },
+            progress:{
+                type:Number,
             }
         }
     ],
+    allowMultipleVotes: {
+        type: Boolean,
+        default: false, 
+      },
     author:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'
     },
-    
+
     startDate:{
         type:Date,
         default:Date.now
     },
-    EndDate:{
+    endDate:{
         type:Date,
         default:()=>Date.now()+24*60*60*1000  // 1 day
     },
@@ -61,4 +68,4 @@ const pollSchema=new mongoose.Schema({
 })
 
 const Poll=mongoose.model("Poll",pollSchema);
-module.export=Poll;
+module.exports=Poll;
