@@ -1,7 +1,7 @@
 const styles = {
     boxWidth: `xl:max-w-[1380px] w-full`,
 
-    heading2: "font-poppins font-semibold xs:text-[48px] text-[40px] text-black  dark:text-white xs:leading-[76.8px] leading-[66.8px] w-full",
+    heading2: "font-poppins font-semibold lg:text-[48px] text-[34px] text-black xs:leading-[76.8px] leading-[66.8px] w-full",
     heading3: " underline mb-2 text-2xl sm:text-4xl md:text-5xl",
     smHeading: "text-[7px] md:text-[12px] font-serif",
     paragraph: "font-poppins font-normal text-slate-500 dark:text-dimWhite text-[18px] leading-[30.8px]",

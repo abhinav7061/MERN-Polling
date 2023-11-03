@@ -46,4 +46,31 @@ const navLinks = [
     },
 ]
 
-export { footerLinks, navLinks }
+const sideLinks = [
+    {
+        id: 1,
+        icon_name: 'apps',
+        text: 'Dashoard',
+        linkTo: "/poll",
+    },
+    {
+        id: 2,
+        icon_name: 'bar-chart-outline',
+        text: 'Create Poll',
+        linkTo: "/poll/create",
+    },
+    {
+        id: 3,
+        icon_name: 'bar-chart-outline',
+        text: 'Your Polls',
+        linkTo: "/poll/yourpoll",
+    },
+    {
+        id: 4,
+        icon_name: 'bar-chart-outline',
+        text: 'Your votes',
+        linkTo: "/poll/yourvote",
+    },
+]
+
+export { footerLinks, navLinks, sideLinks }
