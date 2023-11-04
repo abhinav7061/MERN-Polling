@@ -6,6 +6,7 @@ import polling from './polling.png';
 import vote from './vote.png';
 import deletes from './delete.png'
 import add from './add.png'
+import logo from './logo.svg'
 
 export {
     menu,
@@ -16,4 +17,5 @@ export {
     vote,
     deletes,
     add,
+    logo,
 }

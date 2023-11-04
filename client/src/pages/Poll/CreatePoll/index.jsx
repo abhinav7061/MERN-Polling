@@ -39,6 +39,7 @@ const CreatePoll = () => {
             <h1 className={`${styles.heading2} mb-6`}>Create Free Poll With PollLab</h1>
             <div className={`${styles.flexCenter}`}>
                 <form onSubmit={handleSubmit} className={`${styles.flexCenter} flex-col w-full sm:w-3/5 md:h-3/4 lg:w-1/2`}>
+                    {/* textArea fot the taking input for the question */}
                     <textarea
                         type="text"
                         placeholder="Enter your question"
@@ -46,6 +47,7 @@ const CreatePoll = () => {
                         onChange={(e) => setQuestion(e.target.value)}
                         className='w-full p-2 md:p-4 text-xl rounded-md mb-5'
                     />
+                    {/* div for adding the questions */}
                     <div className='flex justify-between w-full items-cente'>
                         <input
                             type="text"
@@ -56,15 +58,17 @@ const CreatePoll = () => {
                         />
                         <button type='button' title='Click to add option' onClick={addList} className={` ${styles.flexCenter} w-14 rounded-md hover:border-slate-500 hover:border-2 px-3 py-2  bg-slate-300`}><img src={add} alt="Add Option" className=' object-contain' /></button>
                     </div>
+
+                    {/* This is for showing options */}
                     {optionList.length > 0 && (<div className='mt-6 w-full'>
                         <h1 className='text-[26px] font-semibold'>Your options</h1>
                         <ol className='my-6 md:w-3/5'>
                             {optionList.map((each, index) => {
                                 return (
-                                    <div className={`${index > 0 ? 'mt-2.5' : 'mt-0'} px-3 py-1 hover:bg-slate-200 flex items-center text-[20px] rounded-md font-semibold`}>
+                                    <div className={`${index > 0 ? 'mt-2.5' : 'mt-0'} px-3 py-1 hover:bg-slate-200 flex items-center text-[20px] rounded-md font-semibold`} key={index}>
                                         <PollOption
                                             listText={each}
-                                            key={index}
+
                                             id={index}
                                             onSelect={deleteItem}
                                         />
@@ -80,23 +84,5 @@ const CreatePoll = () => {
         </div >
     )
 }
-
-
-
-// const CreatePoll = () => {
-//     const [msg, setMsg] = useState("")
-//     const [show, setshow] = useState(false)
-//     function click() {
-//         setshow((pre) => !pre)
-//         console.log(msg);
-//     }
-//     return (
-//         <div>
-//             <input type="text" value={msg} onChange={(e) => setMsg(e.target.value)} />
-//             <button onClick={click}>add</button>
-//             {show && <p>{msg}</p>}
-//         </div>
-//     )
-// }
 
 export default CreatePoll

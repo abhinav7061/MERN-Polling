@@ -1,13 +1,9 @@
 import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom';
-import { Home, NoPage, Footer, Navbar, Login, Signup, Poll } from './modules'
+import { Home, NoPage, Footer, Navbar, Login, Signup, Poll, Dashoard, CreatePoll, MyPolls, MyVotes } from './modules'
 import styles from './styles';
 import { Toaster } from 'sonner';
 import './App.css'
-import Dashoard from './pages/Poll/Dashboard';
-import CreatePoll from './pages/Poll/CreatePoll';
-import YourPolls from './pages/Poll/YourPolls';
-import YourVotes from './pages/Poll/YourVotes';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -17,28 +13,28 @@ function App() {
       <div className={`${styles.flexCenter}`}>
         <div className={`${styles.boxWidth}  overflow-hidden`}>
           <Navbar />
-          <Toaster position="top-right" richColors closeButton='true' />
+          <Toaster position="top-right" richColors closeButton='true' /> {/* this is the position for showing notification */}
           <Routes>
             <Route index element={<Home />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<Signup />} />
-            {/* <Route path='/poll' element={<Poll />} /> */}
-            <Route path='/poll' element={<Poll />} >
+            <Route path='login' element={<Login />} />
+            <Route path='register' element={<Signup />} />
+            <Route path='poll' element={<Poll />} >
+              {/* Routing for internal polls. For the sidebar */}
               <Route
                 index
                 element={<Dashoard />}
               />
               <Route
-                path="/poll/create"
+                path="create"
                 element={<CreatePoll />}
               />
               <Route
-                path="/poll/my-poll"
-                element={<YourPolls />}
+                path="my-poll"
+                element={<MyPolls />}
               />
               <Route
-                path="/poll/my-vote"
-                element={<YourVotes />}
+                path="my-vote"
+                element={<MyVotes />}
               />
             </Route>
             <Route path="*" element={<NoPage />} />

@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 
+// Shema for the login form 
 export const loginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Required"),
     password: Yup.string()
@@ -8,6 +9,7 @@ export const loginSchema = Yup.object().shape({
         .required("Required"),
 });
 
+// shema for the registeration form
 export const signupSchema = Yup.object().shape({
     name: Yup.string().min(3, "Too short name").required('Required'),
     email: Yup.string().email("Invalid email").required("Required"),

@@ -41,3 +41,10 @@
             #6d6d6d -78.47%,
             #11101d 91.61%);
 }
+
+.poll-sidebar {
+    position: -webkit-sticky;
+    position: sticky;
+    border: 2px solid #11101d;
+    top: 0;
+}
