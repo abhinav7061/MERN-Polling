@@ -15,22 +15,39 @@ const Signup = () => {
         cpassword: "",
     }
 
+    const getRegister = async ({ name, email, password }) => {
+        try {
+            const res = await fetch("http://localhost:5000/api/v1/user/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, email, password }),
+            });
+            const data = await res.json();
+            if (res.status === 400) {
+                if (data.message == "User Already Exists")
+                    toast.error("This email is in use. Use another one or try to login with same email");
+            } else {
+                toast.success("Signup successfully");
+                console.log("registered successfully");
+                navigate('/login');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
         initialValues,
         validationSchema: signupSchema,
-        onSubmit: (values) => {
-            toast.success("Signup successfully");
-            setTimeout(() => {
-                navigate('/login')
-            }, 1000);
-            console.log({
-                values,
-            });
+        onSubmit: (values, action) => {
+            getRegister(values);
+            action.resetForm();
         }
     })
 
     return (
-
         <div className={`flex md:flex-row flex-col-reverse border bg-white border-sky-400 mx-2 my-4 md:m-20 rounded-2xl overflow-hidden`}>
             <div className={`flex-1 ${styles.flexStart} flex-col xl:px-0 sm:px-16 px-6 p-16`}>
                 {/* div for login form  */}

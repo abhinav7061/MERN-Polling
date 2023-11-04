@@ -11,7 +11,7 @@ exports.registerUser = async (req, res) => {
     if (!name) return sendErrorResponse(res, 400, "Name is required");
     if (!email) return sendErrorResponse(res, 400, "Email is required");
     if (!password) return sendErrorResponse(res, 400, "Password is required");
-    if (!avatar) return sendErrorResponse(res, 400, "Avatar is required");
+    // if (!avatar) return sendErrorResponse(res, 400, "Avatar is required");
 
     // const myCloud = await cloudinary.v2.uploader.upload(avatar, {
     //   folder: "avatars",
