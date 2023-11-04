@@ -1,19 +1,71 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose =require("mongoose");
 
-const optionSchema = new Schema({
-    text: String,
-    votes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-});
+const pollSchema=new mongoose.Schema({
+    title:{
+        type:String,
+        required:[true,"title is required"],
+    },
+    description:{
+        type:String,
+        required:true,
+    },
+    options:[
+        {
+            subject:{
+                type:String,
+                required:true
+            },
+            votes:{
+                type:Number,
+                default:0
+            },
+            progress:{
+                type:Number,
+            }
+        }
+    ],
+    allowMultipleVotes: {
+        type: Boolean,
+        default: false, 
+      },
+    author:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User'
+    },
 
-const pollSchema = new Schema({
-    question: { type: String, required: true },
-    options: [optionSchema],
-    creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    voters: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    createdAt: { type: Date, default: Date.now },
-});
+    startDate:{
+        type:Date,
+        default:Date.now
+    },
+    endDate:{
+        type:Date,
+        default:()=>Date.now()+24*60*60*1000  // 1 day
+    },
+    tags:[String],
+    likes:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        }
+    ],
+    comments:[
+        {
+            user:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"User"
+            },
+            comment:String,
+            createdAt:{
+                type:Date,
+                default:Date.now
+            }
+        }
+    ],
+    createdAt:{
+        type:Date,
+        default:Date.now
+    }
+})
 
-const Poll = mongoose.model('Poll', pollSchema);
-
-module.exports = Poll;
+const Poll=mongoose.model("Poll",pollSchema);
+module.exports=Poll;
