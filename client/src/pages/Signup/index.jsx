@@ -8,6 +8,7 @@ import { signupSchema } from '../../schemas';
 import DragDropImage from '../../components/DragDropImage';
 import { useState } from 'react';
 // import CropImage from '../../components/CropImage';
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
