@@ -7,6 +7,7 @@ import vote from './vote.png';
 import deletes from './delete.png'
 import add from './add.png'
 import logo from './logo.svg'
+import defaultUser from './defaultUser.png'
 
 export {
     menu,
@@ -18,4 +19,5 @@ export {
     deletes,
     add,
     logo,
+    defaultUser,
 }

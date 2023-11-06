@@ -1,4 +1,4 @@
-import { register } from '../../assets';
+import { register, defaultUser } from '../../assets';
 import styles from '../../styles';
 import Button from '../../components/Button';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -8,10 +8,11 @@ import { signupSchema } from '../../schemas';
 import DragDropImage from '../../components/DragDropImage';
 import { useState } from 'react';
 // import CropImage from '../../components/CropImage';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
     const navigate = useNavigate();
-    const [avatar, setAvatar] = useState(null)
+    const [avatar, setAvatar] = useState(defaultUser);
     const [preview, setPreview] = useState(false)
     const initialValues = {
         name: "",
@@ -22,7 +23,7 @@ const Signup = () => {
 
     const getRegister = async ({ name, email, password, avatar }) => {
         try {
-            const res = await fetch("http://localhost:5000/api/v1/user/register", {
+            const res = await fetch(`${apiUrl}/user/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -51,7 +52,7 @@ const Signup = () => {
         validationSchema: signupSchema,
         onSubmit: (values, action) => {
             getRegister({ ...values, avatar });
-            setAvatar(null)
+            setAvatar(defaultUser)
             setPreview(false);
             action.resetForm();
         }
@@ -61,7 +62,7 @@ const Signup = () => {
     const changeImage = () => {
         setClicked(true)
         setPreview(false);
-        setAvatar(null);
+        setAvatar(defaultUser);
     }
 
     return (
@@ -84,7 +85,7 @@ const Signup = () => {
                         {/* Registration input form  */}
                         <form method="POST" onSubmit={handleSubmit}>
                             <div className='mb-2'>
-                                {preview ? <div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex'> <div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '><img src={URL.createObjectURL(avatar)} alt={avatar} className=' group-hover:opacity-40 transition-opacity duration-300' /> <button type='button' onClick={changeImage} className='absolute text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold'>change Image</button></div><button type='button'>Crop Image</button></div> : <DragDropImage onImageSelect={handleImageSelection} clicked={clicked} setClicked={setClicked} />}
+                                {preview ? <div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex'> <div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '><img src={URL.createObjectURL(avatar)} alt='Profile pic' className=' group-hover:opacity-40 transition-opacity duration-300' /> <button type='button' onClick={changeImage} className='absolute text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold'>change Image</button></div><button type='button'>Crop Image</button></div> : <DragDropImage onImageSelect={handleImageSelection} clicked={clicked} setClicked={setClicked} />}
                             </div>
                             {/* div for taking name */}
                             <div className='mb-2'>
