@@ -5,9 +5,14 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useFormik } from 'formik'
 import { signupSchema } from '../../schemas';
+import DragDropImage from '../../components/DragDropImage';
+import { useState } from 'react';
+// import CropImage from '../../components/CropImage';
 
 const Signup = () => {
     const navigate = useNavigate();
+    const [avatar, setAvatar] = useState(null)
+    const [preview, setPreview] = useState(false)
     const initialValues = {
         name: "",
         email: "",
@@ -15,37 +20,49 @@ const Signup = () => {
         cpassword: "",
     }
 
-    const getRegister = async ({ name, email, password }) => {
+    const getRegister = async ({ name, email, password, avatar }) => {
         try {
             const res = await fetch("http://localhost:5000/api/v1/user/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ name, email, password }),
+                body: JSON.stringify({ name, email, password, avatar }),
             });
             const data = await res.json();
-            if (res.status === 400) {
-                if (data.message == "User Already Exists")
-                    toast.error("This email is in use. Use another one or try to login with same email");
+            if (res.status === 400 && data.success === false) {
+                toast.error(data.message);
             } else {
                 toast.success("Signup successfully");
-                console.log("registered successfully");
                 navigate('/login');
             }
         } catch (error) {
             console.log(error);
         }
     }
+    const handleImageSelection = (selectedFile) => {
+        setAvatar(selectedFile);
+        setPreview(true);
+        console.log(selectedFile);
+    };
 
     const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
         initialValues,
         validationSchema: signupSchema,
         onSubmit: (values, action) => {
-            getRegister(values);
+            getRegister({ ...values, avatar });
+            setAvatar(null)
+            setPreview(false);
             action.resetForm();
         }
     })
+    const [clicked, setClicked] = useState(false)
+
+    const changeImage = () => {
+        setClicked(true)
+        setPreview(false);
+        setAvatar(null);
+    }
 
     return (
         <div className={`flex md:flex-row flex-col-reverse border bg-white border-sky-400 mx-2 my-4 md:m-20 rounded-2xl overflow-hidden`}>
@@ -61,8 +78,14 @@ const Signup = () => {
                     </div>
                     {/* form div start here */}
                     <div className="w-full md:w-[80%]">
+                        {/* <div>
+                            <CropImage src={URL.createObjectURL(avatar)} />
+                        </div> */}
                         {/* Registration input form  */}
                         <form method="POST" onSubmit={handleSubmit}>
+                            <div className='mb-2'>
+                                {preview ? <div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex'> <div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '><img src={URL.createObjectURL(avatar)} alt={avatar} className=' group-hover:opacity-40 transition-opacity duration-300' /> <button type='button' onClick={changeImage} className='absolute text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold'>change Image</button></div><button type='button'>Crop Image</button></div> : <DragDropImage onImageSelect={handleImageSelection} clicked={clicked} setClicked={setClicked} />}
+                            </div>
                             {/* div for taking name */}
                             <div className='mb-2'>
                                 <label htmlFor="name" className="text-sm font-bold ">Name:</label>
@@ -82,7 +105,6 @@ const Signup = () => {
                                 </div>
                                 {errors.name && touched.name ? (<p className='text-red-600 text-[12px] mt-[3px]'>{errors.name}</p>) : null}
                             </div>
-
                             {/* div for taking email */}
                             <div className='mb-2'>
                                 <label htmlFor="email" className="text-sm font-bold ">Email address:</label>
@@ -187,7 +209,6 @@ const Signup = () => {
                     alt="" />
             </div>
         </div>
-
     )
 }
 
