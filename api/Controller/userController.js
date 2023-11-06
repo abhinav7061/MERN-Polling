@@ -11,7 +11,7 @@ exports.registerUser = async (req, res) => {
     if (!name) return sendErrorResponse(res, 400, "Name is required");
     if (!email) return sendErrorResponse(res, 400, "Email is required");
     if (!password) return sendErrorResponse(res, 400, "Password is required");
-    // if (!avatar) return sendErrorResponse(res, 400, "Avatar is required");
+    if (!avatar) return sendErrorResponse(res, 400, "Avatar is required");
 
     // const myCloud = await cloudinary.v2.uploader.upload(avatar, {
     //   folder: "avatars",
@@ -27,7 +27,7 @@ exports.registerUser = async (req, res) => {
     }
 
     let user = await User.findOne({ email });
-    if (user) return sendErrorResponse(res, 400, "User Already Exists");
+    if (user) return sendErrorResponse(res, 400, "This email is in use. Use another one or try to login with same email");
     user = await User.create({
       name,
       email,
@@ -161,7 +161,7 @@ exports.resetPassword = async (req, res) => {
       .createHash("sha256")
       .update(req.params.token)
       .digest("hex");
-    const resetToken = await User.findOne({resetPasswordToken});
+    const resetToken = await User.findOne({ resetPasswordToken });
     if (!resetToken) {
       return sendErrorResponse(res, 404, "Token not found");
     }
