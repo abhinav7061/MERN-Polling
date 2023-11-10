@@ -1,0 +1,61 @@
+.poll {
+    font-size: 0.9rem;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid gray;
+}
+
+.poll ul {
+    margin-top: 20px;
+    padding: 0;
+    margin: auto;
+}
+
+.poll ul li {
+    list-style: none;
+    border-radius: 3px;
+    margin-bottom: .7rem;
+    width: 100%;
+}
+
+.poll ul li button {
+    border: none;
+    background: transparent;
+    outline: none;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    position: relative;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.poll ul li button:hover {
+    background-color: #00ddf9;
+    color: #fff;
+}
+
+.progress-bar-container {
+    height: 10px;
+    position: relative;
+    top: 0;
+    left: 0;
+    background-color: #ddd;
+    border-radius: 5px;
+    color: #ffb300;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #00ddf9;
+    border-radius: 5px;
+    text-align: center;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
