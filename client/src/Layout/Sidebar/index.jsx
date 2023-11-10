@@ -4,22 +4,26 @@ import { logo } from "../../assets"
 const SidebarContext = createContext()
 
 export default function Sidebar({ children }) {
-    const [expanded, setExpanded] = useState(true)
+    const availableScreen = window.screen.availWidth
+    const [expanded, setExpanded] = useState(availableScreen > 756 ? true : false);
+    console.log(availableScreen);
     return (
-        <aside className="h-screen flex">
-            <nav className="h-full flex flex-col bg-white border-r shadow-sm">
+        <aside className={`sm:h-screen ${expanded ? 'h-screen bg-slate-900 top-0' : 'h-16 w-16 sm:bg-white bg-transparent'} duration-500  transition-all overflow-hidden flex sm:static fixed z-50`}>
+            {/* <button className="sm:hidden">{expanded ? <ion-icon name="arrow-forward-circle-outline"></ion-icon> : <ion-icon name="arrow-back-circle-outline"></ion-icon>}</button> */}
+            <nav className="h-full flex flex-col border-r shadow-sm">
                 <div className="p-4 pb-2 flex justify-between items-center">
                     <img
                         src={logo}
-                        className={`overflow-hidden transition-all ${expanded ? "w-32" : "w-0"
+                        className={`overflow-hidden transition-all ${expanded ? "w-28" : "w-0"
                             }`}
                         alt=""
                     />
                     <button
                         onClick={() => setExpanded((curr) => !curr)}
                         className="p-3 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+                        title="Click to open Sidebar"
                     >
-                        {expanded ? <ion-icon name="arrow-forward-circle-outline"></ion-icon> : <ion-icon name="arrow-back-circle-outline"></ion-icon>}
+                        {expanded ? <ion-icon name="arrow-back-circle-outline"></ion-icon> : <ion-icon name="arrow-forward-circle-outline"></ion-icon>}
                     </button>
                 </div>
                 <SidebarContext.Provider value={{ expanded }}>
@@ -31,15 +35,10 @@ export default function Sidebar({ children }) {
                         alt=""
                         className="w-10 h-10 rounded-md"
                     />
-                    <div
-                        className={`
-              flex justify-between items-center
-              overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"}
-          `}
-                    >
+                    <div className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? "w-40 ml-3" : "w-0"}`}>
                         <div className="leading-4">
-                            <h4 className="font-semibold">John Doe</h4>
-                            <span className="text-xs text-gray-600">johndoe@gmail.com</span>
+                            <h4 className="font-semibold text-white">John Doe</h4>
+                            <span className="text-xs text-gray-400">johndoe@gmail.com</span>
                         </div>
                         <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
                     </div>
@@ -60,13 +59,13 @@ export function SidebarItem({ icon, text, active, alert, onClicks }) {
         transition-colors group
         ${active
                     ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-                    : "hover:bg-indigo-50 text-gray-600"
+                    : `hover:bg-indigo-50 ${expanded ? 'text-white' : 'text-gray-500'} hover:text-gray-600`
                 }
     `}
         >
             {icon}
             <span
-                className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "hidden"
+                className={`overflow-hidden transition-all ${expanded ? "w-40 ml-3" : "hidden"
                     }`}
             >
                 {text}

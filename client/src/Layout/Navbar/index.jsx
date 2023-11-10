@@ -36,7 +36,7 @@ function Navbar() {
                     <button type="button" className=" bg-green-500 text-black hover:bg-blue-400  font-semibold py-2 px-5 rounded text-base" onClick={() => { navigate('/login') }}>LogIn/SignUp</button>
                 </div>
                 {/* div for the mobile menu*/}
-                <div className="flex md:hidden items-center">
+                <div className="flex md:hidden items-center z-50">
                     {/* div for the mobile menu icon */}
                     <div className="text-3xl md:hidden cursor-pointer" onClick={() => setToggle((open) => !open)}>
                         <img src={toggle ? close : menu} alt="menu" className="" />
