@@ -1,9 +1,13 @@
 const styles = {
     boxWidth: `xl:max-w-[1380px] w-full`,
 
-    heading2: "font-poppins font-semibold lg:text-[48px] text-[34px] text-black xs:leading-[76.8px] leading-[66.8px] w-full",
-    heading3: " underline mb-2 text-2xl sm:text-4xl md:text-5xl",
-    smHeading: "text-[7px] md:text-[12px] font-serif",
+    heading1: "lg:text-[48px] text-[34px] text-black xs:leading-[76.8px] leading-[50px] sm:leading-[66.8px]",
+    heading2: "lg:text-[40px] sm:text-[36px] text-[28px] text-black font-bold",
+    heading3: "lg:text-[30px] sm:text-[23px] text-[19px]",
+    heading4: 'lg:text-[26px] sm:text-[21px] text-[17px]',
+    heading5: "lg:text-[20px] sm:text-[17px] text-[12px]",
+    heading6: "lg:text-[14px] sm:text-[12px] text-[10px]",
+    smHeading: "text-[8px] md:text-[10px] lg:text-[13px] font-semibold font-serif",
     paragraph: "font-poppins font-normal text-slate-500 dark:text-dimWhite text-[18px] leading-[30.8px]",
 
     flexCenter: "flex justify-center items-center",
