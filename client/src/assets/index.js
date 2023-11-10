@@ -8,6 +8,10 @@ import deletes from './delete.png'
 import add from './add.png'
 import logo from './logo.svg'
 import defaultUser from './defaultUser.png'
+import defaultUserSvg from './defaultUser.svg'
+import doubleTick from './doubleTick.png'
+import like from './like.svg'
+import comment from './comment.svg'
 
 export {
     menu,
@@ -20,4 +24,8 @@ export {
     add,
     logo,
     defaultUser,
+    defaultUserSvg,
+    doubleTick,
+    like,
+    comment,
 }
