@@ -7,7 +7,7 @@ const Card = ({ img, num, title, color, progress }) => {
     }
     const LowBg = {
         background: `${color}`,
-        opacity: 0.12,
+        opacity: 0.06,
     }
     const border = {
         border: `1px solid ${color}`,

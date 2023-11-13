@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { login } from '../../assets';
 import { useFormik } from 'formik'
 import { loginSchema } from '../../schemas';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = () => {
     const navigate = useNavigate();
@@ -13,31 +14,34 @@ const Login = () => {
         password: '',
         remember_me: false, //if it is set to true then remember options will auto checked
     }
+    const getLogin = async ({ email, password }) => {
+        try {
+            const res = await fetch(`${apiUrl}/user/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password }),
+                credentials: 'include',
+            });
+            const data = await res.json();
+            console.log({ data });
+            if (data.success === false) {
+                toast.error(data.message);
+            } else {
+                toast.success("Signup successfully");
+                navigate('/');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
         initialValues,
         validationSchema: loginSchema,
         onSubmit: (values) => {
-            const data = {
-                email: 'abhikumar13570@gmail.com',
-                password: "12345678",
-            }
-            if (!(data.password === values.password && data.email === values.email)) {
-                toast.error('wrong credential');
-                console.log({
-                    data,
-                    values,
-                });
-            } else {
-                toast.success("Logged in successfully");
-                setTimeout(() => {
-                    navigate('/')
-                }, 1000);
-                console.log({
-                    data,
-                    values,
-                });
-            }
+            getLogin(values);
         }
     })
 

@@ -1,0 +1,13 @@
+.accordion-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    transition: max-height 0.3s ease-out;
+}
+
+.accordion-content.expanded {
+    -webkit-line-clamp: initial;
+    max-height: none;
+}

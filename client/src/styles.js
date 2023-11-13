@@ -2,7 +2,7 @@ const styles = {
     boxWidth: `xl:max-w-[1380px] w-full`,
 
     heading1: "lg:text-[48px] text-[34px] text-black xs:leading-[76.8px] leading-[50px] sm:leading-[66.8px]",
-    heading2: "lg:text-[40px] sm:text-[36px] text-[28px] text-black font-bold",
+    heading2: "lg:text-[40px] sm:text-[36px] text-[24px] text-black font-bold",
     heading3: "lg:text-[30px] sm:text-[23px] text-[19px]",
     heading4: 'lg:text-[26px] sm:text-[21px] text-[17px]',
     heading5: "lg:text-[20px] sm:text-[17px] text-[12px]",

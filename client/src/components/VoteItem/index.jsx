@@ -3,6 +3,7 @@ import "./index.css";
 import styles from "../../styles";
 import { defaultUserSvg, doubleTick, like, comment } from "../../assets";
 import UserDescription from "../UserDescription";
+import Accordion from "../Accordion";
 
 function VoteItem() {
     const [voteData, setVoteData] = useState([]);
@@ -42,7 +43,6 @@ function VoteItem() {
         }
         console.log({ voteData })
     };
-    const test = 40
 
     const undo = () => {
         voteData.forEach((item) => {
@@ -55,10 +55,14 @@ function VoteItem() {
         return <div>Loading...</div>
     }
 
+    const longText = "This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters.This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters.";
+
     return (
         <>
             {/* // <div className="bg-white rounded-[10px] overflow-hidden mb-4 px-6 py-3"> */}
             <UserDescription />
+            <hr className="my-1" />
+            <Accordion content={longText} />
             <div className="poll md:p-5 sm:p-4 p-3">
                 <h1 className={`mb-3 font-bold ${styles.heading5}`}>What is your favourite Programming Language?</h1>
                 <ul>
@@ -92,26 +96,29 @@ function VoteItem() {
                         <div className="md:w-7 w-4 rounded-full md:translate-x-[-10px] translate-x-[-5px] bg-white md:p-[3px] p-[1px]"><img src={defaultUserSvg} alt="" className=" rounded-full" /></div>
                         <div className="md:w-7 w-4 rounded-full md:translate-x-[-20px] translate-x-[-10px] bg-white md:p-[3px] p-[1px]"><img src={defaultUserSvg} alt="" className=" rounded-full" /></div>
                     </div>
-                    <div className={`flex font-semibold items-center flex-1 justify-between ${styles.smHeading}`}>
+                    <div className={`flex font-semibold flex-1 items-center justify-between ${styles.smHeading}`}>
                         <div className="flex text-slate-400">
                             <p className="">Total Votes: {totalVotes}</p>
-                            <div className="mx-3">&#x2022;</div>
+                            <div className="md:mx-3 mx-1">&#x2022;</div>
                             <p className="">days left</p>
                         </div>
                     </div>
+                    {voted && <div className={`flex font-semibold items-center mt-2 ${styles.smHeading}`}>
+                        <button onClick={undo} className="px-2 md:px-3 py-1 rounded-md  text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Undo</button>
+                        <button onClick={() => setVoted(pre => !pre)} className="md:ml-6 sm:ml-4 ml-2 px-2 md:px-3 py-1 rounded-md text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Vote again</button>
+                    </div>}
                 </div>
-                {voted && <div className={`flex font-semibold items-center mt-2 ${styles.smHeading}`}>
+                {/* {voted && <div className={`flex font-semibold items-center mt-2 ${styles.smHeading}`}>
                     <button onClick={undo} className="px-2 md:px-3 py-1 rounded-md  text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Undo</button>
                     <button onClick={() => setVoted(pre => !pre)} className="ml-6 px-2 md:px-3 py-1 rounded-md text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Vote again</button>
-
-                </div>}
+                </div>} */}
             </div>
             <div className={`flex justify-between mt-3 ${styles.heading6}`}>
                 <div className="flex items-center"><div className="p-1 bg-blue-300 rounded-full mr-2"><img src={like} alt="" className="w-3 h-3" /></div>2</div>
                 <div className="hover:underline cursor-pointer">2 Comment</div>
             </div>
             <div className="h-0 border-t border-gray-400 my-1" />
-            <div className="flex justify-between">
+            <div className="flex justify-between text-slate-600 font-semibold">
                 <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`}><img src={like} alt="" className="w-3 md:w-5 mr-1 md:mr-3" /><h5>Like</h5></div>
                 <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`}><img src={comment} alt="" className="w-3 md:w-5 mr-1 md:mr-3" />Comment</div>
             </div>

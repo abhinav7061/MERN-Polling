@@ -5,10 +5,9 @@ const SidebarContext = createContext()
 
 export default function Sidebar({ children }) {
     const availableScreen = window.screen.availWidth
-    const [expanded, setExpanded] = useState(availableScreen > 756 ? true : false);
-    console.log(availableScreen);
+    const [expanded, setExpanded] = useState(availableScreen > 640 ? true : false);
     return (
-        <aside className={`sm:h-screen ${expanded ? 'h-screen bg-slate-900 top-0' : 'h-16 w-16 sm:bg-white bg-transparent'} duration-500  transition-all overflow-hidden flex sm:static fixed z-50`}>
+        <aside className={`sm:h-screen ${expanded ? 'h-screen bg-slate-900 top-0' : 'h-10 w-16 sm:bg-white bg-transparent'} duration-500  transition-all overflow-hidden flex sm:static fixed z-50`}>
             {/* <button className="sm:hidden">{expanded ? <ion-icon name="arrow-forward-circle-outline"></ion-icon> : <ion-icon name="arrow-back-circle-outline"></ion-icon>}</button> */}
             <nav className="h-full flex flex-col border-r shadow-sm">
                 <div className="p-4 pb-2 flex justify-between items-center">
@@ -20,7 +19,7 @@ export default function Sidebar({ children }) {
                     />
                     <button
                         onClick={() => setExpanded((curr) => !curr)}
-                        className="p-3 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+                        className={`sm:p-3 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center sm:-translate-x-0 sm:translate-y-0 ${!expanded ? 'translate-x-[-22px] translate-y-[-5px]' : ''}`}
                         title="Click to open Sidebar"
                     >
                         {expanded ? <ion-icon name="arrow-back-circle-outline"></ion-icon> : <ion-icon name="arrow-forward-circle-outline"></ion-icon>}

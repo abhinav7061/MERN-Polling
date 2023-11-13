@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 const CreatePoll = () => {
     const [question, setQuestion] = useState("")
+    const [descripition, setDescripition] = useState("")
     const [options, setOptions] = useState("");
     const [optionList, setOptionList] = useState([]);
 
@@ -28,9 +29,11 @@ const CreatePoll = () => {
         console.log("submitted data is:-");
         console.log({
             question,
+            descripition,
             optionList,
         });
         setQuestion('');
+        setDescripition("");
         setOptionList([]);
         toast.success("Your poll has been created")
     }
@@ -38,25 +41,33 @@ const CreatePoll = () => {
         <div>
             <h1 className={`${styles.heading2} mb-6`}>Create Free Poll With PollLab</h1>
             <div className={`${styles.flexCenter}`}>
-                <form onSubmit={handleSubmit} className={`${styles.flexCenter} flex-col w-full sm:w-3/5 md:h-3/4 lg:w-1/2`}>
+                <form onSubmit={handleSubmit} className={`${styles.flexCenter} ${styles.heading5} flex-col w-full sm:w-3/5 md:h-3/4 lg:w-1/2`}>
                     {/* textArea fot the taking input for the question */}
                     <textarea
                         type="text"
                         placeholder="Enter your question"
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
-                        className='w-full p-2 md:p-4 text-xl rounded-md mb-5'
+                        className='w-full p-2 md:p-4 rounded-md mb-5'
                     />
-                    {/* div for adding the questions */}
+                    {/* textArea fot the taking input for the descripition */}
+                    <textarea
+                        type="text"
+                        placeholder="Enter your descripition"
+                        value={descripition}
+                        onChange={(e) => setDescripition(e.target.value)}
+                        className='w-full p-2 md:p-4 rounded-md mb-5'
+                    />
+                    {/* div for adding the option */}
                     <div className='flex justify-between w-full items-cente'>
                         <input
                             type="text"
                             placeholder="Enter your option"
                             value={options}
                             onChange={(e) => setOptions(e.target.value)}
-                            className='w-4/5 p-2 md:p-4 text-xl rounded-md'
+                            className='w-4/5 p-2 md:py-3 md:px-4 rounded-md'
                         />
-                        <button type='button' title='Click to add option' onClick={addList} className={` ${styles.flexCenter} w-14 rounded-md hover:border-slate-500 hover:border-2 px-3 py-2  bg-slate-300`}><img src={add} alt="Add Option" className=' object-contain' /></button>
+                        <button type='button' title='Click to add option' onClick={addList} className={` ${styles.flexCenter} md:w-12 sm:w-11 w-8 rounded-md hover:border-slate-500 hover:border-2 md:px-3 md:py-2 p-[5px]  bg-slate-300`}><img src={add} alt="Add Option" className=' object-contain' /></button>
                     </div>
 
                     {/* This is for showing options */}
@@ -68,7 +79,6 @@ const CreatePoll = () => {
                                     <div className={`${index > 0 ? 'mt-2.5' : 'mt-0'} px-3 py-1 hover:bg-slate-200 flex items-center text-[20px] rounded-md font-semibold`} key={index}>
                                         <PollOption
                                             listText={each}
-
                                             id={index}
                                             onSelect={deleteItem}
                                         />

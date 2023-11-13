@@ -17,7 +17,7 @@ const Poll = () => {
                     <NavLink to={slinks.linkTo}><SidebarItem icon={<ion-icon name={slinks.icon_name}></ion-icon>} text={slinks.text} active={location.pathname === slinks.linkTo} key={slinks.id} /></NavLink>
                 }))} */}
             </Sidebar>
-            <div className={`${styles.paddingX} py-6 h-screen overflow-auto`} style={{ flex: 1 }}>
+            <div className={`${styles.paddingX} bg-slate-100 py-6 md:h-screen overflow-auto`} style={{ flex: 1 }}>
                 <Outlet />
             </div>
         </div>

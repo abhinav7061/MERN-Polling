@@ -9,5 +9,6 @@ import Dashoard from "./pages/Poll/Dashboard";
 import CreatePoll from "./pages/Poll/CreatePoll";
 import MyPolls from "./pages/Poll/MyPolls";
 import MyVotes from "./pages/Poll/MyVotes";
+import { UserContextProvider } from "./UserContext";
 
-export { NoPage, Home, Footer, Navbar, Login, Signup, Poll, Dashoard, CreatePoll, MyPolls, MyVotes, }
+export { NoPage, Home, Footer, Navbar, Login, Signup, Poll, Dashoard, CreatePoll, MyPolls, MyVotes, UserContextProvider, }
