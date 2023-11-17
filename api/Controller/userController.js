@@ -99,6 +99,19 @@ exports.logoutUser = async (req, res) => {
   }
 };
 
+exports.myProfile =async (req,res) =>{
+  try {
+    const user=await User.findById(req.user._id);
+    if(!user)return sendErrorResponse(res,404,"User not found");
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    sendErrorResponse(res,500,error.message)
+  }
+}
+
 exports.getUserDetails = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
