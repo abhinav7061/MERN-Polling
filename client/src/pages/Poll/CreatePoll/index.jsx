@@ -4,38 +4,83 @@ import PollOption from './PollOption';
 import { add } from '../../../assets';
 import Button from '../../../components/Button';
 import { toast } from 'sonner';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const CreatePoll = () => {
     const [question, setQuestion] = useState("")
-    const [descripition, setDescripition] = useState("")
-    const [options, setOptions] = useState("");
+    const [description, setDescription] = useState("")
+    const [option, setOption] = useState("");
     const [optionList, setOptionList] = useState([]);
 
     const addList = () => {
+        if (option === "") return toast.error("You can not add a option blank");
+        if (optionList.includes(option)) return toast.error("You have already added this option");
         setOptionList((olditems) => {
-            return [...olditems, options];
+            return [...olditems, option];
         });
-        setOptions("");
+        setOption("");
     };
+
     const deleteItem = (id) => {
-        setOptionList((olditems) => {
-            return olditems.filter((arrElement, index) => {
-                return index !== id;
+        if (optionList.length === 1) {
+            toast.warning('This is last option! Delete it?', {
+                action: {
+                    label: 'Yes',
+                    onClick: () => setOptionList((olditems) => {
+                        return olditems.filter((arrElement, index) => {
+                            return index !== id;
+                        });
+                    }),
+                },
             });
-        });
+        } else {
+            setOptionList((olditems) => {
+                return olditems.filter((arrElement, index) => {
+                    return index !== id;
+                });
+            })
+        }
     };
+
+    const createPoll = async ({ question, description, optionList }) => {
+        let title = question;
+        let options = optionList.map(subject => ({ subject }));
+        try {
+            const res = await fetch(`${apiUrl}/poll/createPoll`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: 'include',
+                body: JSON.stringify({ title, description, options })
+            });
+            const data = await res.json();
+            console.log({ data });
+            if (res.status === 400 || data.success === false) {
+                toast.error(data.message);
+            } else {
+                toast.success("Your poll has been created successfully");
+                setQuestion('');
+                setDescription("");
+                setOptionList([]);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!question || question.length < 3) return toast.error("Length of question should be min 3");
+        if (!description || description.length < 5) return toast.error("Description is required and length should be at least 5 characters");
+        if (!optionList || optionList.length < 2) return toast.error("Minimum two options is required");
         console.log("submitted data is:-");
         console.log({
             question,
-            descripition,
+            description,
             optionList,
         });
-        setQuestion('');
-        setDescripition("");
-        setOptionList([]);
-        toast.success("Your poll has been created")
+        createPoll({ question, description, optionList });
     }
     return (
         <div>
@@ -50,12 +95,12 @@ const CreatePoll = () => {
                         onChange={(e) => setQuestion(e.target.value)}
                         className='w-full p-2 md:p-4 rounded-md mb-5'
                     />
-                    {/* textArea fot the taking input for the descripition */}
+                    {/* textArea fot the taking input for the description */}
                     <textarea
                         type="text"
-                        placeholder="Enter your descripition"
-                        value={descripition}
-                        onChange={(e) => setDescripition(e.target.value)}
+                        placeholder="Enter your description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                         className='w-full p-2 md:p-4 rounded-md mb-5'
                     />
                     {/* div for adding the option */}
@@ -63,8 +108,8 @@ const CreatePoll = () => {
                         <input
                             type="text"
                             placeholder="Enter your option"
-                            value={options}
-                            onChange={(e) => setOptions(e.target.value)}
+                            value={option}
+                            onChange={(e) => setOption(e.target.value)}
                             className='w-4/5 p-2 md:py-3 md:px-4 rounded-md'
                         />
                         <button type='button' title='Click to add option' onClick={addList} className={` ${styles.flexCenter} md:w-12 sm:w-11 w-8 rounded-md hover:border-slate-500 hover:border-2 md:px-3 md:py-2 p-[5px]  bg-slate-300`}><img src={add} alt="Add Option" className=' object-contain' /></button>
@@ -73,7 +118,7 @@ const CreatePoll = () => {
                     {/* This is for showing options */}
                     {optionList.length > 0 && (<div className='mt-6 w-full'>
                         <h1 className='text-[26px] font-semibold'>Your options</h1>
-                        <ol className='my-6 md:w-3/5'>
+                        <ol className='my-6'>
                             {optionList.map((each, index) => {
                                 return (
                                     <div className={`${index > 0 ? 'mt-2.5' : 'mt-0'} px-3 py-1 hover:bg-slate-200 flex items-center text-[20px] rounded-md font-semibold`} key={index}>
