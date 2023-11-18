@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { Layout, Home, NoPage, Login, Signup, Poll, Dashoard, CreatePoll, MyPolls, MyVotes, UserContextProvider, } from './modules'
+import { Layout, Home, NoPage, Login, Signup, Poll, Dashoard, CreatePoll, MyPolls, MyVotes, MyFeeds, UserContextProvider, } from './modules'
 import './App.css'
 function App() {
 
@@ -15,6 +15,10 @@ function App() {
               {/* Routing for internal polls. For the sidebar */}
               <Route
                 index
+                element={<MyFeeds />}
+              />
+              <Route
+                path='dashboard'
                 element={<Dashoard />}
               />
               <Route

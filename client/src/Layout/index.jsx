@@ -1,11 +1,40 @@
-import React from 'react'
+import React, { useState, useEffect, useContext, } from 'react'
 import { Outlet } from 'react-router-dom'
+import { Toaster, toast } from 'sonner';
 import Navbar from './Navbar'
 import Footer from './Footer'
-import { Toaster } from 'sonner';
+import Loader from '../components/Loader';
 import styles from '../styles';
+import { UserContext } from '../UserContext';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Layout = () => {
+    const { setUserInfo } = useContext(UserContext);
+    const [loading, setLoading] = useState(true)
+
+    // Get user info when the component mounts.
+    const getUser = async () => {
+        try {
+            const res = await fetch(`${apiUrl}/user/me`, {
+                credentials: 'include',
+            });
+            const data = await res.json();
+            console.log(data)
+            if (data.success && res.status === 200) {
+                setUserInfo(data.user);
+            }
+        } catch (error) {
+            console.log('Error: ', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+    useEffect(() => {
+        getUser();
+    }, []);
+    if (loading) {
+        return <Loader />
+    }
     return (
         <div className={`${styles.flexCenter}`}>
             <div className={`${styles.boxWidth}  overflow-hidden`}>
