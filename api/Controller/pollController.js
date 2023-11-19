@@ -144,3 +144,22 @@ exports.commentOnPoll = async (req,res) => {
         sendErrorResponse(res,500,error.message)
     }
 }
+
+exports.getAllPolls = async (req, res) => {
+    const perPage = 5;
+    try {
+        const page = req.query.page || 1;
+        const polls = await Poll.find()
+            .populate('author', ['name', 'email'])
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * perPage)
+            .limit(perPage);
+
+        res.status(200).json({
+            success: true,
+            polls
+        })
+    } catch (error) {
+        return sendErrorResponse(res, 500, error.message)
+    }
+}

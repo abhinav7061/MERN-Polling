@@ -5,7 +5,7 @@ import { defaultUserSvg, doubleTick, like, comment } from "../../assets";
 import UserDescription from "../UserDescription";
 import Accordion from "../Accordion";
 
-function VoteItem() {
+function VoteItem({pollData}) {
     const [voteData, setVoteData] = useState([]);
     const [totalVotes, setTotalVotes] = useState(null);
     const [voted, setVoted] = useState(false);
@@ -62,15 +62,15 @@ function VoteItem() {
             {/* // <div className="bg-white rounded-[10px] overflow-hidden mb-4 px-6 py-3"> */}
             <UserDescription />
             <hr className="my-1" />
-            <Accordion content={longText} />
+            <Accordion content={pollData.description} />
             <div className="poll md:p-5 sm:p-4 p-3">
-                <h1 className={`mb-3 font-bold ${styles.heading5}`}>What is your favourite Programming Language?</h1>
+                <h1 className={`mb-3 font-bold ${styles.heading5}`}>{pollData.title}</h1>
                 <ul>
-                    {voteData.map((item, index) =>
+                    {pollData.options.map((item, index) =>
                     (
-                        <li key={item.id} className={`relative text-black ${styles.heading6}`}>
-                            {!voted ? <button onClick={submitVote} data-id={item.id} className="overflow-hidden md:px-5 py-1 " title={`click to vote '${item.option}'`}>
-                                <span className="md:mx-3 mx-2">{index + 1}.</span> {item.option}
+                        <li key={item._id} className={`relative text-black ${styles.heading6}`}>
+                            {!voted ? <button onClick={submitVote} data-id={item.id} className="overflow-hidden md:px-5 py-1 " title={`click to vote '${item.subject}'`}>
+                                <span className="md:mx-3 mx-2">{index + 1}.</span> <p className="text-start">{item.subject}</p>
                             </button>
                                 :
                                 <div className="flex items-center">
@@ -114,8 +114,8 @@ function VoteItem() {
                 </div>} */}
             </div>
             <div className={`flex justify-between mt-3 ${styles.heading6}`}>
-                <div className="flex items-center"><div className="p-1 bg-blue-300 rounded-full mr-2"><img src={like} alt="" className="w-3 h-3" /></div>2</div>
-                <div className="hover:underline cursor-pointer">2 Comment</div>
+                <div className="flex items-center"><div className="p-1 bg-blue-300 rounded-full mr-2"><img src={like} alt="" className="w-3 h-3" /></div>{pollData.likes.length}</div>
+                <div className="hover:underline cursor-pointer">{pollData.comments.length} Comment</div>
             </div>
             <div className="h-0 border-t border-gray-400 my-1" />
             <div className="flex justify-between text-slate-600 font-semibold">
