@@ -1,6 +1,7 @@
 import { useContext, createContext, useState } from "react"
 import { logo } from "../../assets"
 import { UserContext } from "../../UserContext"
+import LogoutBtn from "../../components/Button/LogoutBtn"
 
 const SidebarContext = createContext()
 
@@ -15,13 +16,13 @@ export default function Sidebar({ children }) {
     let firstLetters;
 
     // createing final avatar name
-    let avatar = 'A';
+    let avatar;
 
-    // if (userInfo) {
-    //     words = userInfo.name.split(" ");
-    //     firstLetters = words.map(word => word[0].toUpperCase());
-    //     avatar = firstLetters.join("");
-    // }
+    if (userInfo) {
+        words = userInfo.name.split(" ");
+        firstLetters = words.map(word => word[0].toUpperCase());
+        avatar = firstLetters.join("");
+    }
 
     const [expanded, setExpanded] = useState(availableScreen > 640 ? true : false);
     return (
@@ -55,7 +56,7 @@ export default function Sidebar({ children }) {
                             <h4 className="font-semibold text-white">{userInfo.name}</h4>
                             <span className="text-xs text-gray-400">{userInfo.email}</span>
                         </div>
-                        <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+                        <LogoutBtn />
                     </div>
                 </div>}
             </nav>

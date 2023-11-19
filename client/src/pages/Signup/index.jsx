@@ -30,6 +30,7 @@ const Signup = () => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ name, email, password, avatar }),
+                credentials: 'include',
             });
             const data = await res.json();
             if (res.status === 400 && data.success === false) {

@@ -4,6 +4,7 @@ import styles from '../../styles'
 import { navLinks } from '../../constants'
 import { menu, close } from '../../assets'
 import { UserContext } from '../../UserContext'
+import LogoutBtn from '../../components/Button/LogoutBtn'
 
 function Navbar() {
     const { setUserInfo, userInfo } = useContext(UserContext);
@@ -34,6 +35,8 @@ function Navbar() {
                     </ul>
                 </div>
                 {/* div for login signup button  */}
+
+                {userInfo && <div className={`flex justify-center items-center ${styles.heading6}`}><p className='text-white'>Hi {userInfo.name} !</p><LogoutBtn/></div>}
                 <div className={`hidden ${userInfo ? null : 'md:block'} `}>
                     <button type="button" className=" bg-green-500 text-black hover:bg-blue-400  font-semibold py-2 px-5 rounded text-base" onClick={() => { navigate('/login') }}>LogIn/SignUp</button>
                 </div>

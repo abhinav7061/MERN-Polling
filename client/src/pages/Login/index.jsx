@@ -5,9 +5,12 @@ import { toast } from 'sonner';
 import { login } from '../../assets';
 import { useFormik } from 'formik'
 import { loginSchema } from '../../schemas';
+import { UserContext } from '../../UserContext';
+import { useContext } from 'react';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = () => {
+    const { setUserInfo, userInfo } = useContext(UserContext);
     const navigate = useNavigate();
     const initialValues = {
         email: '',
@@ -25,11 +28,11 @@ const Login = () => {
                 credentials: 'include',
             });
             const data = await res.json();
-            console.log({ data });
-            if (data.success === false) {
+            if (data.success === false || !res.ok) {
                 toast.error(data.message);
             } else {
                 toast.success("Signup successfully");
+                setUserInfo(data.user)
                 navigate('/');
             }
         } catch (error) {

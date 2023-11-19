@@ -76,6 +76,7 @@ exports.loginUser = async (req, res) => {
     res.status(200).cookie("token", token, options).json({
       success: true,
       message: "Loggedin Successfully",
+      user,
     });
   } catch (error) {
     sendErrorResponse(res, 500, error.message);
