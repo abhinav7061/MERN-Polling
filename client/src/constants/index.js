@@ -49,27 +49,33 @@ const navLinks = [
 const sideLinks = [
     {
         id: 1,
-        icon_name: 'apps',
-        text: 'Dashoard',
+        icon_name: 'home',
+        text: 'My Feed',
         linkTo: "/poll",
     },
     {
         id: 2,
+        icon_name: 'apps',
+        text: 'Dashoard',
+        linkTo: "/poll/dashboard",
+    },
+    {
+        id: 3,
         icon_name: 'bar-chart-outline',
         text: 'Create Poll',
         linkTo: "/poll/create",
     },
     {
-        id: 3,
-        icon_name: 'bar-chart-outline',
-        text: 'Your Polls',
-        linkTo: "/poll/yourpoll",
-    },
-    {
         id: 4,
         icon_name: 'bar-chart-outline',
-        text: 'Your votes',
-        linkTo: "/poll/yourvote",
+        text: 'My Polls',
+        linkTo: "/poll/my-poll",
+    },
+    {
+        id: 5,
+        icon_name: 'bar-chart-outline',
+        text: 'My votes',
+        linkTo: "/poll/my-vote",
     },
 ]
 

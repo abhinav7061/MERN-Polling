@@ -163,3 +163,16 @@ exports.getAllPolls = async (req, res) => {
         return sendErrorResponse(res, 500, error.message)
     }
 }
+
+exports.getPoll = async(req,res)=>{
+    try {
+        const poll = await Poll.findById(req.params.id);
+        if (!poll) return sendErrorResponse(res, 404, "Poll not found");
+        res.status(200).json({
+          success: true,
+          poll,
+        });
+      } catch (error) {
+        sendErrorResponse(res, 500, error.message);
+      }
+}

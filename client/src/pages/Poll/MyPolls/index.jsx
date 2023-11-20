@@ -1,8 +1,9 @@
 import React from 'react'
+import { SmallSpinLoader,Spinner } from '../../../components/Loader/SpinLoader'
 
 const MyPolls = () => {
     return (
-        <div>MyPolls</div>
+        <div>MyPolls <SmallSpinLoader/> <Spinner/></div>
     )
 }
 
