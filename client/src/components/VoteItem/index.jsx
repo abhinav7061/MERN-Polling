@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import styles from "../../styles";
-import { defaultUserSvg, doubleTick, like, comment } from "../../assets";
+import { defaultUserSvg, doubleTick, like, comment, login } from "../../assets";
 import { toast } from "sonner";
 import UserDescription from "../UserDescription";
 import Accordion from "../Accordion";
@@ -13,7 +13,9 @@ function VoteItem({ pollData }) {
     const [voteData, setVoteData] = useState(pollData);
     const [voted, setVoted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(getLeftTime(voteData.endDate))
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [inputComment, setInputComment] = useState('');
+    const [commentInputField, setCommentInputField] = useState(false)
 
     setInterval(() => {
         setTimeLeft(getLeftTime(voteData.endDate));
@@ -69,6 +71,58 @@ function VoteItem({ pollData }) {
         //     console.log(item.selected);
         //     item.selected = false;
         // })
+    }
+
+    const handleLike = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`${apiUrl}/poll/like-dislike/${voteData._id}`, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: 'include',
+            })
+            const data = await res.json();
+            if (res.ok) {
+                getPoll(voteData._id)
+                toast(data.message, { type: "info" });
+            } else {
+                toast(data.message, { type: 'warning' })
+            }
+        }
+        catch (error) { console.log(error); }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    const handleCommentPost = async (e) => {
+        e.preventDefault();
+        if (inputComment.length < 3) return toast.warning("The comment should contain 3 characters")
+        setLoading(true);
+        try {
+            const res = await fetch(`${apiUrl}/poll/comment/${voteData._id}`, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ comment: inputComment }),
+                credentials: 'include',
+            })
+            const data = await res.json();
+            if (res.ok) {
+                getPoll(voteData._id)
+                toast(data.message, { type: "info" });
+            } else {
+                toast(data.message, { type: 'warning' })
+            }
+        }
+        catch (error) { console.log(error); }
+        finally {
+            setLoading(false);
+        }
+        console.log(inputComment);
     }
 
     const longText = "This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters.This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters.";
@@ -131,12 +185,32 @@ function VoteItem({ pollData }) {
             </div>
             <div className={`flex justify-between mt-3 ${styles.heading6}`}>
                 <div className="flex items-center"><div className="p-1 bg-blue-300 rounded-full mr-2"><img src={like} alt="" className="w-3 h-3" /></div>{voteData.likes.length}</div>
-                <div className="hover:underline cursor-pointer">{voteData.comments.length} Comment</div>
+                <div className="hover:underline cursor-pointer" onClick={() => setCommentInputField(prev => !prev)}>{voteData.comments.length} Comment</div>
             </div>
             <div className="h-0 border-t border-gray-400 my-1" />
-            <div className="flex justify-between text-slate-600 font-semibold">
-                <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`}><img src={like} alt="" className="w-3 md:w-5 mr-1 md:mr-3" /><h5>Like</h5></div>
-                <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`}><img src={comment} alt="" className="w-3 md:w-5 mr-1 md:mr-3" />Comment</div>
+            <div className="flex justify-between text-slate-600 font-semibold"> 
+                <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`} onClick={handleLike}><img src={like} alt="" className="w-3 md:w-5 mr-1 md:mr-3" /><h5>Like</h5></div>
+                <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`} onClick={() => setCommentInputField(prev => !prev)}><img src={comment} alt="" className="w-3 md:w-5 mr-1 md:mr-3" />Comment</div>
+            </div>
+            <div className={`my-3 ${commentInputField ? '' : 'hidden'}`}>
+                <form className={`flex ${styles.heading5}`} onSubmit={handleCommentPost}>
+                    <input type="text" name="comment" value={inputComment} onChange={(e) => { setInputComment(e.target.value) }} id="" className={`w-full border-2 border-slate-400 px-3 sm:px-5 py-1 outline-none focus:border-slate-600 rounded-3xl`} placeholder="Enter your comment here" autoComplete="off" required />
+                    <input type="submit" value="Post" className="md:ml-6 sm:ml-4 ml-2 px-2 md:px-3 py-1 rounded-md text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors cursor-pointer" />
+                </form>
+                {(voteData.comments.length > 0) ? <div className="my-3 border border-slate-800 rounded-lg py-3 px-5">
+                    <div className={`flex justify-between mb-4 ${styles.heading5}`}><p>Comments</p> <p className="cursor-pointer">Most Relevent</p></div>
+                    {voteData.comments.map((comment, index) => (
+                        <div className={`rounded-md bg-slate-100 p-3 ${voteData.comments.length - 1 === index ? '' : "mb-5"}`} key={comment._id}>
+                            <UserDescription />
+                            <h1 className={`${styles.heading5} mt-1 px-2`}>{comment.comment}</h1>
+                        </div>
+                    ))}
+                </div>
+                    :
+                    <div className="flex flex-col justify-center items-center my-3 py-3 px-5">
+                        <img src={login} alt="comment" className="lg:h-44 md:h-40 sm:h-36 h-28" />
+                        <h1 className= {`font-semibold ${styles.heading5}`}>Be the first to comment</h1>
+                    </div>}
             </div>
             {/* // </div> */}
         </>
