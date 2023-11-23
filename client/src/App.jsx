@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { Layout, Home, NoPage, Login, Signup, Poll, Dashoard, CreatePoll, MyPolls, MyVotes, MyFeeds, UserContextProvider, } from './modules'
+import { Layout, Home, NoPage, Login, Signup, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, MyFeeds, UserContextProvider, } from './modules'
 import './App.css'
 function App() {
 
@@ -24,6 +24,14 @@ function App() {
               <Route
                 path="create"
                 element={<CreatePoll />}
+              />
+              <Route
+                path='edit-poll/:id'
+                element={<EditPoll />}
+              />
+              <Route
+                path='delete-poll/:id'
+                element={<DeletePoll />}
               />
               <Route
                 path="my-poll"

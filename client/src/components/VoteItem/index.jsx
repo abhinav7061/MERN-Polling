@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./index.css";
 import styles from "../../styles";
 import { defaultUserSvg, doubleTick, like, comment, login } from "../../assets";
@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import UserDescription from "../UserDescription";
 import Accordion from "../Accordion";
 import { getLeftTime } from "../../utilities/getLeftTime";
+import { Link } from "react-router-dom";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -66,11 +67,9 @@ function VoteItem({ pollData }) {
         }
     };
 
-    const undo = () => {
-        // voteData.forEach((item) => {
-        //     console.log(item.selected);
-        //     item.selected = false;
-        // })
+    const undoVote = () => {
+        console.log('deleted vote');
+
     }
 
     const handleLike = async () => {
@@ -113,6 +112,7 @@ function VoteItem({ pollData }) {
             const data = await res.json();
             if (res.ok) {
                 getPoll(voteData._id)
+                setInputComment('');
                 toast(data.message, { type: "info" });
             } else {
                 toast(data.message, { type: 'warning' })
@@ -122,15 +122,12 @@ function VoteItem({ pollData }) {
         finally {
             setLoading(false);
         }
-        console.log(inputComment);
     }
-
-    const longText = "This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters.This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters. This is a long piece of text. It could be more than 20 characters.";
 
     return (
         <>
             {/* // <div className="bg-white rounded-[10px] overflow-hidden mb-4 px-6 py-3"> */}
-            <UserDescription />
+            <div className="flex items-center"><div className="flex-1"><UserDescription /></div><Link to={`/poll/edit-poll/${voteData._id}`}className=" hover:text-blue-600"><ion-icon name="create-outline"></ion-icon></Link><Link to={`/poll/delete-poll/${voteData._id}`} className="md:ml-3 lg:ml-5 ml-1 hover:text-red-500"><ion-icon name="trash-outline"></ion-icon></Link></div>
             <hr className="my-1" />
             <Accordion content={voteData.description} />
             <div className="poll md:p-5 sm:p-4 p-3">
@@ -174,27 +171,23 @@ function VoteItem({ pollData }) {
                         </div>
                     </div>
                     {voted && <div className={`flex font-semibold items-center mt-2 ${styles.smHeading}`}>
-                        <button onClick={undo} className="px-2 md:px-3 py-1 rounded-md  text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Undo</button>
+                        <button onClick={undoVote} className="px-2 md:px-3 py-1 rounded-md  text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Undo</button>
                         <button onClick={() => setVoted(pre => !pre)} className="md:ml-6 sm:ml-4 ml-2 px-2 md:px-3 py-1 rounded-md text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Vote again</button>
                     </div>}
                 </div>
-                {/* {voted && <div className={`flex font-semibold items-center mt-2 ${styles.smHeading}`}>
-                    <button onClick={undo} className="px-2 md:px-3 py-1 rounded-md  text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Undo</button>
-                    <button onClick={() => setVoted(pre => !pre)} className="ml-6 px-2 md:px-3 py-1 rounded-md text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors">Vote again</button>
-                </div>} */}
             </div>
             <div className={`flex justify-between mt-3 ${styles.heading6}`}>
                 <div className="flex items-center"><div className="p-1 bg-blue-300 rounded-full mr-2"><img src={like} alt="" className="w-3 h-3" /></div>{voteData.likes.length}</div>
                 <div className="hover:underline cursor-pointer" onClick={() => setCommentInputField(prev => !prev)}>{voteData.comments.length} Comment</div>
             </div>
             <div className="h-0 border-t border-gray-400 my-1" />
-            <div className="flex justify-between text-slate-600 font-semibold"> 
+            <div className="flex justify-between text-slate-600 font-semibold">
                 <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`} onClick={handleLike}><img src={like} alt="" className="w-3 md:w-5 mr-1 md:mr-3" /><h5>Like</h5></div>
                 <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`} onClick={() => setCommentInputField(prev => !prev)}><img src={comment} alt="" className="w-3 md:w-5 mr-1 md:mr-3" />Comment</div>
             </div>
             <div className={`my-3 ${commentInputField ? '' : 'hidden'}`}>
                 <form className={`flex ${styles.heading5}`} onSubmit={handleCommentPost}>
-                    <input type="text" name="comment" value={inputComment} onChange={(e) => { setInputComment(e.target.value) }} id="" className={`w-full border-2 border-slate-400 px-3 sm:px-5 py-1 outline-none focus:border-slate-600 rounded-3xl`} placeholder="Enter your comment here" autoComplete="off" required />
+                    <input type="text" name="comment" value={inputComment} onChange={(e) => { setInputComment(e.target.value) }} className={`w-full border-2 border-slate-400 px-3 sm:px-5 py-1 outline-none focus:border-slate-600 rounded-3xl`} placeholder="Enter your comment here" autoComplete="off" required />
                     <input type="submit" value="Post" className="md:ml-6 sm:ml-4 ml-2 px-2 md:px-3 py-1 rounded-md text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors cursor-pointer" />
                 </form>
                 {(voteData.comments.length > 0) ? <div className="my-3 border border-slate-800 rounded-lg py-3 px-5">
@@ -209,7 +202,7 @@ function VoteItem({ pollData }) {
                     :
                     <div className="flex flex-col justify-center items-center my-3 py-3 px-5">
                         <img src={login} alt="comment" className="lg:h-44 md:h-40 sm:h-36 h-28" />
-                        <h1 className= {`font-semibold ${styles.heading5}`}>Be the first to comment</h1>
+                        <h1 className={`font-semibold ${styles.heading5}`}>Be the first to comment</h1>
                     </div>}
             </div>
             {/* // </div> */}
