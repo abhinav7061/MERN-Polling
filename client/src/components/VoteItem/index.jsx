@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./index.css";
 import styles from "../../styles";
 import { defaultUserSvg, doubleTick, like, comment, login } from "../../assets";
@@ -7,10 +7,12 @@ import UserDescription from "../UserDescription";
 import Accordion from "../Accordion";
 import { getLeftTime } from "../../utilities/getLeftTime";
 import { Link } from "react-router-dom";
+import { UserContext } from "../../UserContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function VoteItem({ pollData }) {
+    const { userInfo } = useContext(UserContext);
     const [voteData, setVoteData] = useState(pollData);
     const [voted, setVoted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(getLeftTime(voteData.endDate))
@@ -127,7 +129,20 @@ function VoteItem({ pollData }) {
     return (
         <>
             {/* // <div className="bg-white rounded-[10px] overflow-hidden mb-4 px-6 py-3"> */}
-            <div className="flex items-center"><div className="flex-1"><UserDescription /></div><Link to={`/poll/edit-poll/${voteData._id}`}className=" hover:text-blue-600"><ion-icon name="create-outline"></ion-icon></Link><Link to={`/poll/delete-poll/${voteData._id}`} className="md:ml-3 lg:ml-5 ml-1 hover:text-red-500"><ion-icon name="trash-outline"></ion-icon></Link></div>
+            <div className="flex items-center">
+                <div className="flex-1">
+                    <UserDescription userId={voteData.author} />
+                </div>
+                {(userInfo && userInfo._id === voteData.author) && <>
+                    <Link to={`/poll/edit-poll/${voteData._id}`} className=" hover:text-blue-600" title="Edit Poll">
+                        <ion-icon name="create-outline"></ion-icon>
+                    </Link>
+                    <Link to={`/poll/delete-poll/${voteData._id}`} className="md:ml-3 lg:ml-5 ml-1 hover:text-red-500" title="Delete Poll">
+                        <ion-icon name="trash-outline">
+                        </ion-icon>
+                    </Link>
+                </>}
+            </div>
             <hr className="my-1" />
             <Accordion content={voteData.description} />
             <div className="poll md:p-5 sm:p-4 p-3">
@@ -194,7 +209,7 @@ function VoteItem({ pollData }) {
                     <div className={`flex justify-between mb-4 ${styles.heading5}`}><p>Comments</p> <p className="cursor-pointer">Most Relevent</p></div>
                     {voteData.comments.map((comment, index) => (
                         <div className={`rounded-md bg-slate-100 p-3 ${voteData.comments.length - 1 === index ? '' : "mb-5"}`} key={comment._id}>
-                            <UserDescription />
+                            <UserDescription userId={comment.user} />
                             <h1 className={`${styles.heading5} mt-1 px-2`}>{comment.comment}</h1>
                         </div>
                     ))}

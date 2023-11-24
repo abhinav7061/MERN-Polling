@@ -31,6 +31,6 @@ router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword)
 router.route("/role-update/:id").put(updateRole)
-router.route("/delete-profile/:id").delete(isAuthenticatedUser,isAdmin,deleteProfile)
+router.route("/delete-profile/:id").delete(isAuthenticatedUser, isAdmin, deleteProfile)
 
 module.exports = router;

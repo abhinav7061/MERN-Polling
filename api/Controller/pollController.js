@@ -5,6 +5,7 @@ const User = require("../Models/UserSchema");
 exports.createPoll = async (req, res) => {
     try {
         const { title, description, options } = req.body;
+        const userId = req.user._id;
         if (!title) {
             return sendErrorResponse(res, 401, "Title is required");
         }
@@ -17,7 +18,7 @@ exports.createPoll = async (req, res) => {
         if (options.length < 2) {
             return sendErrorResponse(res, 401, "At least 2 subjects is required");
         }
-        const poll = await Poll.create({ title, description, options })
+        const poll = await Poll.create({ title, description, options, author: userId })
         res.status(200).json({
             success: true,
             message: "Poll created Successfully",
@@ -147,10 +148,8 @@ exports.commentOnPoll = async (req, res) => {
 
 exports.getAllPolls = async (req, res) => {
     const perPage = 5;
-    // console.log(req.query);
     try {
         const page = req.query.page || 1;
-
         // Search
         const searchQuery = req.query.search;
         const searchFilter = searchQuery
@@ -186,15 +185,32 @@ exports.getAllPolls = async (req, res) => {
             },
             // {
             //     $lookup: {
-            //         from: 'User',
+            //         from: 'users',
             //         localField: 'author',
             //         foreignField: '_id',
             //         as: 'authorInfo',
             //     },
             // },
-            // {
-            //     $unwind: '$authorInfo',
-            // },
+            // // {
+            // //     $unwind: '$authorInfo',
+            // // },
+            // // {
+            // //     $project: {
+            // //         _id: 1,
+            // //         title: 1,
+            // //         description: 1,
+            // //         options: 1,
+            // //         allowMultipleVotes: 1,
+            // //         startDate: 1,
+            // //         endDate: 1,
+            // //         tags: 1,
+            // //         likes: 1,
+            // //         comments: 1,
+            // //         createdAt: 1,
+            // //         // Fields from users collection which needed in the project
+            // //         'authorInfo._id': 1,
+            // //     },
+            // // },
             {
                 $sort: sortCriteria,
             },
@@ -210,7 +226,6 @@ exports.getAllPolls = async (req, res) => {
             success: true,
             polls,
         });
-        console.log({ polls, page, searchQuery, searchFilter, sortOption });
     } catch (error) {
         return sendErrorResponse(res, 500, error.message);
     }
