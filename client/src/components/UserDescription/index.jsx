@@ -6,6 +6,9 @@ import SimpleSpinLoader from '../Loader/SpinLoader';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const UserDescription = ({ userId }) => {
+    if (!userId) {
+        return
+    }
     const [user, setUser] = useState({})
     const [loading, setLoading] = useState(true)
 
@@ -31,7 +34,7 @@ const UserDescription = ({ userId }) => {
 
     useEffect(() => {
         getUser();
-    }, [userId])
+    }, [])
     return (
         <div className="flex md:p-3 p-1 justify-between items-center">
             {loading ? <SimpleSpinLoader /> : (<>

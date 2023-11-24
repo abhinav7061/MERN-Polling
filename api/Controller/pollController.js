@@ -146,11 +146,24 @@ exports.commentOnPoll = async (req, res) => {
     }
 }
 
-exports.getAllPolls = async (req, res) => {
+exports.getPoll = async (req, res) => {
+    try {
+        const poll = await Poll.findById(req.params.id);
+        if (!poll) return sendErrorResponse(res, 404, "Poll not found");
+        res.status(200).json({
+            success: true,
+            poll,
+        });
+    } catch (error) {
+        sendErrorResponse(res, 500, error.message);
+    }
+}
+
+const getPollsByCriteria = async (req, res, options = {}) => {
     const perPage = 5;
     try {
+        const userId = options.includeUserFilter && req.user ? req.user._id : null;
         const page = req.query.page || 1;
-        // Search
         const searchQuery = req.query.search;
         const searchFilter = searchQuery
             ? {
@@ -161,7 +174,6 @@ exports.getAllPolls = async (req, res) => {
             }
             : {};
 
-        // Sorting
         const sortOption = req.query.sort || 'newer';
         let sortCriteria = {};
         if (sortOption === 'older') {
@@ -174,16 +186,31 @@ exports.getAllPolls = async (req, res) => {
             sortCriteria = { totalVotes: -1 };
         }
 
+        const currentDate = new Date();
+
+        const dateFilter = options.includeActiveFilter
+            ? { endDate: { $gte: currentDate } }
+            : options.includeClosedFilter
+                ? { endDate: { $lt: currentDate } }
+                : {};
+
+        const filter = {
+            ...(userId ? { author: userId } : {}),
+            ...searchFilter,
+            ...dateFilter,
+        };
+
         const polls = await Poll.aggregate([
             {
-                $match: searchFilter,
+                $match: filter,
             },
             {
                 $addFields: {
                     totalVotes: { $sum: '$options.votes' },
                 },
             },
-            // {
+
+            //  {
             //     $lookup: {
             //         from: 'users',
             //         localField: 'author',
@@ -191,26 +218,26 @@ exports.getAllPolls = async (req, res) => {
             //         as: 'authorInfo',
             //     },
             // },
-            // // {
-            // //     $unwind: '$authorInfo',
-            // // },
-            // // {
-            // //     $project: {
-            // //         _id: 1,
-            // //         title: 1,
-            // //         description: 1,
-            // //         options: 1,
-            // //         allowMultipleVotes: 1,
-            // //         startDate: 1,
-            // //         endDate: 1,
-            // //         tags: 1,
-            // //         likes: 1,
-            // //         comments: 1,
-            // //         createdAt: 1,
-            // //         // Fields from users collection which needed in the project
-            // //         'authorInfo._id': 1,
-            // //     },
-            // // },
+            // {
+            //     $unwind: '$authorInfo',
+            // },
+            // {
+            //     $project: {
+            //         _id: 1,
+            //         title: 1,
+            //         description: 1,
+            //         options: 1,
+            //         allowMultipleVotes: 1,
+            //         startDate: 1,
+            //         endDate: 1,
+            //         tags: 1,
+            //         likes: 1,
+            //         comments: 1,
+            //         createdAt: 1,
+            //         // Fields from users collection which needed in the project
+            //         'authorInfo._id': 1,
+            //     },
+            // },
             {
                 $sort: sortCriteria,
             },
@@ -227,19 +254,25 @@ exports.getAllPolls = async (req, res) => {
             polls,
         });
     } catch (error) {
-        return sendErrorResponse(res, 500, error.message);
+        sendErrorResponse(res, 500, error.message);
     }
 };
 
-exports.getPoll = async (req, res) => {
-    try {
-        const poll = await Poll.findById(req.params.id);
-        if (!poll) return sendErrorResponse(res, 404, "Poll not found");
-        res.status(200).json({
-            success: true,
-            poll,
-        });
-    } catch (error) {
-        sendErrorResponse(res, 500, error.message);
+exports.getAllPolls = async (req, res) => {
+    await getPollsByCriteria(req, res);
+};
+
+exports.myPolls = async (req, res) => {
+    console.log(req.query);
+    if (!req.user) {
+        return sendErrorResponse(res, 400, "Login First");
     }
-}
+    const includeActiveFilter = req.query.active === 'active';
+    const includeClosedFilter = req.query.active === 'closed';
+    await getPollsByCriteria(req, res, {
+        includeUserFilter: true,
+        includeActiveFilter,
+        includeClosedFilter
+    });
+};
+
