@@ -13,7 +13,8 @@ const voteSchema=new mongoose.Schema({
     },
     selectedOption:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Poll.options"
+        ref:"Poll.options",
+        required:true
     },
     createdAt:{
         type:Date,

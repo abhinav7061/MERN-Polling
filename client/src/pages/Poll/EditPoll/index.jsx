@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PollEditor from '../PollEditor'
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styles from '../../../styles';
 import { Spinner } from '../../../components/Loader/SpinLoader';
 import { toast } from 'sonner';
@@ -11,6 +11,12 @@ const EditPoll = () => {
     const pollId = useParams().id;
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true)
+    const [path, setPath] = useState('/poll')
+    const location = useLocation();
+    if (location.state !== null) {
+        setPath(location.state.path);
+        location.state = null;
+    }
     // Set initial data state
     const [initialData, setInitialData] = useState({
         question: '',
@@ -34,7 +40,7 @@ const EditPoll = () => {
                 toast.error(data.message);
             } else {
                 toast.success("Your poll has been Updated successfully");
-                navigate('/poll');
+                navigate(path);
             }
         } catch (error) {
             console.log(error);

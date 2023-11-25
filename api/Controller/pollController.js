@@ -263,7 +263,6 @@ exports.getAllPolls = async (req, res) => {
 };
 
 exports.myPolls = async (req, res) => {
-    console.log(req.query);
     if (!req.user) {
         return sendErrorResponse(res, 400, "Login First");
     }

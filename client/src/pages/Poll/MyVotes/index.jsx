@@ -1,16 +1,38 @@
-import React from 'react'
-import VoteItem from '../../../components/VoteItem'
+import React, { useState } from 'react';
+import usePolls from '../../../Hooks/usePolls';
+import PollList from '../../../components/PollList';
+import SearchSort from '../../../components/SearchSort';
+import { useLocation } from 'react-router-dom';
 
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const MyVotes = () => {
-    return (
-        <div className='flex flex-col'>
-            <div className="bg-white rounded-[10px] overflow-hidden mb-4 px-2 py-1 md:px-6 md:py-2">
-                {/* <VoteItem /> */}
-                MyVotes
-            </div>
-        </div>
-    )
-}
+    const { feeds, loading, hasMore, search, sort, active, setSearch, setSort, setActive, resetPolls } = usePolls(`${apiUrl}/vote/myVotes`);
+    const location = useLocation();
+    if (location.state !== null) {
+        setActive(location.state.active);
+        location.state = null;
+    }
 
-export default MyVotes
+    const handleSearchSortSubmit = (e) => {
+        e.preventDefault();
+        resetPolls();
+    };
+
+    return (
+        <div className='flex lg:flex-row flex-col-reverse'>
+            <PollList feeds={feeds} loading={loading} hasMore={hasMore} role='votes' />
+            <SearchSort
+                search={search}
+                sort={sort}
+                // filter={filter}
+                setSearch={setSearch}
+                setSort={setSort}
+                // setFilter={setFilter}
+                onSearchSortSubmit={handleSearchSortSubmit}
+            />
+        </div>
+    );
+};
+
+export default MyVotes;

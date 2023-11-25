@@ -1,11 +1,17 @@
-import React, { useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Spinner } from '../../../components/Loader/SpinLoader';
 import { toast } from 'sonner';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const DeletePoll = () => {
+    const [path, setPath] = useState('/poll')
+    const location = useLocation();
+    if (location.state !== null) {
+        setPath(location.state.path);
+        location.state = null;
+    }
     const pollId = useParams().id;
     const navigate = useNavigate();
     useEffect(() => {
@@ -21,7 +27,7 @@ const DeletePoll = () => {
                 const data = await res.json();
                 if (data.success) {
                     toast.info('Poll deleted');
-                    navigate('/poll');
+                    navigate(path);
                 }
             } catch (error) {
                 console.log(error);
