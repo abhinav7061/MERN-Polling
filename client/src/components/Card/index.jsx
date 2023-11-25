@@ -17,7 +17,7 @@ const Card = ({ img, num, title, color, progress }) => {
     }
 
     return (
-        <div className={`bg-white py-4 px-6 sm:py-6 sm:px-10 rounded-xl sm:w-[350px] w-[250px] relative overflow-hidden`} style={border}>
+        <div className={`bg-white py-4 px-6 sm:py-6 sm:px-10 rounded-xl sm:w-[375px] w-[265px] relative overflow-hidden`} style={border}>
             <div className={`h-full w-2 absolute top-0 left-0`} style={bg}></div>
             <div className='flex justify-between mb-0 sm:mb-1'>
                 <h6 className={`font-bold ${styles.heading5}`}>My Total {title}</h6>

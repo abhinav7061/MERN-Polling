@@ -15,11 +15,13 @@ const {
   updateRole,
   deleteProfile,
   myProfile,
+  getDashboard,
 } = require("../Controller/userController");
 const { isAuthenticatedUser, isAdmin } = require("../middlewares/auth");
 
 const router = express.Router();
 
+router.route('/dashboard').get(isAuthenticatedUser, getDashboard);
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 router.route("/logout").post(logoutUser);

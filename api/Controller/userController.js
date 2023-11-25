@@ -1,4 +1,6 @@
 const User = require("../Models/UserSchema");
+const Poll = require("../Models/PollSchema");
+const Vote = require("../Models/VoteSchema");
 const validator = require("validator");
 const cloudinary = require("cloudinary");
 const { sendErrorResponse } = require("../middlewares/erroHandle");
@@ -100,16 +102,16 @@ exports.logoutUser = async (req, res) => {
   }
 };
 
-exports.myProfile =async (req,res) =>{
+exports.myProfile = async (req, res) => {
   try {
-    const user=await User.findById(req.user._id);
-    if(!user)return sendErrorResponse(res,404,"User not found");
+    const user = await User.findById(req.user._id);
+    if (!user) return sendErrorResponse(res, 404, "User not found");
     res.status(200).json({
       success: true,
       user,
     });
   } catch (error) {
-    sendErrorResponse(res,500,error.message)
+    sendErrorResponse(res, 500, error.message)
   }
 }
 
@@ -303,3 +305,187 @@ exports.deleteProfile = async (req, res) => {
     sendErrorResponse(res, 500, error.message);
   }
 };
+
+exports.getDashboard = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Get total active polls for the user
+    const activePolls = await Poll.countDocuments({
+      author: userId,
+      startDate: { $lte: new Date() },
+      endDate: { $gte: new Date() },
+    });
+
+    // Get total polls created by the user
+    const totalPollsCreated = await Poll.countDocuments({ author: userId });
+
+    // Get total votes given to active polls
+    const activePollVotes = await Vote.countDocuments({
+      User: userId,
+      Poll: {
+        $in: await Poll.find({
+          startDate: { $lte: new Date() },
+          endDate: { $gte: new Date() }
+        }).distinct('_id')
+      },
+    });
+
+    // Get total votes given by the user in his lifetime
+    const lifetimeVotes = await Vote.countDocuments({ User: userId });
+
+    // Generate an array of dates for the last 7 days
+    const dateRange = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date();
+      date.setDate(date.getDate() - index);
+      return date.toISOString().split('T')[0];
+    });
+
+    // Get poll data for chart (active and closed polls in the last 7 days)
+    const pollChartData = await Poll.aggregate([
+      {
+        $match: {
+          author: userId,
+          endDate: { $gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) }, // Last 7 days
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$endDate' } },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Fill in missing dates with zero counts for pollChartData
+    const filledPollChartData = dateRange.map((date) => ({
+      label: date,
+      count: pollChartData.find((entry) => entry._id === date)?.count || 0,
+    }));
+
+    // Get poll data for the previous 7 days
+    const previousPollChartData = await Poll.aggregate([
+      {
+        $match: {
+          author: userId,
+          endDate: {
+            $gte: new Date(new Date() - 14 * 24 * 60 * 60 * 1000), // Previous 7 days
+            $lt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000), // Last 14 days to Last 7 days
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$endDate' } },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const totalPollInThisWeak = filledPollChartData.reduce((acc, current) => acc + current.count, 0);
+    const totalPollInLastWeak = previousPollChartData.reduce((acc, current) => acc + current.count, 0);
+
+    // Calculating polls growth percentage
+    const pollGrowthPercentage = Math.floor((Math.abs(totalPollInThisWeak - totalPollInLastWeak) / totalPollInLastWeak) * 100);
+
+    // Compare poll counts for the last 7 days and the previous 7 days
+    const pollComparison = {
+      totalNumber: totalPollsCreated,
+      growth: totalPollInThisWeak > totalPollInLastWeak,
+      growthPercentage: pollGrowthPercentage,
+      thisWeek: totalPollInThisWeak,
+      lastWeek: totalPollInLastWeak,
+    };
+
+    // Get vote data for chart (active and closed votes in the last 7 days)
+    const voteChartData = await Vote.aggregate([
+      {
+        $match: {
+          User: userId,
+          createdAt: { $gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) }, // Last 7 days
+        },
+      },
+      {
+        $lookup: {
+          from: 'polls',
+          localField: 'Poll',
+          foreignField: '_id',
+          as: 'poll',
+        },
+      },
+      {
+        $unwind: '$poll',
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$poll.endDate' } },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Fill in missing dates with zero counts for voteChartData
+    const filledVoteChartData = dateRange.map((date) => ({
+      label: date,
+      count: voteChartData.find((entry) => entry._id === date)?.count || 0,
+    }));
+
+    // Get vote data for the previous 7 days
+    const previousVoteChartData = await Vote.aggregate([
+      {
+        $match: {
+          User: userId,
+          createdAt: {
+            $gte: new Date(new Date() - 14 * 24 * 60 * 60 * 1000), // Previous 7 days
+            $lt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000), // Last 14 days to Last 7 days
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'polls',
+          localField: 'Poll',
+          foreignField: '_id',
+          as: 'poll',
+        },
+      },
+      {
+        $unwind: '$poll',
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$poll.endDate' } },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const totalVoteInThisWeak = filledVoteChartData.reduce((acc, current) => acc + current.count, 0);
+    const totalVoteInLastWeak = previousVoteChartData.reduce((acc, current) => acc + current.count, 0);
+
+    // Calculating votes growth percentage
+    const voteGrowthPercentage = Math.floor((Math.abs(totalVoteInThisWeak - totalVoteInLastWeak) / totalVoteInLastWeak) * 100);
+
+    // Compare vote counts for the last 7 days and the previous 7 days
+    const voteComparison = {
+      totalNumber: lifetimeVotes,
+      growth: totalVoteInThisWeak > totalVoteInLastWeak,
+      growthPercentage: voteGrowthPercentage,
+      thisWeek: totalVoteInThisWeak,
+      lastWeek: totalVoteInLastWeak,
+    };
+
+    // Send the dashboard information as a response
+    res.json({
+      activePolls,
+      totalPollsCreated: pollComparison,
+      activePollVotes,
+      lifetimeVotes: voteComparison,
+      pollChartData: filledPollChartData,
+      voteChartData: filledVoteChartData,
+    });
+  } catch (error) {
+    console.error(error);
+    sendErrorResponse(res, 500, error.message);
+  }
+}

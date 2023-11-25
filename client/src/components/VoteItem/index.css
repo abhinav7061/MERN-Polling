@@ -59,3 +59,11 @@
     align-items: center;
     justify-content: center;
 }
+
+.loading {
+    background: rgba(46, 45, 45, 0.275);
+    transform: translate(-25px, -10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

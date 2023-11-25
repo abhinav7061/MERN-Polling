@@ -1,0 +1,25 @@
+.chart {
+    flex: 0 0 575px;
+    width: 575px;
+}
+
+@media screen and (max-width: 1100px) {
+    .chart {
+        flex: 0 0 500px;
+        width: 500px;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .chart {
+        flex: 0 0 400px;
+        width: 400px;
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .chart {
+        flex: 0 0 325px;
+        width: 325px;
+    }
+}

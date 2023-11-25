@@ -11,6 +11,7 @@ import defaultUser from './defaultUser.png'
 import defaultUserSvg from './defaultUser.svg'
 import doubleTick from './doubleTick.png'
 import like from './like.svg'
+import likedThumb from './likedThumb.svg'
 import comment from './comment.svg'
 
 export {
@@ -27,5 +28,6 @@ export {
     defaultUserSvg,
     doubleTick,
     like,
+    likedThumb,
     comment,
 }
