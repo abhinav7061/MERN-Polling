@@ -1,6 +1,7 @@
 const { sendErrorResponse } = require("../middlewares/erroHandle")
 const Poll = require("../Models/PollSchema");
 const User = require("../Models/UserSchema");
+const Vote = require("../Models/VoteSchema");
 
 exports.createPoll = async (req, res) => {
     try {
@@ -60,10 +61,13 @@ exports.updatePoll = async (req, res) => {
 
 exports.deletePoll = async (req, res) => {
     try {
-        const poll = await Poll.findByIdAndDelete(req.params.id);
+        const pollId = req.params.id
+        const poll = await Poll.findByIdAndDelete(pollId);
         if (!poll) {
             return sendErrorResponse(res, 404, "Poll not found");
         }
+        const votes = Vote.find({ Poll: pollId })
+        await votes.deleteMany();
         res.status(200).json({
             success: true,
             message: "Poll deleted successfully"

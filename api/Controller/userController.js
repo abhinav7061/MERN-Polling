@@ -351,7 +351,7 @@ exports.getDashboard = async (req, res) => {
       },
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$endDate' } },
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
           count: { $sum: 1 },
         },
       },
@@ -359,7 +359,7 @@ exports.getDashboard = async (req, res) => {
 
     // Fill in missing dates with zero counts for pollChartData
     const filledPollChartData = dateRange.map((date) => ({
-      label: date,
+      label: new Date(date).toLocaleDateString('en-GB'),
       count: pollChartData.find((entry) => entry._id === date)?.count || 0,
     }));
 
@@ -376,7 +376,7 @@ exports.getDashboard = async (req, res) => {
       },
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$endDate' } },
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
           count: { $sum: 1 },
         },
       },
@@ -418,7 +418,7 @@ exports.getDashboard = async (req, res) => {
       },
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$poll.endDate' } },
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$poll.createdAt' } },
           count: { $sum: 1 },
         },
       },

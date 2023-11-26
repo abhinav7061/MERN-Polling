@@ -70,7 +70,7 @@ function VoteItem({ pollData, role }) {
     useEffect(() => {
         checkLiked(feedData);
         checkVoted(feedData._id);
-    }, [voted])
+    }, [feedData])
 
     const getPoll = async (pollId) => {
         try {
@@ -131,6 +131,7 @@ function VoteItem({ pollData, role }) {
             console.log(data);
             if (res.ok) {
                 checkVoted(pollId)
+                getPoll(pollId);
                 toast("You have deleted your vote!", { type: "success" });
             } else {
                 toast(data.message, { type: 'warning' })
@@ -228,7 +229,7 @@ function VoteItem({ pollData, role }) {
                                 </button>
                             ) : (
                                 <div className="flex items-center">
-                                    <span className="mr-4 sm:w-10 w-8">{item.progress}%</span>
+                                    <span className="mr-4 sm:w-10 w-8">{Math.floor(item.progress)}%</span>
                                     {isLoading ? <PulseLoader /> : <div style={{ flex: 1 }}>
                                         <div className="flex items-center">
                                             <span className="mr-5">{item.subject}</span>

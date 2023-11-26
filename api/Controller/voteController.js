@@ -80,15 +80,26 @@ exports.deleteVote = async (req, res) => {
     if (selectedOption) {
       selectedOption.votes -= 1;
     }
+
     await vote.deleteOne();
 
     const totalVotes = poll.options.reduce(
       (sum, option) => sum + option.votes,
       0
     );
-    poll.options.forEach((option) => {
-      option.progress = (option.votes / totalVotes) * 100;
-    });
+
+    // Check if totalVotes is greater than 0 before calculating progress
+    if (totalVotes > 0) {
+      poll.options.forEach((option) => {
+        option.progress = (option.votes / totalVotes) * 100;
+      });
+    } else {
+      // If totalVotes is 0, set progress to 0 for all options
+      poll.options.forEach((option) => {
+        option.progress = 0;
+      });
+    }
+
     await poll.save();
 
     res

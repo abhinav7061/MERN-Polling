@@ -9,7 +9,7 @@ import { polling, vote } from '../../../assets'
 import styles from '../../../styles'
 import './index.css'
 
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL; 
 
 const Dashoard = () => {
     const [dashboardData, setDashboardData] = useState(null);
@@ -40,7 +40,7 @@ const Dashoard = () => {
 
     return (
         <div>
-            {loading ? <LargeSpinLoader /> : <div className='mt-8'>
+            {loading ? <div className='flex justify-center'><LargeSpinLoader /></div> : <div className='mt-8'>
                 <h1 className={`${styles.heading2} mb-5`}>Polls Overview</h1>
                 <div className='flex flex-col justify-between lg:flex-row items-center'>
                     <div className='mr-5'>
@@ -48,7 +48,7 @@ const Dashoard = () => {
                             <Link to='/poll/my-poll' state={{ active: 'active' }}><Card2 num={dashboardData.activePolls} title='Active Polls' color='green' /></Link>
                             <Link to='/poll/my-poll' state={{ active: 'closed' }} className='ml-5'><Card2 num={dashboardData.totalPollsCreated.totalNumber - dashboardData.activePolls} title='Closed Polls' color='red' /></Link>
                         </div>
-                        <Link to='/poll/my-poll' state={{ active: 'all' }}><Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.thisWeek} /></Link>
+                        <Link to='/poll/my-poll' state={{ active: 'all' }}><Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.thisWeek - dashboardData.totalPollsCreated.lastWeek} /></Link>
                     </div>
                     <div className='mx-3 chart mt-6'><BarChart data={dashboardData.pollChartData} label='Total Polls' /></div>
                 </div>
@@ -57,11 +57,11 @@ const Dashoard = () => {
                     <div className='mr-5'>
                         <div className='flex mb-5'>
                             <Link to='/poll/my-vote' state={{ active: 'active' }}><Card2 num={dashboardData.activePollVotes} title='Active Votes' color='green' /></Link>
-                            <Link to='/poll/my-vote' state={{ active: 'closed' }} className='ml-5'><Card2 num={dashboardData.lifetimeVotes.totalNumber - dashboardData.activePolls} title='Closed Polls' color='red' /></Link>
+                            <Link to='/poll/my-vote' state={{ active: 'closed' }} className='ml-5'><Card2 num={dashboardData.lifetimeVotes.totalNumber - dashboardData.activePollVotes} title='Closed Vote' color='red' /></Link>
                         </div>
-                        <Link to='/poll/my-votes' state={{ active: 'all' }}><Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.thisWeek} /></Link>
+                        <Link to='/poll/my-vote' state={{ active: 'all' }}><Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.thisWeek - dashboardData.lifetimeVotes.lastWeek} /></Link>
                     </div>
-                    <div className='mx-3 graph mt-6'><LineChart data={dashboardData.voteChartData} label='Total Votes' /></div>
+                    <div className='mx-3 chart mt-6'><LineChart data={dashboardData.voteChartData} label='Total Votes' /></div>
                 </div>
             </div>}
         </div>
