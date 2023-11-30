@@ -120,11 +120,13 @@ exports.checkVote = async (req, res) => {
       return sendErrorResponse(res, 404, "Poll not found");
     }
 
+    // Find the vote (if any) by user and poll IDs
     const vote = await Vote.findOne({
       Poll: pollId,
       User: userId,
     });
 
+    // If vote exists, return vote data
     if (vote) {
       res.status(200).json({
         success: true,
@@ -133,6 +135,7 @@ exports.checkVote = async (req, res) => {
         voted: true
       });
     } else {
+      // If vote doesn't exist, return voting status
       res.status(200).json({
         success: true,
         message: "You have not voted on this poll",
@@ -147,15 +150,16 @@ exports.checkVote = async (req, res) => {
 exports.myVotes = async (req, res) => {
   try {
     const userId = req.user._id;
-    // Pagination options
+
+    // Set pagination options
     const page = req.query.page || 1;
     const limit = 5;
-    const search = req.query.search;
 
-    // Search query 
+    // Handle search query
+    const search = req.query.search;
     const searchQuery = { $or: [{ title: { $regex: search, $options: 'i' } }, { description: { $regex: search, $options: 'i' } }] };
 
-    // Sorting options
+    // Define sorting options
     const sortOption = req.query.sort || 'newer';
     let sortCriteria;
     if (sortOption === 'older') {
@@ -168,21 +172,50 @@ exports.myVotes = async (req, res) => {
       sortCriteria = { totalVotes: -1 };
     }
 
+    // Fetch user votes and associated polls
     const userVotes = await Vote.find({ User: userId })
       .populate({
         path: "Poll",
-        match: searchQuery, // Apply search query
-        options: { sort: sortCriteria, skip: (page - 1) * limit, limit: limit }, // Apply sort and pagination
+        match: searchQuery,
+        options: { sort: sortCriteria, skip: (page - 1) * limit, limit: limit },
       });
 
+    // Filter out votes without associated polls
     const userVotedPolls = userVotes
-      .filter(vote => vote.Poll !== null) // Filter out votes without associated polls
+      .filter(vote => vote.Poll !== null);
 
+    // Map filtered votes to polls
     const polls = userVotedPolls.map((vote) => vote.Poll);
 
+    // Send polls as response
     res.status(200).json({
       success: true,
       polls,
+    });
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message);
+  }
+}
+
+exports.getVoters = async (req, res) => {
+  try {
+    const pollId = req.query.poll;
+
+    const votes = await Vote.find({ Poll: pollId })
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .populate('User')  // Populate the 'User' field
+      .exec();
+
+    if (!votes) {
+      return sendErrorResponse(res, 404, 'votes not found on this pol')
+    }
+    // Extract user information from votes
+    const voters = votes.map(vote => vote.User);
+
+    res.status(200).json({
+      success: true,
+      voters,
     });
   } catch (error) {
     sendErrorResponse(res, 500, error.message);

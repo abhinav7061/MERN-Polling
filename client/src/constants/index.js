@@ -79,4 +79,10 @@ const sideLinks = [
     },
 ]
 
-export { footerLinks, navLinks, sideLinks }
+const pollMessage = {
+    'feeds': 'No Feeds Found',
+    'votes': 'You have ZERO votes',
+    'polls': 'You have ZERO poll'
+}
+
+export { footerLinks, navLinks, sideLinks, pollMessage }

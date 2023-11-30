@@ -3,10 +3,10 @@ import styles from '../../styles'
 
 const Card2 = ({ num, title, color }) => {
     const border = {
-        border: `1px solid ${color}`,
+        border: `1px solid ${color || '#D4B000'}`,
     }
     const bg = {
-        background: `${color}`,
+        background: `${color || '#D4B000'}`,
     }
     return (
         <div className={`bg-white py-2 pl-4 sm:py-6 sm:px-5 rounded-lg sm:w-[180px] w-[120px] relative overflow-hidden`} style={border}>

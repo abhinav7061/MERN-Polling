@@ -1,19 +1,20 @@
 import React from 'react'
 import styles from '../../styles'
 
-const Card = ({ img, num, title, color, progress }) => {
+const Card = ({ img, num, title, color, progress, indicator }) => {
+    // Setting colors based on color props
     const bg = {
-        background: `${color}`,
+        background: `${color || '#D4B000'}`,
     }
     const LowBg = {
-        background: `${color}`,
+        background: `${color || '#D4B000'}`,
         opacity: 0.06,
     }
     const border = {
-        border: `1px solid ${color}`,
+        border: `1px solid ${color || '#D4B000'}`,
     }
     const text = {
-        color: `${color}`,
+        color: `${color || '#D4B000'}`,
     }
 
     return (
@@ -27,7 +28,11 @@ const Card = ({ img, num, title, color, progress }) => {
             </div>
             <h1 className={`${styles.heading2} mb-0 leadi sm:mb-3`}>{num}</h1>
             <div className={`flex gap-10 items-center ${styles.smHeading}`}>
-                <div className='py-[2px] px-3 rounded-2xl bg-opacity-10 overflow-hidden relative'><div className=' absolute top-0 right-0 h-full w-full ' style={LowBg} ></div><h6 style={text}>{progress}%</h6></div>
+                <div className='py-[2px] px-3 rounded-2xl bg-opacity-10 overflow-hidden relative flex items-center'>
+                    <div className=' absolute top-0 right-0 h-full w-full ' style={LowBg} ></div>
+                    <img src={indicator} className='h-[10px] mr-2' />
+                    <h6 style={text}>{progress}%</h6>
+                </div>
                 <h6 className=' text-slate-500'>Since last weak</h6>
             </div>
         </div>

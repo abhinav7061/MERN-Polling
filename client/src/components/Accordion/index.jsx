@@ -6,21 +6,15 @@ const Accordion = ({ content }) => {
   const [isExpanded, setExpanded] = useState(false);
   const [isOverflowed, setOverflowed] = useState(false);
   const contentRef = useRef(null);
-  // const [num, setNum] = useState(0);
 
-
+  // Check if the content is overflowing and update state accordingly
   useEffect(() => {
-    // Check if the content exceeds two lines
     if (contentRef.current) {
-      // const lines = window.getComputedStyle(contentRef.current).getPropertyValue('-webkit-line-clamp');
-      // setOverflowed(lines && parseInt(lines) <= contentRef.current.clientHeight / parseFloat(getComputedStyle(contentRef.current).lineHeight));
       const element = contentRef.current;
       const isCurrentlyClamped = element.offsetHeight < element.scrollHeight;
-      // setNum(isCurrentlyClamped)
       setOverflowed(isCurrentlyClamped);
     }
   }, [content]);
-  // console.log({ isOverflowed, num });
   const toggleAccordion = () => {
     setExpanded(!isExpanded);
   };

@@ -43,7 +43,7 @@ const EditPoll = () => {
                 navigate(path);
             }
         } catch (error) {
-            console.log(error);
+            console.log('Error during editing your poll', error);
         }
     }
 

@@ -19,12 +19,11 @@ const Layout = () => {
                 credentials: 'include',
             });
             const data = await res.json();
-            console.log(data)
-            if (data.success && res.status === 200) {
+            if (data.success && res.ok) {
                 setUserInfo(data.user);
             }
         } catch (error) {
-            console.log('Error: ', error);
+            console.error('Error fetching user data:', error);
         } finally {
             setLoading(false);
         }
@@ -32,17 +31,20 @@ const Layout = () => {
     useEffect(() => {
         getUser();
     }, []);
-    if (loading) {
-        return <Loader />
-    }
     return (
         <div className={`${styles.flexCenter}`}>
-            <div className={`${styles.boxWidth}  overflow-hidden`}>
-                <Navbar />
-                <Toaster position="top-right" richColors closeButton='true' /> {/* this is the position for showing notification */}
-                <Outlet />
-                <Footer />
-            </div>
+            {
+                loading ? (
+                    <Loader />
+                ) : (
+                    <div className={`${styles.boxWidth}  overflow-hidden`}>
+                        <Navbar />
+                        <Toaster position="top-right" richColors closeButton='true' /> {/* this is the position for showing notification */}
+                        <Outlet />
+                        <Footer />
+                    </div>
+                )
+            }
         </div>
     )
 }

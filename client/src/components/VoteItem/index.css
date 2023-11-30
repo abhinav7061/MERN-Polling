@@ -67,3 +67,21 @@
     justify-content: center;
     align-items: center;
 }
+
+.image-1 {
+    transform: translateX(-4px);
+}
+
+.image-2 {
+    transform: translateX(-8px);
+}
+
+@media (min-width: 640px) {
+    .image-1 {
+        transform: translateX(-7px);
+    }
+
+    .image-2 {
+        transform: translateX(-14px);
+    }
+}

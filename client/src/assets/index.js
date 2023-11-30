@@ -13,6 +13,8 @@ import doubleTick from './doubleTick.png'
 import like from './like.svg'
 import likedThumb from './likedThumb.svg'
 import comment from './comment.svg'
+import incrementProgress from './incrementProgress.png'
+import decrementProgress from './decrementProgress.png'
 
 export {
     menu,
@@ -30,4 +32,6 @@ export {
     like,
     likedThumb,
     comment,
+    incrementProgress,
+    decrementProgress,
 }

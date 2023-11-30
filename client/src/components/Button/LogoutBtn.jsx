@@ -19,14 +19,22 @@ const LogoutBtn = () => {
             if (res.ok) {
                 toast.success("Logged out successfully");
                 setUserInfo(null);
+                navigate('/');
                 console.log("logout successfully");
+            } else {
+                // Handle error, show error message, .
+                toast.error("Logout failed");
+                console.error("Logout failed:", data.message);
             }
         } catch (error) {
-            console.log(error);
+            toast.info("Error during logout")
+            console.log("Error during logout:", error);
         }
     }
     return (
-        <div className= {`text-white ml-2 cursor-pointer flex items-center ${styles.heading4}`} onClick={logout} title='Logout'><ion-icon name="log-out-outline"></ion-icon></div>
+        <div className={`text-white ml-2 cursor-pointer flex items-center ${styles.heading4}`} onClick={logout} title='Logout'>
+            <ion-icon name="log-out-outline"></ion-icon>
+        </div>
     )
 }
 

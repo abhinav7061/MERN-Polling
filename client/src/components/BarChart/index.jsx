@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Chart from 'chart.js/auto';
 
 const BarChart = ({ data, label }) => {
+    const barCanvasRef = useRef(null);
 
     const renderBarChart = (data, label) => {
-        const ctx = document.getElementById('barChart').getContext('2d');
+        const ctx = barCanvasRef.current.getContext('2d');
         new Chart(ctx, {
             type: 'bar',
             data: {
@@ -24,11 +25,9 @@ const BarChart = ({ data, label }) => {
 
     useEffect(() => {
         renderBarChart(data, label);
-    }, []);
+    }, [data, label]);
 
-    return (
-        <canvas id="barChart" width="300" height="200"></canvas>
-    )
+    return <canvas ref={barCanvasRef} width="300" height="200"></canvas>;
 }
 
 export default BarChart

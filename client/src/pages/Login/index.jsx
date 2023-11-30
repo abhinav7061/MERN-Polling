@@ -28,12 +28,12 @@ const Login = () => {
                 credentials: 'include',
             });
             const data = await res.json();
-            if (data.success === false || !res.ok) {
-                toast.error(data.message);
-            } else {
+            if (data.success && res.ok) {
                 toast.success("Signup successfully");
                 setUserInfo(data.user)
                 navigate('/');
+            } else {
+                toast.error(data.message);
             }
         } catch (error) {
             console.log(error);

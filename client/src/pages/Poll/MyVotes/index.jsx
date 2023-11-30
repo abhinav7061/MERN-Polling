@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const MyVotes = () => {
-    const { feeds, loading, hasMore, search, sort, active, setSearch, setSort, setActive, resetPolls } = usePolls(`${apiUrl}/vote/myVotes`);
+    const { feeds, loading, hasMore, search, sort, active, setSearch, setSort, setActive, resetPolls, searchPlaceholder } = usePolls(`${apiUrl}/vote/myVotes`);
     const location = useLocation();
     if (location.state !== null) {
         setActive(location.state.active);
@@ -21,15 +21,14 @@ const MyVotes = () => {
 
     return (
         <div className='flex lg:flex-row flex-col-reverse'>
-            <PollList feeds={feeds} loading={loading} hasMore={hasMore} role='votes' />
+            <PollList feeds={feeds} loading={loading} hasMore={hasMore} role='vote' customMessage={searchPlaceholder ? `You have Zero votes which contains '${searchPlaceholder}'` : 'You have ZERO votes'} />
             <SearchSort
                 search={search}
                 sort={sort}
-                // filter={filter}
                 setSearch={setSearch}
                 setSort={setSort}
-                // setFilter={setFilter}
                 onSearchSortSubmit={handleSearchSortSubmit}
+                searchPlaceholder={searchPlaceholder}
             />
         </div>
     );

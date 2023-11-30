@@ -30,7 +30,7 @@ const DeletePoll = () => {
                     navigate(path);
                 }
             } catch (error) {
-                console.log(error);
+                console.log('Error while deleting your Votes', error);
             }
         };
 

@@ -1,4 +1,4 @@
-import { register, defaultUser } from '../../assets';
+import { register } from '../../assets';
 import styles from '../../styles';
 import Button from '../../components/Button';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -6,14 +6,16 @@ import { toast } from 'sonner';
 import { useFormik } from 'formik'
 import { signupSchema } from '../../schemas';
 import DragDropImage from '../../components/DragDropImage';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { UserContext } from '../../UserContext';
 // import CropImage from '../../components/CropImage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
+    const { setUserInfo } = useContext(UserContext);
     const navigate = useNavigate();
-    const [avatar, setAvatar] = useState(defaultUser);
+    const [avatar, setAvatar] = useState(null);
     const [preview, setPreview] = useState(false)
     const initialValues = {
         name: "",
@@ -21,23 +23,25 @@ const Signup = () => {
         password: "",
         cpassword: "",
     }
-
     const getRegister = async ({ name, email, password, avatar }) => {
         try {
+            const dataForm = new FormData();
+            dataForm.set('name', name);
+            dataForm.set('email', email);
+            dataForm.set('password', password);
+            dataForm.set('avatar', avatar);
             const res = await fetch(`${apiUrl}/user/register`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ name, email, password, avatar }),
+                body: dataForm,
                 credentials: 'include',
             });
             const data = await res.json();
-            if (res.status === 400 && data.success === false) {
-                toast.error(data.message);
-            } else {
+            if (res.ok && data.success) {
+                setUserInfo(data.user)
                 toast.success("Signup successfully");
                 navigate('/login');
+            } else {
+                toast.error(data.message);
             }
         } catch (error) {
             console.log(error);
@@ -46,7 +50,6 @@ const Signup = () => {
     const handleImageSelection = (selectedFile) => {
         setAvatar(selectedFile);
         setPreview(true);
-        console.log(selectedFile);
     };
 
     const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
@@ -54,7 +57,7 @@ const Signup = () => {
         validationSchema: signupSchema,
         onSubmit: (values, action) => {
             getRegister({ ...values, avatar });
-            setAvatar(defaultUser)
+            setAvatar(null)
             setPreview(false);
             action.resetForm();
         }
@@ -64,7 +67,7 @@ const Signup = () => {
     const changeImage = () => {
         setClicked(true)
         setPreview(false);
-        setAvatar(defaultUser);
+        setAvatar(null);
     }
 
     return (
@@ -87,7 +90,18 @@ const Signup = () => {
                         {/* Registration input form  */}
                         <form method="POST" onSubmit={handleSubmit}>
                             <div className='mb-2'>
-                                {preview ? <div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex'> <div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '><img src={URL.createObjectURL(avatar)} alt='Profile pic' className=' group-hover:opacity-40 transition-opacity duration-300' /> <button type='button' onClick={changeImage} className='absolute text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold'>change Image</button></div><button type='button'>Crop Image</button></div> : <DragDropImage onImageSelect={handleImageSelection} clicked={clicked} setClicked={setClicked} />}
+                                {
+                                    preview ? (
+                                        <div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex'>
+                                            <div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '>
+                                                <img src={URL.createObjectURL(avatar)} alt='Profile pic' className=' group-hover:opacity-40 transition-opacity duration-300' />
+                                                <button type='button' onClick={changeImage} className='absolute text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold'>change Image</button>
+                                            </div>
+                                            <button type='button'>Crop Image</button>
+                                        </div>
+                                    ) : (
+                                        <DragDropImage onImageSelect={handleImageSelection} clicked={clicked} setClicked={setClicked} />
+                                    )}
                             </div>
                             {/* div for taking name */}
                             <div className='mb-2'>

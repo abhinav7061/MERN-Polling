@@ -63,11 +63,15 @@ exports.deletePoll = async (req, res) => {
     try {
         const pollId = req.params.id
         const poll = await Poll.findByIdAndDelete(pollId);
+
         if (!poll) {
             return sendErrorResponse(res, 404, "Poll not found");
         }
+
+        // Find and delete all votes associated with the deleted poll
         const votes = Vote.find({ Poll: pollId })
         await votes.deleteMany();
+
         res.status(200).json({
             success: true,
             message: "Poll deleted successfully"
@@ -153,7 +157,9 @@ exports.commentOnPoll = async (req, res) => {
 exports.getPoll = async (req, res) => {
     try {
         const poll = await Poll.findById(req.params.id);
+
         if (!poll) return sendErrorResponse(res, 404, "Poll not found");
+
         res.status(200).json({
             success: true,
             poll,
@@ -166,9 +172,16 @@ exports.getPoll = async (req, res) => {
 const getPollsByCriteria = async (req, res, options = {}) => {
     const perPage = 5;
     try {
+        // Extract userId if includeUserFilter option is enabled and user exists in the request
         const userId = options.includeUserFilter && req.user ? req.user._id : null;
+
+        // Get the current page from the request query, or default to 1
         const page = req.query.page || 1;
+
+        // Get the search query from the request query
         const searchQuery = req.query.search;
+
+        // Create a search filter using the search query
         const searchFilter = searchQuery
             ? {
                 $or: [
@@ -178,7 +191,10 @@ const getPollsByCriteria = async (req, res, options = {}) => {
             }
             : {};
 
+        // Get the sort option from the request query, or default to 'newer'
         const sortOption = req.query.sort || 'newer';
+
+        // Create a sort criteria object based on the sort option
         let sortCriteria = {};
         if (sortOption === 'older') {
             sortCriteria = { createdAt: 1 };
@@ -192,18 +208,21 @@ const getPollsByCriteria = async (req, res, options = {}) => {
 
         const currentDate = new Date();
 
+        // Create a date filter based on the includeActiveFilter and includeClosedFilter options
         const dateFilter = options.includeActiveFilter
             ? { endDate: { $gte: currentDate } }
             : options.includeClosedFilter
                 ? { endDate: { $lt: currentDate } }
                 : {};
 
+        // Create a filter object combining the userId, searchFilter, and dateFilter
         const filter = {
             ...(userId ? { author: userId } : {}),
             ...searchFilter,
             ...dateFilter,
         };
 
+        // Execute an aggregation pipeline on the Poll collection
         const polls = await Poll.aggregate([
             {
                 $match: filter,
@@ -213,8 +232,8 @@ const getPollsByCriteria = async (req, res, options = {}) => {
                     totalVotes: { $sum: '$options.votes' },
                 },
             },
-
-            //  {
+            // Uncomment the following lines if you want to join the polls with the users collection
+            // {
             //     $lookup: {
             //         from: 'users',
             //         localField: 'author',
@@ -253,11 +272,13 @@ const getPollsByCriteria = async (req, res, options = {}) => {
             },
         ]);
 
+        // Return the polls in the response
         res.status(200).json({
             success: true,
             polls,
         });
     } catch (error) {
+        // If an error occurs, send an error response with a 500 status code and the error message
         sendErrorResponse(res, 500, error.message);
     }
 };
@@ -266,12 +287,18 @@ exports.getAllPolls = async (req, res) => {
     await getPollsByCriteria(req, res);
 };
 
+// exports.myPolls is a controller function to handle requests to retrieve the current user's polls
 exports.myPolls = async (req, res) => {
+    // Check if user is logged in
     if (!req.user) {
         return sendErrorResponse(res, 400, "Login First");
     }
+
+    // Determine if active, closed, or all polls should be included
     const includeActiveFilter = req.query.active === 'active';
     const includeClosedFilter = req.query.active === 'closed';
+
+    // Fetch polls based on user and filter criteria
     await getPollsByCriteria(req, res, {
         includeUserFilter: true,
         includeActiveFilter,

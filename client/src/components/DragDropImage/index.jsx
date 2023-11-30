@@ -38,7 +38,6 @@ export default function DragDropImage({ onImageSelect, clicked, setClicked }) {
         e.preventDefault();
         if (e.target.files && e.target.files[0]) {
             handleFiles(e.target.files);
-            // onImageSelect(e.target.files[0]); // Call the provided function with the selected file
         }
     };
 

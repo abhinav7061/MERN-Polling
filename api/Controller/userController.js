@@ -6,55 +6,76 @@ const cloudinary = require("cloudinary");
 const { sendErrorResponse } = require("../middlewares/erroHandle");
 const { sendEmail } = require("../middlewares/sendEmail");
 const crypto = require("crypto");
+const { uploadImageToOwnServer, unlinkPreviousImage } = require('../helper/uploads')
+const defaultUserSvg = "defaultUserSvg.svg"
+const { roundToDecimalPlaces } = require('../helper/functions')
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, avatar, myStatus } = req.body;
+    const { name, email, password, myStatus } = req.body;
+
+    const avatar = req.file;
+
+    // Validate required fields
     if (!name) return sendErrorResponse(res, 400, "Name is required");
     if (!email) return sendErrorResponse(res, 400, "Email is required");
     if (!password) return sendErrorResponse(res, 400, "Password is required");
-    if (!avatar) return sendErrorResponse(res, 400, "Avatar is required");
-
-    // const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-    //   folder: "avatars",
-    // });
     if (!validator.isEmail(email))
       return sendErrorResponse(res, 400, "Invalid email");
     if (password.length < 8) {
       return sendErrorResponse(
         res,
         400,
-        "Password must be atleast 8 characters"
+        "Password must be at least 8 characters"
       );
     }
 
     let user = await User.findOne({ email });
-    if (user) return sendErrorResponse(res, 400, "This email is in use. Use another one or try to login with same email");
+    if (user) return sendErrorResponse(res, 400, "This email is in use. Use another one or try to login with the same email");
+
+    let ProfileImageUrl;
+
+    // If an avatar is provided, upload it to the server
+    if (avatar) {
+      ProfileImageUrl = uploadImageToOwnServer(avatar);
+    } else {
+      // If no avatar is provided, use a default image
+      ProfileImageUrl = defaultUserSvg;
+    }
+
+    // Create a new user with the provided information
     user = await User.create({
       name,
       email,
       password,
       myStatus,
       avatar: {
-        public_id: " myCloud.public_id",
-        url: "myCloud.secure_url",
+        public_id: ProfileImageUrl,
+        url: ProfileImageUrl,
       },
     });
+
+    // Generate a token for the new user
     const token = user.generateToken();
+
+    // Set cookie options for the token
     const options = {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       httpOnly: true,
     };
+
+    // Respond with success and user information, along with the token in a cookie
     res.status(200).cookie("token", token, options).json({
       success: true,
       message: "Registered Successfully",
       user,
     });
   } catch (error) {
-    console.log(error);
+    // Handle any errors that occur during the registration process
     sendErrorResponse(res, 500, error.message);
   }
 };
+
 
 exports.loginUser = async (req, res) => {
   try {
@@ -251,23 +272,42 @@ exports.updatePassword = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, email, avatar, myStatus } = req.body;
+    const userId = req.user._id;
+
+    const { name, email, myStatus } = req.body;
+
+    const avatar = req.file;
+
     const user = await User.findById(req.user._id);
+
+    // Update user information if provided in the request
     if (name) user.name = name;
     if (email) user.email = email;
     if (myStatus) user.myStatus = myStatus;
+
+    // Update user avatar if a new avatar is provided
     if (avatar) {
-      const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-        folder: "avatars",
-      });
-      user.avatar = myCloud.secure_url;
+      // Check if the current avatar is not the default one and unlink the previous image
+      if (user.avatar.url !== defaultUserSvg) {
+        unlinkPreviousImage(avatar.path.substring(0, avatar.path.lastIndexOf('/')), user.avatar.url);
+      }
+
+      // Upload the new profile image and update the user's avatar URL
+      const profileImage = uploadImageToOwnServer(avatar, userId);
+      user.avatar.url = profileImage;
     }
+
+    // Save the updated user information
     await user.save();
+
+    // Respond with success message
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
     });
+
   } catch (error) {
+    // handle any errors that occur during the profile update process
     sendErrorResponse(res, 500, error.message);
   }
 };
@@ -306,6 +346,7 @@ exports.deleteProfile = async (req, res) => {
   }
 };
 
+//  Controller for the user dashboard 
 exports.getDashboard = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -386,7 +427,12 @@ exports.getDashboard = async (req, res) => {
     const totalPollInLastWeak = previousPollChartData.reduce((acc, current) => acc + current.count, 0);
 
     // Calculating polls growth percentage
-    const pollGrowthPercentage = Math.floor((Math.abs(totalPollInThisWeak - totalPollInLastWeak) / totalPollInLastWeak) * 100);
+    let pollGrowthPercentage;
+    if (totalPollInLastWeak === 0) {
+      pollGrowthPercentage = 100;
+    } else {
+      pollGrowthPercentage = roundToDecimalPlaces(((Math.abs(totalPollInThisWeak - totalPollInLastWeak) / totalPollInLastWeak) * 100), 2); // Growth percentage with respect to previous seven days
+    }
 
     // Compare poll counts for the last 7 days and the previous 7 days
     const pollComparison = {
@@ -464,7 +510,12 @@ exports.getDashboard = async (req, res) => {
     const totalVoteInLastWeak = previousVoteChartData.reduce((acc, current) => acc + current.count, 0);
 
     // Calculating votes growth percentage
-    const voteGrowthPercentage = Math.floor((Math.abs(totalVoteInThisWeak - totalVoteInLastWeak) / totalVoteInLastWeak) * 100);
+    let voteGrowthPercentage;
+    if (totalVoteInLastWeak === 0) {
+      voteGrowthPercentage = 100
+    } else {
+      voteGrowthPercentage = roundToDecimalPlaces(((Math.abs(totalVoteInThisWeak - totalVoteInLastWeak) / totalVoteInLastWeak) * 100), 2); // Growth percentage with respect to previous seven days
+    }
 
     // Compare vote counts for the last 7 days and the previous 7 days
     const voteComparison = {

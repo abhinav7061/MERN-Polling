@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Chart from 'chart.js/auto';
 
 const LineChart = ({ data, label }) => {
-
+    const lineCanvasRef = useRef(null);
     const renderLineChart = (data, label) => {
-        const ctx = document.getElementById('lineChart').getContext('2d');
+        const ctx = lineCanvasRef.current.getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -24,11 +24,9 @@ const LineChart = ({ data, label }) => {
 
     useEffect(() => {
         renderLineChart(data, label);
-    }, []);
+    }, [data, label]);
 
-    return (
-        <canvas id="lineChart" width="300" height="200"></canvas>
-    )
+    return <canvas ref={lineCanvasRef} width="300" height="200"></canvas>;
 }
 
 export default LineChart

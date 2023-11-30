@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { defaultUserSvg } from '../../assets'
 import styles from '../../styles'
 import SimpleSpinLoader from '../Loader/SpinLoader';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const UserDescription = ({ userId }) => {
-    if (!userId) {
-        return
-    }
     const [user, setUser] = useState({})
     const [loading, setLoading] = useState(true)
 
@@ -26,7 +22,7 @@ const UserDescription = ({ userId }) => {
                 setUser(data.user)
             }
         } catch (error) {
-            console.log(error);
+            console.error('Error fetching user:', error);
         } finally {
             setLoading(false);
         }
@@ -40,14 +36,14 @@ const UserDescription = ({ userId }) => {
             {loading ? <SimpleSpinLoader /> : (<>
                 <div className='flex'>
                     <img
-                        src={defaultUserSvg}
+                        src={`${apiUrl}/profile-image/${user.avatar.url}`}
                         alt=""
-                        className="md:w-10 w-8 rounded-full"
+                        className="rounded-full object-top object-cover bg-slate-300 w-9 h-9 sm:h-12 sm:w-12"
                     />
                     <div className={`flex justify-between items-center overflow-hidden transition-all md:ml-3 sm:ml-2 ml-1`}>
                         <div className="leading-3 md:leading-5">
-                            <h4 className={`${styles.heading5} font-semibold`}>{user.name}</h4>
-                            <span className={`${styles.heading6} text-gray-600`}>{user.email}</span>
+                            <h4 className={`${styles.heading5} font-semibold`}>{user.name || 'Unknown User'}</h4>
+                            <span className={`${styles.heading6} text-gray-600`}>{user.email || 'No Email Available'}</span>
                         </div>
                     </div>
                 </div>
