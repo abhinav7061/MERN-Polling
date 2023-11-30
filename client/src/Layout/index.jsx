@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, } from 'react'
+import React, { useState, useEffect, useContext, Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Toaster, toast } from 'sonner';
 import Navbar from './Navbar'
@@ -6,6 +6,8 @@ import Footer from './Footer'
 import Loader from '../components/Loader';
 import styles from '../styles';
 import { UserContext } from '../UserContext';
+import { LargeSpinLoader } from '../components/Loader/SpinLoader';
+import Container from '../components/Container';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Layout = () => {
@@ -40,7 +42,9 @@ const Layout = () => {
                     <div className={`${styles.boxWidth}  overflow-hidden`}>
                         <Navbar />
                         <Toaster position="top-right" richColors closeButton='true' /> {/* this is the position for showing notification */}
-                        <Outlet />
+                        <Suspense fallback={<Container><LargeSpinLoader /></Container>}>
+                            <Outlet />
+                        </Suspense>
                         <Footer />
                     </div>
                 )

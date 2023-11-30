@@ -1,18 +1,32 @@
-import Layout from './Layout';
-import Home from "./pages/Home";
-import NoPage from "./pages/NoPage";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Poll from "./pages/Poll";
-import Dashoard from "./pages/Poll/Dashboard";
-import CreatePoll from "./pages/Poll/CreatePoll";
-import EditPoll from './pages/Poll/EditPoll';
-import DeletePoll from './pages/Poll/DeletePoll';
-import MyPolls from "./pages/Poll/MyPolls";
-import MyVotes from "./pages/Poll/MyVotes";
+import { lazy } from 'react';
+export default function lazyLoad(path, namedExport) {
+    return lazy(() => {
+        const promise = import(`${path}`)
+        if (namedExport == null) {
+            return promise
+        } else {
+            return promise.then(module => ({
+                default: module[namedExport]
+            }))
+        }
+    })
+}
+
 import { UserContextProvider } from "./UserContext";
-import MyFeeds from './pages/MyFeeds';
-import MyProfile from './pages/MyProfile';
-import IsAuthenticatedUser from './components/IsAuthenticatedUser';
+const Layout = lazyLoad('./Layout');
+const Home = lazyLoad("./pages/Home");
+const NoPage = lazyLoad("./pages/NoPage");
+const Login = lazyLoad("./pages/Login");
+const Signup = lazyLoad("./pages/Signup");
+const Poll = lazyLoad("./pages/Poll");
+const Dashoard = lazyLoad("./pages/Poll/Dashboard");
+const CreatePoll = lazyLoad("./pages/Poll/CreatePoll");
+const EditPoll = lazyLoad('./pages/Poll/EditPoll');
+const DeletePoll = lazyLoad('./pages/Poll/DeletePoll');
+const MyPolls = lazyLoad("./pages/Poll/MyPolls");
+const MyVotes = lazyLoad("./pages/Poll/MyVotes");
+const MyFeeds = lazyLoad('./pages/MyFeeds');
+const MyProfile = lazyLoad('./pages/MyProfile')
+const IsAuthenticatedUser = lazyLoad('./components/IsAuthenticatedUser');
 
 export { NoPage, Layout, Home, Login, Signup, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, MyFeeds, MyProfile, UserContextProvider, IsAuthenticatedUser }

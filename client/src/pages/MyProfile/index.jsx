@@ -121,7 +121,7 @@ const MyProfile = () => {
 					!enableChangingAvatar ? (
 						<div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex items-center gap-2'>
 							<div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '>
-								<img src={avatarChanged ? URL.createObjectURL(user.avatar) : `${apiUrl}/profile-image/${userInfo.avatar.url}`} alt='Profile pic' className=' group-hover:opacity-40 transition-opacity duration-300' />
+								<img src={avatarChanged ? URL.createObjectURL(user.avatar) : `${apiUrl}/profile-image/${userInfo.avatar.url}`} alt='Profile pic' className=' group-hover:opacity-40 transition-opacity duration-300  object-top object-cover  h-48 w-48' />
 								<button type='button' onClick={changeImage} className='absolute text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold'>change Image</button></div>
 							{avatarChanged && <button type='button' className='bg-slate-400 h-6 px-3 py-1 flex items-center justify-center rounded-md' style={{ whiteSpace: 'nowrap' }} onClick={revertImage}>Revert Image</button>}
 						</div>

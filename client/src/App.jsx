@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { Layout, Home, NoPage, Login, Signup, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, MyFeeds, MyProfile, UserContextProvider, IsAuthenticatedUser } from './modules'
+// const Poll = lazy(() => import('./pages/Poll'))
 import './App.css'
 function App() {
 

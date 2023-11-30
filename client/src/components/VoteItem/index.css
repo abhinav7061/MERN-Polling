@@ -49,17 +49,6 @@
     color: #ffb300;
 }
 
-.progress-bar {
-    height: 20px;
-    background-color: #00ddf9;
-    border-radius: 5px;
-    text-align: center;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .loading {
     background: rgba(46, 45, 45, 0.275);
     transform: translate(-25px, -10px);

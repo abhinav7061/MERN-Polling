@@ -285,7 +285,7 @@ function VoteItem({ pollData, role }) {
                                                     {item._id === votedData.selectedOption && <img src={doubleTick} alt="selected" className="h-5 w-5" />}
                                                 </div>
                                                 <div className="progress-bar-container">
-                                                    <div className={`progress-bar h-full ${item._id === votedData.selectedOption ? `bg-green-600` : `bg-slate-400`} absolute`} style={{ "width": `${item.progress}%` }}>
+                                                    <div className={`rounded-xl h-full ${item._id === votedData.selectedOption ? `bg-green-600` : `bg-slate-400`} absolute`} style={{ "width": `${item.progress}%` }}>
                                                     </div>
                                                 </div>
                                             </div>}
