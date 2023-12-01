@@ -10,6 +10,7 @@ const PollEditor = ({ handleSubmit, initialData, type, reset }) => {
     const [description, setDescription] = useState(initialData.description || '')
     const [option, setOption] = useState('');
     const [optionList, setOptionList] = useState(initialData.optionList || []);
+    const [endDate, setEndDate] = useState((initialData.endDate instanceof Date) ? (new Date(initialData.endDate)).toISOString().split('T')[0] : '')
     const addList = () => {
         if (option === "") return toast.error("You can not add a option blank");
         if (optionList.includes(option)) return toast.error("You have already added this option");
@@ -50,8 +51,9 @@ const PollEditor = ({ handleSubmit, initialData, type, reset }) => {
             setDescription("");
             setOption("");
             setOptionList([]);
+            setEndDate('');
         }
-        handleSubmit({ question, description, optionList })
+        handleSubmit({ question, description, optionList, endDate })
     }
     return (
         <div className={`${styles.flexCenter}`}>
@@ -82,6 +84,11 @@ const PollEditor = ({ handleSubmit, initialData, type, reset }) => {
                         className='w-4/5 p-2 md:py-3 md:px-4 rounded-md'
                     />
                     <button type='button' title='Click to add option' onClick={addList} className={` ${styles.flexCenter} md:w-12 sm:w-11 w-8 rounded-md hover:border-slate-500 hover:border-2 md:px-3 md:py-2 p-[5px]  bg-slate-300`}><img src={add} alt="Add Option" className=' object-contain' /></button>
+                </div>
+                {/* div for the date */}
+                <div className='flex flex-wrap gap-3 py-4 w-full items-center font-semibold'>
+                    <label htmlFor="endDate">Select End Date:</label>
+                    <input type="date" name="endDate" id="endDate" value={endDate} onChange={e => setEndDate(e.target.value)} className='p-2 rounded-md text-slate-600  outline-none cursor-pointer' />
                 </div>
 
                 {/* This is for showing options */}

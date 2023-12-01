@@ -20,7 +20,7 @@ export const getLeftTime = (time) => {
     const secondsDifference = Math.floor((timeDifference % (60 * 1000)) / 1000);
 
     if (daysDifference > 0) {
-        return `${daysDifference} days ${hoursDifference} hours ${minutesDifference}`
+        return `${daysDifference} days ${hoursDifference} hours`
     } else if (hoursDifference > 0) {
         return `${hoursDifference} hours ${minutesDifference} minutes`
     } else if (minutesDifference > 0) {

@@ -22,8 +22,9 @@ const EditPoll = () => {
         question: '',
         description: '',
         optionList: [],
+        endDate: '',
     });
-    const editPoll = async ({ question, description, optionList }) => {
+    const editPoll = async (question, description, optionList, endDate) => {
         let title = question;
         let options = optionList.map(subject => ({ subject }));
         try {
@@ -33,7 +34,7 @@ const EditPoll = () => {
                     "Content-Type": "application/json"
                 },
                 credentials: 'include',
-                body: JSON.stringify({ title, description, options })
+                body: JSON.stringify({ title, description, options, endDate })
             });
             const data = await res.json();
             if (res.status === 400 || data.success === false) {
@@ -47,8 +48,8 @@ const EditPoll = () => {
         }
     }
 
-    const handleSubmit = ({ question, description, optionList }) => {
-        editPoll({ question, description, optionList });
+    const handleSubmit = ({ question, description, optionList, endDate }) => {
+        editPoll(question, description, optionList, endDate);
     }
 
     useEffect(() => {
@@ -64,12 +65,13 @@ const EditPoll = () => {
                         question: fetchedData.title,
                         description: fetchedData.description,
                         optionList: fetchedData.options.map(option => option.subject),
+                        endDate: new Date(fetchedData.endDate),
                     });
                     //setting loading false
                     setLoading(false);
                 }
             } catch (error) {
-                console.log(error);
+                console.log('Error getting your poll', error);
             }
         };
 

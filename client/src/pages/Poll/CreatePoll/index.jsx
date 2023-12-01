@@ -11,10 +11,12 @@ const CreatePoll = () => {
         question: "",
         description: "",
         optionList: [],
+        endDate: '',
     }
-    const createPoll = async ({ question, description, optionList }) => {
-        let title = question;
-        let options = optionList.map(subject => ({ subject }));
+    const createPoll = async (question, description, optionList, date) => {
+        const title = question;
+        const options = optionList.map(subject => ({ subject }));
+        const endDate = new Date(date);
         try {
             const res = await fetch(`${apiUrl}/poll/createPoll`, {
                 method: "POST",
@@ -22,10 +24,9 @@ const CreatePoll = () => {
                     "Content-Type": "application/json"
                 },
                 credentials: 'include',
-                body: JSON.stringify({ title, description, options })
+                body: JSON.stringify({ title, description, options, endDate })
             });
             const data = await res.json();
-            console.log({ data });
             if (res.status === 400 || data.success === false) {
                 toast.error(data.message);
             } else {
@@ -33,12 +34,12 @@ const CreatePoll = () => {
                 navigate('/poll')
             }
         } catch (error) {
-            console.log(error);
+            console.log("Error while creating the poll", error);
         }
     }
 
-    const handleSubmit = ({ question, description, optionList }) => {
-        createPoll({ question, description, optionList });
+    const handleSubmit = ({ question, description, optionList, endDate }) => {
+        createPoll(question, description, optionList, endDate);
     }
     return (
         <>

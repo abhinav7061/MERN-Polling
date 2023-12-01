@@ -5,7 +5,7 @@ const Vote = require("../Models/VoteSchema");
 
 exports.createPoll = async (req, res) => {
     try {
-        const { title, description, options } = req.body;
+        const { title, description, options, endDate } = req.body;
         const userId = req.user._id;
         if (!title) {
             return sendErrorResponse(res, 401, "Title is required");
@@ -19,7 +19,12 @@ exports.createPoll = async (req, res) => {
         if (options.length < 2) {
             return sendErrorResponse(res, 401, "At least 2 subjects is required");
         }
-        const poll = await Poll.create({ title, description, options, author: userId })
+        let poll;
+        if (!endDate) {
+            poll = await Poll.create({ title, description, options, author: userId, })
+        } else {
+            poll = await Poll.create({ title, description, options, author: userId, endDate })
+        }
         res.status(200).json({
             success: true,
             message: "Poll created Successfully",
@@ -37,7 +42,7 @@ exports.updatePoll = async (req, res) => {
         fields.forEach((field) => {
             if (req.body[field] !== undefined) {
                 if (field === 'startDate' || field === 'endDate') {
-                    update[field] = new Date(req.body.field)
+                    update[field] = new Date(req.body[field])
                 }
                 else {
                     update[field] = req.body[field]
