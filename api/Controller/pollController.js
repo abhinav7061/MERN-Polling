@@ -54,6 +54,10 @@ exports.updatePoll = async (req, res) => {
             return sendErrorResponse(res, 404, "Poll not found")
         }
 
+        // Find and delete all previous votes associated with the updated poll
+        // const votes = Vote.find({ Poll: pollId })
+        // await votes.deleteMany();
+
         res.status(200).json({
             success: true,
             message: "Poll updated successfully",
@@ -112,48 +116,6 @@ exports.likeDislikePoll = async (req, res) => {
             })
         }
 
-    } catch (error) {
-        sendErrorResponse(res, 500, error.message)
-    }
-}
-
-exports.commentOnPoll = async (req, res) => {
-    try {
-        const pollId = req.params.id;
-        const userId = req.user._id;
-        const { comment } = req.body;
-        const poll = await Poll.findById(pollId);
-        if (!poll) {
-            return sendErrorResponse(res, 404, "Poll not found")
-        }
-        let commentIndex = -1;
-        poll.comments.forEach((item, index) => {
-            if (item.user.toString() === userId.toString()) {
-                commentIndex = index;
-            }
-        })
-
-        if (commentIndex !== -1) {
-            //update comment
-            poll.comments[commentIndex].comment = comment
-            await poll.save();
-            res.status(200).json({
-                success: true,
-                message: "Comment updated"
-            })
-        }
-        else {
-            //add new comment
-            poll.comments.unshift({
-                user: userId,
-                comment
-            })
-            await poll.save();
-            res.status(200).json({
-                success: true,
-                message: "Comment added"
-            })
-        }
     } catch (error) {
         sendErrorResponse(res, 500, error.message)
     }

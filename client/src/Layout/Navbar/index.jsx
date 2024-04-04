@@ -62,7 +62,7 @@ function Navbar() {
                             { //mapping navigation links for the mobile screen
                                 navLinks.map(
                                     (links) => (
-                                        <li key={links.id}>
+                                        <li key={links.id} onClick={() => setToggle(!toggle)} >
                                             <NavLink to={links.linkTo} className={(({ isActive }) => {
                                                 const color = isActive ? 'text-sky-600' : 'text-white';
                                                 return color + " hover:text-sky-400";

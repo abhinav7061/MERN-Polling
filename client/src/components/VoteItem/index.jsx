@@ -1,16 +1,20 @@
 // Import necessary dependencies and styles
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, Suspense } from "react";
 import "./index.css";
 import styles from "../../styles";
 import { defaultUserSvg, doubleTick, like, likedThumb, comment, login } from "../../assets";
 import { toast } from "sonner";
 import UserDescription from "../UserDescription";
 import Accordion from "../Accordion";
+import CommentsCount from "./CommentsCount";
 import { getLeftTime } from "../../utilities/getLeftTime";
 import { Link } from "react-router-dom";
 import { UserContext } from "../../UserContext";
 import PulseLoader from "../Loader/PulseLoader";
 import { MediumSpinLoader } from "../Loader/SpinLoader";
+import { formatDistanceToNow } from 'date-fns';
+import formatRelativeDate from "../../utilities/relativeDate";
+const LazyComments = React.lazy(() => import('../Comments'));
 
 // Define the API URL using Vite environment variable
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -36,7 +40,6 @@ function VoteItem({ pollData, role }) {
     const [timeLeft, setTimeLeft] = useState(getLeftTime(feedData.endDate));
     const [loading, setLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [inputComment, setInputComment] = useState('');
     const [commentInputField, setCommentInputField] = useState(false);
     const [liked, setLiked] = useState(false);
     const [votedData, setVotedData] = useState(null);
@@ -210,35 +213,6 @@ function VoteItem({ pollData, role }) {
         }
     }
 
-    // Function to handle posting a comment
-    const handleCommentPost = async (e) => {
-        e.preventDefault();
-        if (inputComment.length < 3) return toast.warning("The comment should contain 3 characters")
-        setLoading(true);
-        try {
-            const res = await fetch(`${apiUrl}/poll/comment/${feedData._id}`, {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ comment: inputComment }),
-                credentials: 'include',
-            })
-            const data = await res.json();
-            if (res.ok) {
-                getPoll(feedData._id)
-                setInputComment('');
-                toast(data.message, { type: "info" });
-            } else {
-                toast(data.message, { type: 'warning' })
-            }
-        } catch (error) {
-            console.log('Error while posting your comment', error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
     // Render the VoteItem component
     return (
         <>
@@ -331,7 +305,12 @@ function VoteItem({ pollData, role }) {
             {/* Like and Comment counts */}
             <div className={`flex justify-between mt-3 ${styles.heading6}`}>
                 <div className="flex items-center"><div className="p-1 bg-blue-300 rounded-full mr-2"><img src={like} alt="" className="w-3 h-3" /></div>{feedData.likes.length}</div>
-                <div className="hover:underline cursor-pointer" onClick={() => setCommentInputField(prev => !prev)}>{feedData.comments.length} Comment</div>
+                <div className="flex">
+                    <h1>{formatDistanceToNow(new Date(feedData.startDate), { addSuffix: true })}</h1>
+                    {/* <h1>{formatRelativeDate(new Date(feedData.startDate))}</h1> */}
+                    <div className="md:mx-3 mx-1">&#x2022;</div>
+                    <span onClick={() => setCommentInputField(prev => !prev)}><CommentsCount pollId={pollData._id} /></span>
+                </div>
             </div>
             <div className="h-0 border-t border-gray-400 my-1" />
             {/* Like and Comment buttons */}
@@ -344,30 +323,12 @@ function VoteItem({ pollData, role }) {
                 </div>
                 <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`} onClick={() => setCommentInputField(prev => !prev)}><img src={comment} alt="" className="w-3 md:w-5 mr-1 md:mr-3" />Comment</div>
             </div>
-            <div className={`my-3 ${commentInputField ? '' : 'hidden'}`}>
-                {/* form for taking comments inputs */}
-                <form className={`flex ${styles.heading5}`} onSubmit={handleCommentPost}>
-                    <input type="text" name="comment" value={inputComment} onChange={(e) => { setInputComment(e.target.value) }} className={`w-full border-2 border-slate-400 px-3 sm:px-5 py-1 outline-none focus:border-slate-600 rounded-3xl`} placeholder="Enter your comment here" autoComplete="off" required />
-                    <input type="submit" value="Post" className="md:ml-6 sm:ml-4 ml-2 px-2 md:px-3 py-1 rounded-md text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors cursor-pointer" />
-                </form>
-                { // showing all the comment for this poll if present
-                    (feedData.comments.length > 0) ? (
-                        <div className="my-3 border border-slate-800 rounded-lg py-3 px-5">
-                            <div className={`flex justify-between mb-4 ${styles.heading5}`}><p>Comments</p> <p className="cursor-pointer">Most Relevent</p></div>
-                            {feedData.comments.map((comment, index) => (
-                                <div className={`rounded-md bg-slate-100 p-3 ${feedData.comments.length - 1 === index ? '' : "mb-5"}`} key={comment._id}>
-                                    <UserDescription userId={comment.user} />
-                                    <h1 className={`${styles.heading5} mt-1 px-2`}>{comment.comment}</h1>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col justify-center items-center my-3 py-3 px-5">
-                            <img src={login} alt="comment" className="lg:h-44 md:h-40 sm:h-36 h-28" />
-                            <h1 className={`font-semibold ${styles.heading5}`}>Be the first to comment</h1>
-                        </div>)
-                }
-            </div>
+            {commentInputField &&
+                (<Suspense fallback={<div>Loading...</div>}>
+                    <div className="my-3">
+                        <LazyComments pollId={pollData._id} />
+                    </div>
+                </Suspense>)}
         </>
     );
 }

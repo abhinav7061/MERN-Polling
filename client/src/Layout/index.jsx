@@ -39,7 +39,7 @@ const Layout = () => {
                 loading ? (
                     <Loader />
                 ) : (
-                    <div className={`${styles.boxWidth}  overflow-hidden`}>
+                    <div className={`${styles.boxWidth}  overflow-hidden flex flex-col min-h-screen`}>
                         <Navbar />
                         <Toaster position="top-right" richColors closeButton='true' /> {/* this is the position for showing notification */}
                         <Suspense fallback={<Container><LargeSpinLoader /></Container>}>

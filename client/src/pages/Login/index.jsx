@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import styles from '../../styles';
 import Button from '../../components/Button';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -31,7 +32,7 @@ const Login = () => {
             if (data.success && res.ok) {
                 toast.success("Signup successfully");
                 setUserInfo(data.user)
-                navigate('/');
+                navigate('/poll');
             } else {
                 toast.error(data.message);
             }
@@ -45,6 +46,13 @@ const Login = () => {
         validationSchema: loginSchema,
         onSubmit: (values) => {
             getLogin(values);
+        }
+    })
+
+    useEffect(() => {
+        if (userInfo) {
+            toast.warning("You are already logged in");
+            navigate('/poll');
         }
     })
 

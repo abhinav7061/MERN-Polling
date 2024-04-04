@@ -1,7 +1,8 @@
-import { useContext, createContext, useState } from "react";
+import { useContext, createContext, useState, useEffect } from "react";
 import { logo } from "../../assets";
 import { UserContext } from "../../UserContext";
 import LogoutBtn from "../../components/Button/LogoutBtn";
+import useMediaQuery from "../../Hooks/useMediaQuery";
 
 // Create a context for managing the state of the Sidebar
 const SidebarContext = createContext();
@@ -11,12 +12,14 @@ const apiUrl = import.meta.env.VITE_API_URL;
 export default function Sidebar({ children }) {
     // Access user information from the context
     const { userInfo } = useContext(UserContext);
-
-    // Determine the available screen width
-    const availableScreen = window.screen.availWidth;
+    const isLargeScreen = useMediaQuery('(min-width: 640px)');
 
     // State variable to manage Sidebar expansion
-    const [expanded, setExpanded] = useState(availableScreen > 640 ? true : false);
+    const [expanded, setExpanded] = useState(isLargeScreen);
+
+    useEffect(() => {
+        setExpanded(isLargeScreen);
+    }, [isLargeScreen])
 
     return (
         <aside className={`sm:h-screen ${expanded ? 'h-screen top-0' : 'h-10 sm:overflow-visible'} duration-500 overflow-hidden transition-all flex sm:static fixed z-50`}>
@@ -31,14 +34,15 @@ export default function Sidebar({ children }) {
                     <button
                         onClick={() => setExpanded((curr) => !curr)}
                         className={`sm:p-3 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center sm:-translate-x-0 sm:translate-y-0 ${!expanded ? 'translate-x-[-22px] translate-y-[-5px]' : ''}`}
-                        title="Click to open Sidebar"
+                        title={`${!expanded ? "Open Sidebar" : "Close Sidebar"}`}
+                        type="button"
                     >
                         {expanded ? <ion-icon name="arrow-back-circle-outline" aria-label="Collapse Sidebar"></ion-icon> : <ion-icon name="arrow-forward-circle-outline" aria-label="Expand Sidebar"></ion-icon>}
                     </button>
                 </div>
 
                 {/* Provide the Sidebar state via context */}
-                <SidebarContext.Provider value={{ expanded }}>
+                <SidebarContext.Provider value={{ expanded, setExpanded }}>
                     <ul className="flex-1 px-3">{children}</ul>
                 </SidebarContext.Provider>
 
@@ -63,9 +67,10 @@ export default function Sidebar({ children }) {
 }
 
 // SidebarItem component
-export function SidebarItem({ icon, text, active, alert, onClicks }) {
+export function SidebarItem({ icon, text, active, alert }) {
     // Access the Sidebar state from the context
-    const { expanded } = useContext(SidebarContext);
+    const { expanded, setExpanded } = useContext(SidebarContext);
+    const isLargeScreen = useMediaQuery('(min-width: 640px)');
 
     return (
         <li
@@ -74,8 +79,8 @@ export function SidebarItem({ icon, text, active, alert, onClicks }) {
                     ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
                     : `hover:bg-indigo-50 ${expanded ? 'text-white' : 'text-gray-500'} hover:text-gray-600`
                 }
-    `}
-        >
+    ` }
+            onClick={!isLargeScreen ? () => setExpanded((open) => !open) : undefined}>
             {icon}
             <span
                 className={`overflow-hidden transition-all ${expanded ? "w-40 ml-3" : "hidden"}`}

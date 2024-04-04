@@ -12,6 +12,7 @@ uploads
 dist
 dist-ssr
 *.local
+migration.js
 
 # Editor directories and files
 .vscode/*

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 function Footer() {
     return (
-        <div className={`${styles.paddingX} bg-gray-900 text-white md:py-5 py-3 flex justify-between items-center text-[14px]`}>
+        <div className={`${styles.paddingX} bg-gray-900 text-white md:py-5 py-3 flex justify-between items-center text-[14px] mt-auto`}>
             <p>
                 Copyright Ⓒ 2023 Pollab.<br className='md:hidden' /> All Rights Reserved.
             </p>

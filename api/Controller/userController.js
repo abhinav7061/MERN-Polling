@@ -278,6 +278,8 @@ exports.updateProfile = async (req, res) => {
 
     const avatar = req.file;
 
+    console.log({ avatar });
+
     const user = await User.findById(req.user._id);
 
     // Update user information if provided in the request
@@ -290,6 +292,7 @@ exports.updateProfile = async (req, res) => {
       // Check if the current avatar is not the default one and unlink the previous image
       if (user.avatar.url !== defaultUserSvg) {
         unlinkPreviousImage(avatar.path.substring(0, avatar.path.lastIndexOf('/')), user.avatar.url);
+        // unlinkPreviousImage(avatar.destination, user.avatar.url);
       }
 
       // Upload the new profile image and update the user's avatar URL

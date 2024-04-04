@@ -6,14 +6,14 @@ import { toast } from 'sonner';
 import { useFormik } from 'formik'
 import { signupSchema } from '../../schemas';
 import DragDropImage from '../../components/DragDropImage';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../UserContext';
 // import CropImage from '../../components/CropImage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
-    const { setUserInfo } = useContext(UserContext);
+    const { userInfo, setUserInfo } = useContext(UserContext);
     const navigate = useNavigate();
     const [avatar, setAvatar] = useState(null);
     const [preview, setPreview] = useState(false)
@@ -69,6 +69,13 @@ const Signup = () => {
         setPreview(false);
         setAvatar(null);
     }
+
+    useEffect(() => {
+        if (userInfo) {
+            toast.warning("You are already logged in with registered account");
+            navigate('/poll');
+        }
+    })
 
     return (
         <div className={`flex md:flex-row flex-col-reverse border bg-white border-sky-400 mx-2 my-4 md:m-20 rounded-2xl overflow-hidden`}>

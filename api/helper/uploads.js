@@ -29,6 +29,7 @@ exports.uploadProfileImageToCloudinary = async (image, user_id) => {
 exports.unlinkPreviousImage = async (directory, url) => {
     try {
         // Construct the previous file path based on the user ID (ignoring extension)
+        console.log({ directory });
         const previousFilePath = `${directory}/${url}.*`;
 
         // Get an array of files that match the pattern
