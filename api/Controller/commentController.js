@@ -5,7 +5,6 @@ const Vote = require("../Models/VoteSchema");
 const Comment = require('../Models/CommentSchema');
 
 exports.createComment = async (req, res) => {
-    console.log("create comment", req.body);
     try {
         const pollId = req.params.pollId;
         const userId = req.user._id;
@@ -41,8 +40,19 @@ exports.createComment = async (req, res) => {
 }
 
 exports.deleteComment = async (req, res) => {
+    const commentId = req.params.id;
+    try {
+        const deletedComment = await Comment.findByIdAndDelete(commentId);
+        if (!deletedComment) {
+            return sendErrorResponse(res, 404, "Comment not found");
+        }
 
-}
+        res.status(200).json({ success: true, message: 'Comment Deleted' });
+    } catch (err) {
+        console.log(err.message);
+        sendErrorResponse(res, 500, "Server Error")
+    }
+};
 
 exports.commentCount = async (req, res) => {
     const pollId = req.params.pollId;
