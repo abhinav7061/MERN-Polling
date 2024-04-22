@@ -12,6 +12,11 @@ exports.createVote = async (req, res) => {
     if (!poll) {
       return sendErrorResponse(res, 404, "Poll not found");
     }
+    const date = new Date(poll.endDate).toISOString();
+    // Checking whether the voting period is over or not
+    if (new Date() > new Date(date)) {
+      return sendErrorResponse(res, 403, "The voting time has been expired.");
+    }
 
     if (!poll.allowMultipleVotes) {
       const existingVote = await Vote.findOne({ Poll: pollId, User: userId });
