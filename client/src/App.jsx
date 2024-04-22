@@ -12,7 +12,6 @@ function App() {
             <Route index element={<Home />} />
             <Route path='login' element={<Login />} />
             <Route path='register' element={<Signup />} />
-            <Route path="profile" element={<IsAuthenticatedUser><MyProfile /></IsAuthenticatedUser>} />
             <Route path='poll' element={<IsAuthenticatedUser><Poll /></IsAuthenticatedUser>} >
               {/* Routing for internal polls. For the sidebar */}
               <Route
@@ -42,6 +41,10 @@ function App() {
               <Route
                 path="my-vote"
                 element={<IsAuthenticatedUser><MyVotes /></IsAuthenticatedUser>}
+              />
+              <Route
+                path="profile"
+                element={<IsAuthenticatedUser><MyProfile /></IsAuthenticatedUser>}
               />
             </Route>
             <Route path="*" element={<NoPage />} />
