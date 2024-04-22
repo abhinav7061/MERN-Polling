@@ -5,13 +5,13 @@ import styles from "../../styles";
 import { defaultUserSvg, doubleTick, like, likedThumb, comment, login } from "../../assets";
 import { toast } from "sonner";
 import UserDescription from "../UserDescription";
+import Actions from "./Actions";
 import Accordion from "../Accordion";
 import CommentsCount from "./CommentsCount";
 import { getLeftTime } from "../../utilities/getLeftTime";
-import { Link } from "react-router-dom";
 import { UserContext } from "../../UserContext";
 import PulseLoader from "../Loader/PulseLoader";
-import { MediumSpinLoader } from "../Loader/SpinLoader";
+import { MediumSpinLoader, SmallSpinLoader } from "../Loader/SpinLoader";
 import { formatDistanceToNow } from 'date-fns';
 import formatRelativeDate from "../../utilities/relativeDate";
 const LazyComments = React.lazy(() => import('../Comments'));
@@ -21,14 +21,6 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 // Function for rendering individual vote items
 function VoteItem({ pollData, role }) {
-    // Initialize path based on the user's role
-    let path = '/poll';
-    if (role === 'votes') {
-        path = '/poll/my-vote';
-    }
-    if (role === 'polls') {
-        path = '/poll/my-poll';
-    }
 
     // Access user information from the context
     const { userInfo } = useContext(UserContext);
@@ -223,15 +215,7 @@ function VoteItem({ pollData, role }) {
                     <UserDescription userId={feedData.author} />
                 </div>
                 {/* Display edit and delete buttons for the poll owner */}
-                {(userInfo && userInfo._id === feedData.author) && (<>
-                    <Link to={`/poll/edit-poll/${feedData._id}`} state={{ path }} className=" hover:text-blue-600" title="Edit Poll">
-                        <ion-icon name="create-outline"></ion-icon>
-                    </Link>
-                    <Link to={`/poll/delete-poll/${feedData._id}`} state={{ path }} className="md:ml-3 lg:ml-5 ml-1 hover:text-red-500" title="Delete Poll">
-                        <ion-icon name="trash-outline">
-                        </ion-icon>
-                    </Link>
-                </>)}
+                <Actions author={feedData.author} role={role} pollId={feedData._id} />
             </div>
             <hr className="my-1" />
             {/* Display poll description in an accordion */}
@@ -324,11 +308,12 @@ function VoteItem({ pollData, role }) {
                 <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`} onClick={() => setCommentInputField(prev => !prev)}><img src={comment} alt="" className="w-3 md:w-5 mr-1 md:mr-3" />Comment</div>
             </div>
             {commentInputField &&
-                (<Suspense fallback={<div>Loading...</div>}>
+                (<Suspense fallback={<><SmallSpinLoader /></>}>
                     <div className="my-3">
                         <LazyComments pollId={pollData._id} />
                     </div>
-                </Suspense>)}
+                </Suspense >)
+            }
         </>
     );
 }

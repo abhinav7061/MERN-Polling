@@ -278,8 +278,6 @@ exports.updateProfile = async (req, res) => {
 
     const avatar = req.file;
 
-    console.log({ avatar });
-
     const user = await User.findById(req.user._id);
 
     // Update user information if provided in the request
@@ -541,5 +539,103 @@ exports.getDashboard = async (req, res) => {
   } catch (error) {
     console.error(error);
     sendErrorResponse(res, 500, error.message);
+  }
+}
+
+exports.followUser = async (req, res) => {
+  const user = req.user;
+  const userToFollowId = req.params.id;
+
+  try {
+    // Checking if the request is made by the same user to avoid self-following
+    if (String(user._id) === String(userToFollowId)) {
+      throw new Error('You cannot follow yourself');
+    }
+
+    // Finding the user that needs to be followed
+    const userToFollow = await User.findById(userToFollowId).select('+followers');
+
+    // If the user does not exist, return an error
+    if (user.following.includes(userToFollowId)) {
+      return sendErrorResponse(res, 404, `You are already following ${userToFollow.name}`);
+    }
+
+    if (!userToFollow) {
+      return sendErrorResponse(res, 404, `The user could not be found`);
+    }
+
+    // Add the current logged in user to the user's followers list
+    userToFollow.followers.push(user._id);
+
+    // Add the followed user in the current logged-in user's following list
+    user.following.push(userToFollowId);
+
+    // Save the updated user data back into the database
+    await userToFollow.save();
+
+    // Save the updated user data back into the database
+    await user.save();
+
+    // Return a success message
+    res.status(201).send({ message: 'User successfully followed', success: true });
+  } catch (err) {
+    sendErrorResponse(res, 400, err.message);
+  }
+};
+
+// Unfollow a user from the currently authenticated one
+exports.unfollowUser = async (req, res) => {
+  const user = req.user;
+  const userToUnfollowId = req.params.id;
+  // console.log({ user._id, userToUnfollowId })
+  try {
+    // Check if the user is already following the userToUnfollow
+    if (!user.following.includes(userToUnfollowId)) {
+      return sendErrorResponse(res, 400, 'You are not following');
+    }
+
+    // Remove the userId of the user we want to unfollow from the array of following for the authenticated user
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: user._id },
+      { $pull: { following: userToUnfollowId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return sendErrorResponse(res, 404, 'User not found');
+    }
+
+    // Remove the followerId from the followers list of the user to unfollow
+    const followedUser = await User.findOneAndUpdate(
+      { _id: userToUnfollowId },
+      { $pull: { followers: user._id } }
+    );
+
+    // Send a success message back to the client
+    res.status(200).send({ message: `Successfully unfollowed  ${followedUser.name}`, success: true });
+  } catch (error) {
+    console.error(error);
+    sendErrorResponse(res, 500, 'Server error when trying to unfollow user');
+  }
+};
+
+
+exports.isFollower = async (req, res) => {
+  const userId = req.user._id;
+  const userToFollowId = req.params.id;
+  try {
+    // Find the user who wants to follow
+    const user = await User.findById(userId).select('following');
+
+    // If the user does not exist, return false
+    if (!user) {
+      return res.status(201).send({ following: false });
+    }
+
+    // Check if the userToFollowId exists in the following list of the current user
+    res.status(201).send({ following: user.following.includes(userToFollowId) });
+  } catch (err) {
+    console.log(err);
+    sendErrorResponse(res, 400, err.message);
   }
 }

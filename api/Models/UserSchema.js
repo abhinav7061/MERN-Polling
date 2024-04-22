@@ -36,18 +36,18 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:"Love is Life so Let me Love You"
     },
-    // followers:[
-    //     {
-    //         type:mongoose.Schema.Types.ObjectId,
-    //         ref:"User"
-    //     }
-    // ],
-    // following:[
-    //     {
-    //         type:mongoose.Schema.Types.ObjectId,
-    //         ref:"User"
-    //     }
-    // ],
+    followers:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        }
+    ],
+    following:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        }
+    ],
     Votes:[
         {
             type:mongoose.Schema.Types.ObjectId,
