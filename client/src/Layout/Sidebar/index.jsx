@@ -1,4 +1,5 @@
 import { useContext, createContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { logo } from "../../assets";
 import { UserContext } from "../../UserContext";
 import LogoutBtn from "../../components/Button/LogoutBtn";
@@ -49,9 +50,9 @@ export default function Sidebar({ children }) {
                 {/* User information and logout button */}
                 {userInfo && (
                     <div className={`border-t p-3 flex`} title={!expanded ? userInfo.name : ''}>
-                        <div className="w-10 h-10 rounded-md flex justify-center items-center bg-blue-400 text-white overflow-hidden">
+                        <Link to='profile' className="w-10 h-10 rounded-md flex justify-center items-center bg-blue-400 text-white overflow-hidden">
                             <img src={`${apiUrl}/profile-image/${userInfo.avatar.url}`} alt={`${userInfo.name}`} className="w-10 h-10 object-top object-cover " />
-                        </div>
+                        </Link>
                         <div className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? "ml-3" : "w-0"} `}>
                             <div className="leading-4">
                                 <h4 className="font-semibold text-white">{userInfo.name}</h4>
