@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, Suspense } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Toaster, toast } from 'sonner';
 import Navbar from './Navbar'
 import Footer from './Footer'
@@ -11,8 +11,10 @@ import Container from '../components/Container';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Layout = () => {
-    const { setUserInfo } = useContext(UserContext);
+    const { userInfo, setUserInfo } = useContext(UserContext);
     const [loading, setLoading] = useState(true)
+
+    const navigate = useNavigate();
 
     // Get user info when the component mounts.
     const getUser = async () => {
@@ -23,6 +25,7 @@ const Layout = () => {
             const data = await res.json();
             if (data.success && res.ok) {
                 setUserInfo(data.user);
+                navigate('/poll');
             }
         } catch (error) {
             console.error('Error fetching user data:', error);
@@ -40,12 +43,12 @@ const Layout = () => {
                     <Loader />
                 ) : (
                     <div className={`${styles.boxWidth}  overflow-hidden flex flex-col min-h-screen`}>
-                        <Navbar />
+                        {userInfo ? null : <Navbar />}
                         <Toaster position="top-right" richColors closeButton='true' /> {/* this is the position for showing notification */}
                         <Suspense fallback={<Container><LargeSpinLoader /></Container>}>
                             <Outlet />
                         </Suspense>
-                        <Footer />
+                        {userInfo ? null : <Footer />}
                     </div>
                 )
             }
