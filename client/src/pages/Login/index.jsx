@@ -30,7 +30,7 @@ const Login = () => {
             });
             const data = await res.json();
             if (data.success && res.ok) {
-                toast.success("Signup successfully");
+                toast.success("Logged-in successfully");
                 setUserInfo(data.user)
                 navigate('/poll');
             } else {
