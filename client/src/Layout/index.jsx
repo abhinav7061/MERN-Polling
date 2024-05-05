@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, Suspense } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Toaster, toast } from 'sonner';
 import Navbar from './Navbar'
 import Footer from './Footer'
@@ -15,6 +15,7 @@ const Layout = () => {
     const [loading, setLoading] = useState(true)
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Get user info when the component mounts.
     const getUser = async () => {
@@ -25,7 +26,9 @@ const Layout = () => {
             const data = await res.json();
             if (data.success && res.ok) {
                 setUserInfo(data.user);
-                navigate('/poll');
+                if (!location.pathname.startsWith('/poll')) {
+                    navigate('/poll');
+                }
             }
         } catch (error) {
             console.error('Error fetching user data:', error);
