@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { toast } from "sonner";
 import { UserContext } from '../../UserContext';
 import UserDescription from '../UserDescription';
@@ -21,6 +21,30 @@ const Comments = ({ pollId }) => {
 
   // Access user information from the context
   const { userInfo } = useContext(UserContext);
+
+  const containerRef = useRef(null);
+
+  const handleScroll = () => {
+    const container = containerRef.current;
+    if (container) {
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+        setPage(prevPage => prevPage + 1);
+      }
+    }
+    console.log({ container, page });
+  };
+
+  // Use the containerRef for the scroll event listener
+  useEffect(() => {
+    const container = containerRef.current;
+    console.log(container);
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => {
+        container.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [containerRef]);
 
   // Function to handle posting a comment
   const handleCommentPost = async (e) => {
@@ -113,37 +137,68 @@ const Comments = ({ pollId }) => {
     }
   }
 
+  const textareaStyle = {
+    resize: 'none', // prevent resizing by dragging
+    overflowY: 'hidden', // hide scrollbar
+    minHeight: '50px',
+  };
+
   useEffect(() => {
     if (hasMore) {
       getComments();
     }
   }, [page, hasMore]);
 
+  const handleTextAreaInput = (e) => {
+    setInputComment(e.target.value);
+
+    // Calculate the height based on the scrollHeight
+    const textarea = event.target;
+    textarea.style.height = 'auto'; // Reset height to auto to allow shrinkage
+    textarea.style.height = `${textarea.scrollHeight}px`;
+
+
+    // Ensure the textarea does not exceed the maximum height of four rows
+    const maxHeight = parseInt(window.getComputedStyle(textarea).lineHeight) * 4; // Calculate max height based on line height and 4 rows
+    if (textarea.scrollHeight > maxHeight) {
+      textarea.style.height = `${maxHeight}px`;
+      textarea.style.overflowY = 'auto'; // Set scrolling if necessary
+    } else {
+      textarea.style.overflowY = 'hidden'; // Set scrolling if necessary
+    }
+  }
+
   return (
     <>
       {/* form for taking comments inputs */}
       <form className={`flex ${styles.heading5}`} onSubmit={handleCommentPost}>
-        <input
-          id="commentInput"
-          type="text"
-          name="comment"
-          value={inputComment}
-          onChange={(e) => { setInputComment(e.target.value) }}
-          className={`w-full border-2 border-slate-400 px-3 sm:px-5 py-1 outline-none focus:border-slate-600 rounded-3xl`}
-          placeholder="Enter your comment here"
-          autoComplete="off"
-          required />
-        <input
-          type="submit"
-          value="Post"
-          className="md:ml-6 sm:ml-4 ml-2 px-2 md:px-3 py-1 rounded-md text-black hover:text-white bg-slate-300 hover:bg-sky-400 duration-500 transition-colors cursor-pointer" />
+        <div className="relative w-full overflow-hidden rounded-xl">
+          <textarea
+            id="commentInput"
+            name="comment"
+            value={inputComment}
+            onChange={handleTextAreaInput}
+            className={`w-full border-2 border-slate-400 pl-3 sm:pl-5 py-2 outline-none focus:border-slate-600 rounded-xl pr-12 sm:pr-16`}
+            placeholder="Enter your comment here"
+            autoComplete="off"
+            style={textareaStyle}
+            required
+          />
+
+          {/* Submit button inside the container, positioned in the corner */}
+          <input
+            type="submit"
+            value="Post"
+            className={`absolute bottom-4 right-3 bg-slate-300 text-black hover:bg-sky-400 hover:text-white rounded-md px-2 md:px-3 py-1 cursor-pointer duration-500 transition-colors ${styles.smHeading}`}
+          />
+        </div>
       </form>
       { // showing all the comment for this poll if present
         checkComments ? <div className=' w-full flex justify-center items-center'><Spinner /></div> : (comments.length > 0) ? (
-          <div className="my-3 border border-slate-800 rounded-lg py-3 px-5">
+          <div className="my-3 border border-slate-800 rounded-lg py-3 px-5 max-h-96 overflow-auto" ref={containerRef}>
             <div className={`flex justify-between mb-4 ${styles.heading5}`}><p>Comments</p> <p className="cursor-pointer">Most Relevent</p></div>
             {comments.map((comment, index) => (
-              <div className={`rounded-md bg-slate-100 p-3 ${comments.length - 1 === index ? '' : "mb-5"}`} key={comment._id}>
+              <div className={`rounded-md bg-slate-100 p-1 sm:p-3 ${comments.length - 1 === index ? '' : "mb-5"}`} key={comment._id}>
                 <div className="flex items-center">
                   <div className="flex-1">
                     <UserDescription userId={comment.commentedBy} />
@@ -172,8 +227,8 @@ const Comments = ({ pollId }) => {
             <div className='flex justify-center items-center'>
               {loading && <Spinner />}
             </div>
-            <div className='mt-8 flex justify-center items-center font-bold'>
-              {hasMore ? <div className='cursor-pointer px-3 py-2 rounded-lg duration-500 hover:bg-sky-300 transition-colors' onClick={() => setPage(prevPage => prevPage + 1)}>loadMore</div> : <div className=''>End Comments</div>}
+            <div className={`mt-8 flex justify-center items-center font-bold ${styles.heading6}`}>
+              {hasMore ? <div className='cursor-pointer duration-500 hover:bg-sky-300 transition-colors rounded-md  px-2 md:px-3 py-1' onClick={() => setPage(prevPage => prevPage + 1)}>loadMore</div> : <div className=''>End Comments</div>}
             </div>
           </div>
         ) : (
