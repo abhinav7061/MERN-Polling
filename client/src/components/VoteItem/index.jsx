@@ -210,13 +210,10 @@ function VoteItem({ pollData, role }) {
         <>
             {loading && <div className="absolute w-full h-full z-10 loading"><MediumSpinLoader /></div>}
             {/* User information and action buttons */}
-            <div className="flex items-center">
-                <div className="flex-1">
-                    <UserDescription userId={feedData.author} />
-                </div>
+            <UserDescription userId={feedData.author}>
                 {/* Display edit and delete buttons for the poll owner */}
                 <Actions author={feedData.author} role={role} pollId={feedData._id} />
-            </div>
+            </UserDescription>
             <hr className="my-1" />
             {/* Display poll description in an accordion */}
             <Accordion content={feedData.description} />
