@@ -9,7 +9,7 @@ const Unfollow = ({ userToUnfollow, callback }) => {
     const unFollowUser = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${apiUrl}/user/unFollow/${userToUnfollow}`, {
+            const response = await fetch(`${apiUrl}/followers_followings/unFollow/${userToUnfollow}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"

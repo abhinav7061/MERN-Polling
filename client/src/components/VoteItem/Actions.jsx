@@ -33,7 +33,7 @@ const Actions = ({ author, role, pollId }) => {
 
     const checkFollowing = async () => {
         try {
-            const response = await fetch(`${apiUrl}/user/checkFollowing/${author}`, {
+            const response = await fetch(`${apiUrl}/followers_followings/checkFollowing/${author}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"

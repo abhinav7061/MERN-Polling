@@ -10,6 +10,8 @@ import Button from '../../components/Button';
 import DragDropImage from '../../components/DragDropImage';
 import { Spinner } from '../../components/Loader/SpinLoader';
 import { polling, vote } from '../../assets';
+import Followers from '../../components/Followers/index.jsx';
+import Followings from '../../components/Followings/index.jsx';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -142,8 +144,8 @@ const MyProfile = () => {
 
 	return (
 		<>
-			<div className='flex justify-around py-6 px-3 sm:p-12  items-center bg-gray-200 flex-col md:flex-row'>
-				{loading && <div className='absolute w-full h-full bg-slate-200 opacity-50 z-10 flex justify-center items-center'><Spinner /></div>}
+			<div className='flex justify-around items-center flex-col xl:flex-row'>
+				{loading && <div className='absolute w-full h-full z-10 flex justify-center items-center'><Spinner /></div>}
 				<form className='rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full sm:w-auto lg:w-2/3' onSubmit={handleSubmit}>
 					{
 						!enableChangingAvatar ? (
@@ -198,10 +200,14 @@ const MyProfile = () => {
 					</div>
 					{isUserChanged && <Button type="submit" title='Save changes' styles=' px-5 py-1 mb-3' />}
 				</form>
-				{dasLoading ? <Spinner /> : <div className='ml-5 sm:flex flex-col items-center gap-6 md:gap-16 mt-6 md:mt-0 hidden'>
+				{dasLoading ? <Spinner /> : <div className='ml-5 sm:flex flex-col items-center gap-6 md:gap-8 mt-8 xl:mt-0 hidden'>
 					<Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} />
 					<Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} />
 				</div>}
+			</div>
+			<div className='flex gap-12 w-full mt-12 lg:flex-row flex-col'>
+				<Followers />
+				<Followings />
 			</div>
 			{/* {dasLoading ? <Spinner /> : <div className='flex'>
 				<div className='mx-3 mt-6'><BarChart data={dashboardData.pollChartData} label='Total Polls' /></div>

@@ -16,9 +16,6 @@ const {
   deleteProfile,
   myProfile,
   getDashboard,
-  followUser,
-  unfollowUser,
-  isFollower,
 } = require("../Controller/userController");
 const { isAuthenticatedUser, isAdmin } = require("../middlewares/auth");
 const multer = require('multer');
@@ -31,9 +28,6 @@ router.route("/register").post(uploadMiddleware.single('avatar'), registerUser);
 router.route("/login").post(loginUser);
 router.route("/logout").post(logoutUser);
 router.route("/allusers").get(getAllUsers);
-router.route('/follow/:id').put(isAuthenticatedUser, followUser);
-router.route('/unFollow/:id').delete(isAuthenticatedUser, unfollowUser);
-router.route('/checkFollowing/:id').get(isAuthenticatedUser, isFollower);
 router.route("/me").get(isAuthenticatedUser, myProfile);
 router.route("/:id").get(isAuthenticatedUser, getUserDetails);
 router.route("/profile/update").put(isAuthenticatedUser, uploadMiddleware.single('avatar'), updateProfile);
