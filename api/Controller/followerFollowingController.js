@@ -37,27 +37,27 @@ exports.followUser = async (req, res) => {
 };
 
 exports.unfollowUser = async (req, res) => {
-  const user = req.user;
-  const userToUnfollowId = req.params.id;
+  const userToUnfollowId = req.query.userToUnfollowId;
+  const userId = req.query.userId;
 
   try {
     // Checking if the request is made by the same user to avoid self-following
-    if (String(user._id) === String(userToUnfollowId)) {
+    if (String(userId) === String(userToUnfollowId)) {
       throw new Error('You were not allowed follow yourself');
     }
 
     // Finding the user that needs to be unfollowed
     const userToUnfollow = await User.findById(userToUnfollowId);
-
+    const user = await User.findById(userId);
     // If the user to unfollow does not exist, return an error
-    if (!userToUnfollow) {
-      return res.status(404).send({ message: 'User not found', success: false });
+    if (!userToUnfollow || !user) {
+      throw new Error('User not found');
     }
 
     // Check if the user is already following the userToUnfollow
-    const isFollowing = await FollowerFollowing.exists({ followerId: user._id, followingId: userToUnfollowId });
+    const isFollowing = await FollowerFollowing.exists({ followerId: userId, followingId: userToUnfollowId });
     if (!isFollowing) {
-      return res.status(400).send({ message: `You are not following ${userToUnfollow.name}`, success: false });
+      throw new Error(`You are not following ${userToUnfollow.name}`);
     }
 
     // Remove the user from the following list of the current user
@@ -70,50 +70,14 @@ exports.unfollowUser = async (req, res) => {
   }
 };
 
-exports.RemoveFollower = async (req, res) => {
-  const userToRemoveId = req.params.id;
-  const user = req.user;
-
-  console.log({ user, userToRemoveId })
-
-  try {
-    // Checking if the request is made by the same user to avoid self-following
-    if (String(user._id) === String(userToRemoveId)) {
-      throw new Error('You were not allowed follow yourself');
-    }
-
-    // Finding the user that needs to be unfollowed
-    const userToRemove = await User.findById(userToRemoveId);
-
-    // If the user to unfollow does not exist, return an error
-    if (!userToRemove) {
-      return res.status(404).send({ message: 'User not found', success: false });
-    }
-
-    // Check if the user is already following the userToRemove
-    const isFollowing = await FollowerFollowing.exists({ followerId: userToRemove, followingId: user._id });
-    if (!isFollowing) {
-      return res.status(400).send({ message: `${userToRemove.name} is not following you`, success: false });
-    }
-
-    // Remove the user from the following list of the current user
-    await FollowerFollowing.deleteOne({ followerId: userToRemove, followingId: user._id });
-
-    // Return a success message
-    res.status(200).send({ message: `${userToRemove.name} has been removed`, success: true });
-  } catch (err) {
-    sendErrorResponse(res, 400, err.message);
-  }
-};
-
 exports.isFollower = async (req, res) => {
-  const followerId = req.user._id;
-  const followingId = req.params.id;
+  const followerId = req.query.followerId;
+  const followingId = req.query.followingId;
 
   try {
     // Checking if the request is made by the same user to avoid self-following
     if (String(followerId) === String(followingId)) {
-      return res.status(200).send({ following: false, success: false });
+      return res.status(200).send({ following: false, success: true, message: "Both user are same" });
     }
 
     // Check if the user is already following the userToFollow
@@ -121,14 +85,14 @@ exports.isFollower = async (req, res) => {
     if (isFollowing) {
       return res.status(200).send({ following: true, success: true });
     }
-    return res.status(200).send({ following: false, success: false });
+    return res.status(200).send({ following: false, success: true, message: "User is not a follower" });
   } catch (err) {
     sendErrorResponse(res, 400, err.message);
   }
 };
 
 exports.getFollowers = async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.params.id;
   const { page = 1, pageSize = 5 } = req.query;
   try {
     let query = { followingId: userId };
@@ -151,7 +115,7 @@ exports.getFollowers = async (req, res) => {
     // Return followers and pagination metadata
     res.status(200).json({
       totalFollowers,
-      followers,
+      followers: followers.map(f => ({ _id: f.followerId._id, name: f.followerId.name, createdAt: f.createdAt })),
       success: true
     });
   } catch (error) {
@@ -161,7 +125,7 @@ exports.getFollowers = async (req, res) => {
 
 
 exports.getFollowings = async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.params.id;
   const { page = 1, pageSize = 5 } = req.query;
 
   try {
@@ -169,7 +133,6 @@ exports.getFollowings = async (req, res) => {
 
     // Find the total count of followings
     const totalFollowings = await FollowerFollowing.countDocuments(query);
-    console.log({ totalFollowings });
 
     // Calculate skip and limit for pagination
     const skip = (page - 1) * pageSize;
@@ -186,7 +149,7 @@ exports.getFollowings = async (req, res) => {
     // Return followers and pagination metadata
     res.status(200).json({
       totalFollowings,
-      followings,
+      followings: followings.map(f => ({ _id: f.followingId._id, name: f.followingId.name, createdAt: f.createdAt })),
       success: true
     });
   } catch (error) {

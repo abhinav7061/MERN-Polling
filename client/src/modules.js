@@ -12,7 +12,7 @@ export default function lazyLoad(path, namedExport) {
     })
 }
 
-import { UserContextProvider } from "./UserContext";
+import { UserContextProvider } from "./contexts/UserContext";
 const Layout = lazyLoad('./Layout');
 const Home = lazyLoad("./pages/Home");
 const NoPage = lazyLoad("./pages/NoPage");
@@ -28,5 +28,6 @@ const MyVotes = lazyLoad("./pages/Poll/MyVotes");
 const MyFeeds = lazyLoad('./pages/MyFeeds');
 const MyProfile = lazyLoad('./pages/MyProfile')
 const IsAuthenticatedUser = lazyLoad('./components/IsAuthenticatedUser');
+const Profile = lazyLoad('./pages/Profile')
 
-export { NoPage, Layout, Home, Login, Signup, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, MyFeeds, MyProfile, UserContextProvider, IsAuthenticatedUser }
+export { NoPage, Layout, Home, Login, Signup, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, MyFeeds, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser }

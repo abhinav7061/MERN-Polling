@@ -1,0 +1,24 @@
+/* index.module.css */
+.followers_followings_item {
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.fade-slide-enter {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.fade-slide-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-slide-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-slide-exit-active {
+    opacity: 0;
+    transform: translateY(20px);
+}

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { login } from '../../assets';
 import { useFormik } from 'formik'
 import { loginSchema } from '../../schemas';
-import { UserContext } from '../../UserContext';
+import { UserContext } from '../../contexts/UserContext';
 import { useContext } from 'react';
 const apiUrl = import.meta.env.VITE_API_URL;
 

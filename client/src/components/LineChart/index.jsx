@@ -1,32 +1,55 @@
-import React, { useEffect, useRef } from 'react'
-import Chart from 'chart.js/auto';
+import React from 'react'
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2'
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 const LineChart = ({ data, label }) => {
-    const lineCanvasRef = useRef(null);
-    const renderLineChart = (data, label) => {
-        const ctx = lineCanvasRef.current.getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.map((entry, index) => entry.label || index),
-                datasets: [
-                    {
-                        label: label,
-                        data: data.map((entry) => entry.count),
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1,
-                        fill: false,
-                    },
-                ],
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
             },
-        });
+            title: {
+                display: true,
+                text: label,
+            }
+        },
     };
 
-    useEffect(() => {
-        renderLineChart(data, label);
-    }, [data, label]);
+    const lineChartData = {
+        labels: data.map((entry, index) => entry.label || index),
+        datasets: [
+            {
+                label: label,
+                data: data.map((entry) => entry.count),
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                fill: false,
+            },
+        ],
+    };
 
-    return <canvas ref={lineCanvasRef} width="300" height="200"></canvas>;
+    return <Line options={options} data={lineChartData} />;
 }
 
 export default LineChart

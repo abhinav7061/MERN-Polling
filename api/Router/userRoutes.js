@@ -23,7 +23,7 @@ const uploadMiddleware = multer({ dest: 'uploads/profile_image' }); // middlewar
 
 const router = express.Router();
 
-router.route('/dashboard').get(isAuthenticatedUser, getDashboard);
+router.route('/dashboard/:id').get(isAuthenticatedUser, getDashboard);
 router.route("/register").post(uploadMiddleware.single('avatar'), registerUser);
 router.route("/login").post(loginUser);
 router.route("/logout").post(logoutUser);

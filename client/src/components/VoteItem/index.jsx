@@ -5,11 +5,11 @@ import styles from "../../styles";
 import { defaultUserSvg, doubleTick, like, likedThumb, comment, login } from "../../assets";
 import { toast } from "sonner";
 import UserDescription from "../UserDescription";
-import Actions from "./Actions";
+import PollActions from "./PollActions";
 import Accordion from "../Accordion";
 import CommentsCount from "./CommentsCount";
 import { getLeftTime } from "../../utilities/getLeftTime";
-import { UserContext } from "../../UserContext";
+import { UserContext } from "../../contexts/UserContext";
 import PulseLoader from "../Loader/PulseLoader";
 import { MediumSpinLoader, SmallSpinLoader } from "../Loader/SpinLoader";
 import { formatDistanceToNow } from 'date-fns';
@@ -20,7 +20,7 @@ const LazyComments = React.lazy(() => import('../Comments'));
 const apiUrl = import.meta.env.VITE_API_URL;
 
 // Function for rendering individual vote items
-function VoteItem({ pollData, role }) {
+function VoteItem({ pollData, deletePollCallback }) {
 
     // Access user information from the context
     const { userInfo } = useContext(UserContext);
@@ -212,7 +212,7 @@ function VoteItem({ pollData, role }) {
             {/* User information and action buttons */}
             <UserDescription userId={feedData.author}>
                 {/* Display edit and delete buttons for the poll owner */}
-                <Actions author={feedData.author} role={role} pollId={feedData._id} />
+                <PollActions author={feedData.author} pollId={feedData._id} deletePollCallback={deletePollCallback} />
             </UserDescription>
             <hr className="my-1" />
             {/* Display poll description in an accordion */}
@@ -287,7 +287,7 @@ function VoteItem({ pollData, role }) {
             <div className={`flex justify-between mt-3 ${styles.heading6}`}>
                 <div className="flex items-center"><div className="p-1 bg-blue-300 rounded-full mr-2"><img src={like} alt="" className="w-3 h-3" /></div>{feedData.likes.length}</div>
                 <div className="flex">
-                    <h1>{formatDistanceToNow(new Date(feedData.startDate), { addSuffix: true })}</h1>
+                    {/* <h1>{formatDistanceToNow(new Date(feedData.startDate), { addSuffix: true })}</h1> */}
                     {/* <h1>{formatRelativeDate(new Date(feedData.startDate))}</h1> */}
                     <div className="md:mx-3 mx-1">&#x2022;</div>
                     <span onClick={() => setCommentInputField(prev => !prev)}><CommentsCount pollId={pollData._id} /></span>

@@ -6,6 +6,7 @@ const usePolls = (apiEndpoint) => {
   // Constants and state variables for managing poll data
   const perPage = 5;
   const [feeds, setFeeds] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null)
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -27,12 +28,15 @@ const usePolls = (apiEndpoint) => {
       const data = await res.json();
 
       // Check if there are more polls to load
-      if (data.polls.length < perPage) setHasMore(false);
-
-      // Update the state with the fetched polls
-      setFeeds(prevItems => [...new Set([...prevItems, ...data.polls])]);
+      if (data.success) {
+        if (data.polls.length < perPage) setHasMore(false);
+        setFeeds(prevItems => [...new Set([...prevItems, ...data.polls])]);
+      } else {
+        throw new Error(data.message);
+      }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.log('Error fetching data:', error);
+      setErrorMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -81,7 +85,7 @@ const usePolls = (apiEndpoint) => {
   };
 
   // Return the state variables and functions for external usage
-  return { feeds, loading, hasMore, search, sort, active, setSearch, setSort, setActive, resetPolls, searchPlaceholder };
+  return { feeds, setFeeds, errorMessage, loading, hasMore, search, sort, active, setSearch, setSort, setActive, resetPolls, searchPlaceholder };
 };
 
 // Export the custom hook for use in other components

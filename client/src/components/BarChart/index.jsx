@@ -1,33 +1,56 @@
-import React, { useEffect, useRef } from 'react'
-import Chart from 'chart.js/auto';
+import React from 'react'
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
 
 const BarChart = ({ data, label }) => {
-    const barCanvasRef = useRef(null);
-
-    const renderBarChart = (data, label) => {
-        const ctx = barCanvasRef.current.getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map((entry, index) => entry.label || index),
-                datasets: [
-                    {
-                        label: label,
-                        data: data.map((entry) => entry.count),
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1,
-                    },
-                ],
+    const options = {
+        responsive: true,
+        maintainAspectRatio : false,
+        plugins: {
+            legend: {
+                position: 'top',
             },
-        });
+            title: {
+                display: true,
+                text: label,
+            }
+        },
     };
 
-    useEffect(() => {
-        renderBarChart(data, label);
-    }, [data, label]);
+    const barChartData = {
+        labels: data.map((entry, index) => entry.label || index),
+        datasets: [
+            {
+                label: label,
+                data: data.map((entry) => entry.count),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
 
-    return <canvas ref={barCanvasRef} width="300" height="200"></canvas>;
+    return <Bar options={options} data={barChartData} />;
 }
 
 export default BarChart

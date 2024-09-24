@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 const validator=require("validator");
 const jwt =require("jsonwebtoken")
 const bcrypt=require("bcryptjs");
-const crypto=require("crypto")
+const crypto=require("crypto");
+const { type } = require("os");
 
 const userSchema = new mongoose.Schema({
     name:{

@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { Layout, Home, NoPage, Login, Signup, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, MyFeeds, MyProfile, UserContextProvider, IsAuthenticatedUser } from './modules'
+import { Layout, Home, NoPage, Login, Signup, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, MyFeeds, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser } from './modules'
 // const Poll = lazy(() => import('./pages/Poll'))
 import './App.css'
 function App() {
@@ -43,8 +43,12 @@ function App() {
                 element={<IsAuthenticatedUser><MyVotes /></IsAuthenticatedUser>}
               />
               <Route
-                path="profile"
+                path="my_profile"
                 element={<IsAuthenticatedUser><MyProfile /></IsAuthenticatedUser>}
+              />
+              <Route
+                path="profile/:id"
+                element={<IsAuthenticatedUser><Profile /></IsAuthenticatedUser>}
               />
             </Route>
             <Route path="*" element={<NoPage />} />

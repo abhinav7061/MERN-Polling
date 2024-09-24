@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react'
 // import BarChart from '../../components/BarChart';
 // import LineChart from '../../components/LineChart';
 import { toast } from 'sonner';
-import { UserContext } from '../../UserContext';
+import { UserContext } from '../../contexts/UserContext';
 import Card from '../../components/Card';
 import { incrementProgress, decrementProgress } from '../../assets';
 import styles from '../../styles';
@@ -27,11 +27,14 @@ const MyProfile = () => {
 	const [isUserChanged, setIsUserChanged] = useState(false);
 	const [dashboardData, setDashboardData] = useState(null);
 	const [dasLoading, setDasLoading] = useState(true);
+	const [errorMessage, setErrorMessage] = useState(null)
 
 	useEffect(() => {
 		const getDashoard = async () => {
+			setErrorMessage(null);
+			setDasLoading(true);
 			try {
-				const res = await fetch(`${apiUrl}/user/dashboard`, {
+				const res = await fetch(`${apiUrl}/user/dashboard/${userInfo._id}`, {
 					method: 'GET',
 					headers: {
 						"Content-Type": "application/json"
@@ -41,10 +44,16 @@ const MyProfile = () => {
 				const data = await res.json();
 				if (res.ok) {
 					setDashboardData(data);
-					setDasLoading(false);
+				} else {
+					throw new Error(data?.message || "Server Error");
 				}
 			}
-			catch (error) { console.log('Error while getting your dashboard', error); }
+			catch (error) {
+				console.log('Error while getting your dashboard', error);
+				setErrorMessage(error.message);
+			} finally {
+				setDasLoading(false);
+			}
 		}
 		getDashoard();
 	}, [])
@@ -59,16 +68,21 @@ const MyProfile = () => {
 
 	// Get user info when the component mounts.
 	const getUser = async () => {
+		setErrorMessage(null);
+		setLoading(true);
 		try {
 			const res = await fetch(`${apiUrl}/user/me`, {
 				credentials: 'include',
 			});
 			const data = await res.json();
-			if (data.success && res.status === 200) {
+			if (data.success && res.ok) {
 				setUserInfo(data.user);
+			} else {
+				throw new Error(data?.message || "Server Error");
 			}
 		} catch (error) {
 			console.log('Error: ', error);
+			setErrorMessage(error.message);
 		} finally {
 			setLoading(false)
 		}
@@ -106,10 +120,11 @@ const MyProfile = () => {
 				getUser();
 				setEnableChangingStatus(false);
 			} else {
-				toast.error("Error while updating", data.message);
+				toast.error(data.message);
 			}
 		} catch (error) {
 			console.log("Error while updating", error);
+			toast.error("Error while updating");
 		}
 	}
 
@@ -141,6 +156,10 @@ const MyProfile = () => {
 		const hasChanged = Object.keys(user).some((key) => user[key] !== initialValues[key]);
 		setIsUserChanged(hasChanged);
 	}, [user]);
+
+	if (errorMessage) {
+		return <div className='min-h-screen flex items-center justify-center'><ErrorMessage heading="Error fetching the dashoard" message={errorMessage} action={getDashoard} /></div>
+	}
 
 	return (
 		<>
@@ -201,18 +220,14 @@ const MyProfile = () => {
 					{isUserChanged && <Button type="submit" title='Save changes' styles=' px-5 py-1 mb-3' />}
 				</form>
 				{dasLoading ? <Spinner /> : <div className='ml-5 sm:flex flex-col items-center gap-6 md:gap-8 mt-8 xl:mt-0 hidden'>
-					<Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} />
-					<Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} />
+					<Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='My Total Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} />
+					<Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='My Total Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} />
 				</div>}
 			</div>
 			<div className='flex gap-12 w-full mt-12 lg:flex-row flex-col'>
-				<Followers />
-				<Followings />
+				<Followers userId={userInfo._id} />
+				<Followings userId={userInfo._id} />
 			</div>
-			{/* {dasLoading ? <Spinner /> : <div className='flex'>
-				<div className='mx-3 mt-6'><BarChart data={dashboardData.pollChartData} label='Total Polls' /></div>
-				<div className='mx-3 mt-6'><LineChart data={dashboardData.voteChartData} label='Total Votes' /></div>
-			</div>} */}
 		</>
 	)
 }

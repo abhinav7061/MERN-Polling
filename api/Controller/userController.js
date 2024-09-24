@@ -1,6 +1,8 @@
 const User = require("../Models/UserSchema");
 const Poll = require("../Models/PollSchema");
 const Vote = require("../Models/VoteSchema");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const validator = require("validator");
 const cloudinary = require("cloudinary");
 const { sendErrorResponse } = require("../middlewares/erroHandle");
@@ -350,8 +352,7 @@ exports.deleteProfile = async (req, res) => {
 //  Controller for the user dashboard 
 exports.getDashboard = async (req, res) => {
   try {
-    const userId = req.user._id;
-
+    const userId = req.params.id;
     // Get total active polls for the user
     const activePolls = await Poll.countDocuments({
       author: userId,
@@ -387,7 +388,7 @@ exports.getDashboard = async (req, res) => {
     const pollChartData = await Poll.aggregate([
       {
         $match: {
-          author: userId,
+          author: new ObjectId(userId),
           endDate: { $gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) }, // Last 7 days
         },
       },
@@ -409,7 +410,7 @@ exports.getDashboard = async (req, res) => {
     const previousPollChartData = await Poll.aggregate([
       {
         $match: {
-          author: userId,
+          author: new ObjectId(userId),
           endDate: {
             $gte: new Date(new Date() - 14 * 24 * 60 * 60 * 1000), // Previous 7 days
             $lt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000), // Last 14 days to Last 7 days
@@ -448,7 +449,7 @@ exports.getDashboard = async (req, res) => {
     const voteChartData = await Vote.aggregate([
       {
         $match: {
-          User: userId,
+          User: new ObjectId(userId),
           createdAt: { $gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000) }, // Last 7 days
         },
       },
@@ -481,7 +482,7 @@ exports.getDashboard = async (req, res) => {
     const previousVoteChartData = await Vote.aggregate([
       {
         $match: {
-          User: userId,
+          User: new ObjectId(userId),
           createdAt: {
             $gte: new Date(new Date() - 14 * 24 * 60 * 60 * 1000), // Previous 7 days
             $lt: new Date(new Date() - 7 * 24 * 60 * 60 * 1000), // Last 14 days to Last 7 days

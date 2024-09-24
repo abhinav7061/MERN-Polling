@@ -20,7 +20,7 @@ exports.createComment = async (req, res) => {
             // Update the existing comment
             existingComment.comment = comment;
             await existingComment.save();
-            res.status(200).json({ success: true, message: 'Comment updated' });
+            res.status(200).json({ success: true, message: 'Comment updated', updatedComment: existingComment });
         } else {
             // Create a new comment
             const newComment = new Comment({
@@ -32,7 +32,7 @@ exports.createComment = async (req, res) => {
             // Save the new comment to the database
             await newComment.save();
 
-            res.status(200).json({ success: true, message: 'Comment added' });
+            res.status(200).json({ success: true, message: 'Comment added', newComment });
         }
     } catch (error) {
         sendErrorResponse(res, 500, error.message)
@@ -79,7 +79,7 @@ exports.getAllComments = async (req, res) => {
         const comments = await Comment.find({ onPoll: pollId })
             .skip(skip)
             .limit(limit)
-            .sort({ createdAt: -1 }); // Sort comments by creation date in descending order
+            .sort({ updatedAt: -1 }); // Sort comments by creation date in descending order
 
         res.status(200).json({ success: true, comments });
     } catch (error) {

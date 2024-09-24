@@ -1,7 +1,7 @@
-import { useContext, createContext, useState, useEffect } from "react";
+import { useContext, createContext, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { logo } from "../../assets";
-import { UserContext } from "../../UserContext";
+import { UserContext } from "../../contexts/UserContext";
 import LogoutBtn from "../../components/Button/LogoutBtn";
 import useMediaQuery from "../../Hooks/useMediaQuery";
 
@@ -23,10 +23,10 @@ export default function Sidebar({ children }) {
     }, [isLargeScreen])
 
     return (
-        <aside className={`sm:h-screen ${expanded ? 'h-screen top-0' : 'h-10 sm:overflow-visible'} duration-500 overflow-hidden transition-all flex sm:static fixed z-50`}>
+        <aside className={`sm:h-screen ${expanded ? 'h-screen top-0' : 'h-10 sm:overflow-visible'} sm:sticky fixed top-0 left-0 duration-500 overflow-hidden transition-all flex z-[10]`}>
             {/* Logo and toggle button */}
-            <nav className={`h-full flex flex-col border-r shadow-sm ${expanded ? ' bg-slate-900' : 'sm:bg-white border-r-0'} duration-500  transition-all`}>
-                <div className="p-4 pb-2 flex justify-between items-center">
+            <nav className={`h-full flex flex-col border-r shadow-sm items-center ${expanded ? ' bg-slate-900' : 'sm:bg-white border-r-0'} duration-500  transition-all`}>
+                <div className="p-4 pb-2 w-full flex justify-between items-center">
                     <img
                         src={logo}
                         className={`overflow-hidden transition-all ${expanded ? "w-28" : "w-0"}`}
@@ -44,19 +44,19 @@ export default function Sidebar({ children }) {
 
                 {/* Provide the Sidebar state via context */}
                 <SidebarContext.Provider value={{ expanded, setExpanded }}>
-                    <ul className="flex-1 px-3">{children}</ul>
+                    <ul className="flex-1 w-full overflow-y-scroll px-3 flex flex-col items-center">{children}</ul>
                 </SidebarContext.Provider>
 
                 {/* User information and logout button */}
                 {userInfo && (
                     <div className={`border-t p-3 flex`} title={!expanded ? userInfo.name : ''}>
-                        <Link to='profile' className="w-10 h-10 rounded-md flex justify-center items-center bg-blue-400 text-white overflow-hidden">
+                        <Link to='my_profile' className="w-10 h-10 rounded-md flex justify-center items-center bg-blue-400 text-white overflow-hidden">
                             <img src={`${apiUrl}/profile-image/${userInfo.avatar.url}`} alt={`${userInfo.name}`} className="w-10 h-10 object-top object-cover " />
                         </Link>
                         <div className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? "ml-3" : "w-0"} `}>
                             <div className="leading-4">
                                 <h4 className="font-semibold text-white">{userInfo.name}</h4>
-                                <span className="text-xs text-gray-400">{userInfo.email}</span>
+                                <span className="text-xs text-gray-400 line-clamp-1 w-40">{userInfo.email}</span>
                             </div>
                             <LogoutBtn />
                         </div>
@@ -69,19 +69,42 @@ export default function Sidebar({ children }) {
 
 // SidebarItem component
 export function SidebarItem({ icon, text, active, alert }) {
-    // Access the Sidebar state from the context
-    const { expanded, setExpanded } = useContext(SidebarContext);
-    const isLargeScreen = useMediaQuery('(min-width: 640px)');
+    const { expanded } = useContext(SidebarContext);
+    const [tooltipPosition, setTooltipPosition] = useState({ top: 0 });
+    const itemRef = useRef(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (itemRef.current && !expanded) {
+                const { top } = itemRef.current.getBoundingClientRect();
+                setTooltipPosition({ top: top + 1 });
+            }
+        };
+
+        // Add scroll event listener to the parent container
+        const parentElement = itemRef.current?.parentElement?.parentElement;
+        parentElement?.addEventListener('scroll', handleScroll);
+
+        // Initial position update
+        handleScroll();
+
+        // Cleanup event listener on component unmount
+        return () => {
+            parentElement?.removeEventListener('scroll', handleScroll);
+        };
+    }, [expanded]);
 
     return (
         <li
-            className={`relative flex items-center p-3 my-1 font-medium rounded-md cursor-pointer transition-colors group
-        ${active
+            ref={itemRef}
+            className={`relative flex items-center justify-center p-3 my-1 font-medium rounded-md cursor-pointer transition-colors group
+                    ${active
                     ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
                     : `hover:bg-indigo-50 ${expanded ? 'text-white' : 'text-gray-500'} hover:text-gray-600`
                 }
-    ` }
-            onClick={!isLargeScreen ? () => setExpanded((open) => !open) : undefined}>
+                    ${!expanded ? 'w-10 h-10' : ''}
+                `}
+        >
             {icon}
             <span
                 className={`overflow-hidden transition-all ${expanded ? "w-40 ml-3" : "hidden"}`}
@@ -90,17 +113,16 @@ export function SidebarItem({ icon, text, active, alert }) {
             </span>
             {alert && (
                 <div
-                    className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 ${expanded ? "" : "top-2"
-                        }`}
+                    className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 ${expanded ? "" : "top-2"}`}
                 />
             )}
             {/* showing sidebar items name on hover */}
             {!expanded && (
                 <div
-                    className={`absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
-      `}
+                    className={`fixed left-12 rounded-md px-2 py-1 bg-indigo-100 text-indigo-800 text-sm invisible group-hover:visible group-hover:opacity-100 transition-all transform group-hover:translate-x-8 duration-300 ease-in-out`}
+                    style={{ top: tooltipPosition.top }}
                 >
-                    <p className="text-center">{text}</p>
+                    <p className="text-center whitespace-nowrap">{text}</p>
                 </div>
             )}
         </li>

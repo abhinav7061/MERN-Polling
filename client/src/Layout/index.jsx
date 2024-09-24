@@ -5,7 +5,7 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import Loader from '../components/Loader';
 import styles from '../styles';
-import { UserContext } from '../UserContext';
+import { UserContext } from '../contexts/UserContext';
 import { LargeSpinLoader } from '../components/Loader/SpinLoader';
 import Container from '../components/Container';
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -45,7 +45,7 @@ const Layout = () => {
                 loading ? (
                     <Loader />
                 ) : (
-                    <div className={`${styles.boxWidth}  overflow-hidden flex flex-col min-h-screen`}>
+                    <div className={`${styles.boxWidth} flex flex-col min-h-screen`}>
                         {userInfo ? null : <Navbar />}
                         <Toaster position="top-right" richColors closeButton='true' /> {/* this is the position for showing notification */}
                         <Suspense fallback={<Container><LargeSpinLoader /></Container>}>

@@ -1,0 +1,24 @@
+/* index.module.css */
+.comment_item {
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.fade-enter {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transform: translateX(100%);
+}

@@ -3,7 +3,7 @@ import { NavLink, useNavigate, Link } from 'react-router-dom'
 import styles from '../../styles'
 import { navLinks } from '../../constants'
 import { menu, close } from '../../assets'
-import { UserContext } from '../../UserContext'
+import { UserContext } from '../../contexts/UserContext'
 import LogoutBtn from '../../components/Button/LogoutBtn'
 
 function Navbar() {
@@ -11,7 +11,7 @@ function Navbar() {
     const navigate = useNavigate();
     const [toggle, setToggle] = useState(false);
     return (
-        <nav className={`${styles.paddingX} md:py-5 py-3 bg-gray-900`}>
+        <nav className={`${styles.paddingX} md:py-5 py-3 sticky top-0 bg-gray-900 z-[1000]`}>
             <div className="flex items-center justify-between">
                 <NavLink to="/" className="flex items-center">
                     <img src="https://cdn-icons-png.flaticon.com/128/6432/6432236.png?track=ais" className="h-8 mr-1" alt="pollab" />

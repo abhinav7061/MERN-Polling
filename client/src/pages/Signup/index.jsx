@@ -7,7 +7,7 @@ import { useFormik } from 'formik'
 import { signupSchema } from '../../schemas';
 import DragDropImage from '../../components/DragDropImage';
 import { useState, useContext, useEffect } from 'react';
-import { UserContext } from '../../UserContext';
+import { UserContext } from '../../contexts/UserContext';
 // import CropImage from '../../components/CropImage';
 
 const apiUrl = import.meta.env.VITE_API_URL;

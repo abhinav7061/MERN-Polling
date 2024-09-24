@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import PollEditor from '../PollEditor'
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from '../../../styles';
 import { Spinner } from '../../../components/Loader/SpinLoader';
 import { toast } from 'sonner';
+import ErrorMessage from '../../../components/ErrorMessage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -11,12 +12,7 @@ const EditPoll = () => {
     const pollId = useParams().id;
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true)
-    const [path, setPath] = useState('/poll')
-    const location = useLocation();
-    if (location.state !== null) {
-        setPath(location.state.path);
-        location.state = null;
-    }
+    const [errorMessage, setErrorMessage] = useState(null)
     // Set initial data state
     const [initialData, setInitialData] = useState({
         question: '',
@@ -24,7 +20,8 @@ const EditPoll = () => {
         optionList: [],
         endDate: '',
     });
-    const editPoll = async (question, description, optionList, endDate) => {
+
+    const handleSubmit = async ({ question, description, optionList, endDate }) => {
         let title = question;
         let options = optionList.map(subject => ({ subject }));
         try {
@@ -37,46 +34,50 @@ const EditPoll = () => {
                 body: JSON.stringify({ title, description, options, endDate })
             });
             const data = await res.json();
-            if (res.status === 400 || data.success === false) {
-                toast.error(data.message);
-            } else {
+            if (data.success) {
                 toast.success("Your poll has been Updated successfully");
-                navigate(path);
+                navigate(-1);
+            } else {
+                throw new Error(data.message);
             }
         } catch (error) {
             console.log('Error during editing your poll', error);
+            toast.error('Error updatin poll');
         }
     }
 
-    const handleSubmit = ({ question, description, optionList, endDate }) => {
-        editPoll(question, description, optionList, endDate);
-    }
+    const fetchData = async () => {
+        try {
+            const res = await fetch(`${apiUrl}/poll/getPoll/${pollId}`);
+            const data = await res.json();
+            if (data.success) {
+                const fetchedData = data.poll;
+
+                // Set initial data state based on fetched data
+                setInitialData({
+                    question: fetchedData.title,
+                    description: fetchedData.description,
+                    optionList: fetchedData.options.map(option => option.subject),
+                    endDate: new Date(fetchedData.endDate),
+                });
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.log('Error getting your poll', error);
+            setErrorMessage(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch(`${apiUrl}/poll/getPoll/${pollId}`);
-                const data = await res.json();
-                if (data.success) {
-                    const fetchedData = data.poll;
-
-                    // Set initial data state based on fetched data
-                    setInitialData({
-                        question: fetchedData.title,
-                        description: fetchedData.description,
-                        optionList: fetchedData.options.map(option => option.subject),
-                        endDate: new Date(fetchedData.endDate),
-                    });
-                    //setting loading false
-                    setLoading(false);
-                }
-            } catch (error) {
-                console.log('Error getting your poll', error);
-            }
-        };
-
         fetchData();
     }, [pollId]);
+
+    if (errorMessage) {
+        return <div className='min-h-screen flex items-center justify-center'><ErrorMessage heading="Error fetching the dashoard" message={errorMessage} action={fetchData} /></div>
+    }
 
     return (
         <>

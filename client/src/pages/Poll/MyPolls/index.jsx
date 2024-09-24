@@ -4,11 +4,12 @@ import PollList from '../../../components/PollList';
 import SearchSort from '../../../components/SearchSort';
 import styles from '../../../styles';
 import { useLocation } from 'react-router-dom';
+import ErrorMessage from '../../../components/ErrorMessage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const MyPolls = () => {
-    const { feeds, loading, hasMore, search, sort, active, setSearch, setSort, setActive, resetPolls, searchPlaceholder } = usePolls(`${apiUrl}/poll/myPolls`);
+    const { feeds, setFeeds, errorMessage, loading, hasMore, search, sort, active, setSearch, setSort, setActive, resetPolls, searchPlaceholder } = usePolls(`${apiUrl}/poll/myPolls`);
     const location = useLocation();
     if (location.state !== null) {
         setActive(location.state.active);
@@ -20,9 +21,13 @@ const MyPolls = () => {
         resetPolls();
     };
 
+    if (errorMessage) {
+        return <div className='min-h-screen flex items-center justify-center'><ErrorMessage heading="Error fetching the dashoard" message={errorMessage} action={resetPolls} /></div>
+    }
+
     return (
-        <div className='flex lg:flex-row flex-col-reverse'>
-            <PollList feeds={feeds} loading={loading} hasMore={hasMore} role='polls' customMessage={searchPlaceholder || active ? `You have Zero votes ${searchPlaceholder ? `which contains '${searchPlaceholder}'and` : ''} ${active ? `which is ${active}` : null}` : 'You have ZERO poll'} />
+        <div className='flex lg:flex-row gap-6 flex-col-reverse'>
+            <PollList feeds={feeds} setFeeds={setFeeds} loading={loading} hasMore={hasMore} role='polls' customMessage={searchPlaceholder || active ? `You have Zero votes ${searchPlaceholder ? `which contains '${searchPlaceholder}'and` : ''} ${active ? `which is ${active}` : null}` : 'You have ZERO poll'} />
             <SearchSort
                 search={search}
                 sort={sort}

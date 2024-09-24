@@ -5,10 +5,9 @@ const { followUser, unfollowUser, isFollower, getFollowers, getFollowings, Remov
 const router = express.Router();
 
 router.route('/follow/:id').put(isAuthenticatedUser, followUser);
-router.route('/unFollow/:id').delete(isAuthenticatedUser, unfollowUser);
-router.route('/checkFollowing/:id').get(isAuthenticatedUser, isFollower);
-router.route('/followers').get(isAuthenticatedUser, getFollowers);
-router.route('/followings').get(isAuthenticatedUser, getFollowings);
-router.route('/removeFollower/:id').delete(isAuthenticatedUser, RemoveFollower);
+router.route('/unFollow').delete(isAuthenticatedUser, unfollowUser);
+router.route('/checkFollowing').get(isFollower);
+router.route('/followers/:id').get(isAuthenticatedUser, getFollowers);
+router.route('/followings/:id').get(isAuthenticatedUser, getFollowings);
 
 module.exports = router;
