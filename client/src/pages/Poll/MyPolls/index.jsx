@@ -22,7 +22,7 @@ const MyPolls = () => {
     };
 
     if (errorMessage) {
-        return <div className='min-h-screen flex items-center justify-center'><ErrorMessage heading="Error fetching the dashoard" message={errorMessage} action={resetPolls} /></div>
+        return <div className='min-h-screen flex items-center justify-center'><ErrorMessage heading="Error fetching the my polls" message={errorMessage} action={resetPolls} /></div>
     }
 
     return (

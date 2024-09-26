@@ -55,27 +55,33 @@ const sideLinks = [
     },
     {
         id: 2,
-        icon_name: 'apps',
+        icon_name: 'speedometer',
         text: 'Dashoard',
         linkTo: "/poll/dashboard",
     },
     {
         id: 3,
-        icon_name: 'bar-chart-outline',
+        icon_name: 'create',
         text: 'Create Poll',
         linkTo: "/poll/create",
     },
     {
         id: 4,
-        icon_name: 'bar-chart-outline',
+        icon_name: 'stats-chart',
         text: 'My Polls',
         linkTo: "/poll/my-poll",
     },
     {
         id: 5,
-        icon_name: 'bar-chart-outline',
+        icon_name: 'thumbs-up',
         text: 'My votes',
         linkTo: "/poll/my-vote",
+    },
+    {
+        id: 6,
+        icon_name: 'bookmarks',
+        text: 'Saved Polls',
+        linkTo: "/poll/saved-polls",
     },
 ]
 

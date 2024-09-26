@@ -18,6 +18,7 @@ const poll = require("./Router/pollRoutes");
 const vote = require("./Router/voteRoutes");
 const comment = require("./Router/commentRoutes");
 const followerFollowing = require("./Router/followerFollowingRoutes");
+const savePoll = require("./Router/savePollRoutes")
 
 // //using routes
 app.use("/api/v1/user", user);
@@ -25,6 +26,7 @@ app.use("/api/v1/poll", poll);
 app.use("/api/v1/vote", vote);
 app.use("/api/v1/comment", comment);
 app.use("/api/v1/followers_followings", followerFollowing);
+app.use("/api/v1/save-poll", savePoll);
 app.use('/api/v1/profile-image', express.static(__dirname + '/uploads/profile_image')); // route to  serve the static file(profile image in this project)
 
 //using error middlewares
