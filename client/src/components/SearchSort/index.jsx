@@ -11,7 +11,7 @@ const SearchSort = ({ search, sort, setSearch, setSort, onSearchSortSubmit, chil
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className='border-2 border-slate-400 px-3 sm:px-5 lg:py-2 py-1 outline-none focus:border-slate-600 rounded-3xl flex-1 lg:flex-none'
-                required
+            // required
             />
 
             {/* Dropdown for sorting */}

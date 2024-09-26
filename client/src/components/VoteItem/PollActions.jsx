@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../../contexts/UserContext';
 import styles from '../../styles';
 import { Link } from 'react-router-dom';
@@ -9,15 +9,44 @@ import DeletePollBtn from './DeletePollBtn';
 import DropDown from '../DropDown/DropDown';
 import useCheckFollowing from '../../Hooks/useCheckFollowing';
 import { toast } from 'sonner';
+import SaveUnsavePoll from '../SaveUnsavePoll';
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const PollActions = ({ author, pollId, deletePollCallback }) => {
     const { userInfo } = useContext(UserContext);
-    const { isFollower, loading, checkFollowing } = useCheckFollowing({ followerId: userInfo._id, followingId: author })
+    const [isSaved, setIsSaved] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [checkSavesLoading, setCheckSavesLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
+    const { isFollower, loading: checkFollowingLoading, checkFollowing } = useCheckFollowing({ followerId: userInfo._id, followingId: author })
     const [showActions, setShowActions] = useState(false);
+
+    const checkPollSaves = async () => {
+        setCheckSavesLoading(true);
+        setErrorMessage(null);
+        try {
+            const response = await fetch(`${apiUrl}/save-poll/isSaved/${pollId}`, { credentials: 'include' });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                setIsSaved(data.isSaved);
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error(`Error checking poll save status: ${error.message}`);
+            setErrorMessage(error.message)
+        }
+        finally {
+            setCheckSavesLoading(false);
+        }
+    }
 
     const handleActionClick = async () => {
         if (!showActions) {
             await checkFollowing();
+            await checkPollSaves();
         }
         setShowActions(!showActions);
     };
@@ -31,6 +60,10 @@ const PollActions = ({ author, pollId, deletePollCallback }) => {
         toast.success('Successfully Followed');
         checkFollowing();
     }
+
+    useEffect(() => {
+        setLoading(checkSavesLoading && checkFollowingLoading);
+    }, [checkSavesLoading, checkFollowingLoading])
 
     return (
         <DropDown
@@ -48,9 +81,9 @@ const PollActions = ({ author, pollId, deletePollCallback }) => {
                     isFollower ? <Unfollow userId={userInfo._id} userToUnfollowId={author} callback={handleUnfollowing} /> : <Follow userToFollow={author} callback={handleFollowing} />
                 }</>
                 }
-                <span className=" flex gap-1 items-center px-2 py-1 hover:bg-slate-200 rounded-md cursor-pointer">
-                    <ion-icon name="bookmark-outline"></ion-icon> Save
-                </span>
+                {errorMessage ? <button type='button' className='text-red-500 flex gap-1 items-center px-2 py-1 hover:bg-red-100 rounded-md hover:text-red-600' title={`Error checking poll saved states. Error message: ${errorMessage} click to refresh`} onClick={checkPollSaves}><ion-icon name="alert-circle-outline"></ion-icon> Error</button> : <SaveUnsavePoll pollId={pollId} isSaved={isSaved} callback={() => {
+                    setIsSaved(!isSaved);
+                }} />}
             </span>}
             showDropDown={showActions}
             setShowDropdown={setShowActions}

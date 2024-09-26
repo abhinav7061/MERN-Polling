@@ -1,5 +1,6 @@
 const Poll = require("../Models/PollSchema");
 const Vote = require("../Models/VoteSchema");
+const { getPollsByCriteria } = require("../helper/getPollsByCriteria");
 const { sendErrorResponse } = require("../middlewares/erroHandle");
 
 exports.createVote = async (req, res) => {
@@ -156,46 +157,22 @@ exports.myVotes = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Set pagination options
-    const page = req.query.page || 1;
-    const limit = 5;
-
-    // Handle search query
-    const search = req.query.search;
-    const searchQuery = { $or: [{ title: { $regex: search, $options: 'i' } }, { description: { $regex: search, $options: 'i' } }] };
-
-    // Define sorting options
-    const sortOption = req.query.sort || 'newer';
-    let sortCriteria;
-    if (sortOption === 'older') {
-      sortCriteria = { createdAt: 1 };
-    } else if (sortOption === 'newer') {
-      sortCriteria = { createdAt: -1 };
-    } else if (sortOption === 'likes') {
-      sortCriteria = { likes: -1 };
-    } else if (sortOption === 'votes') {
-      sortCriteria = { totalVotes: -1 };
-    }
-
     // Fetch user votes and associated polls
-    const userVotes = await Vote.find({ User: userId })
-      .populate({
-        path: "Poll",
-        match: searchQuery,
-        options: { sort: sortCriteria, skip: (page - 1) * limit, limit: limit },
-      });
+    const userVotes = await Vote.find({ User: userId });
 
     // Filter out votes without associated polls
-    const userVotedPolls = userVotes
-      .filter(vote => vote.Poll !== null);
+    const userVotedPolls = userVotes.filter(vote => vote.Poll !== null);
 
     // Map filtered votes to polls
-    const polls = userVotedPolls.map((vote) => vote.Poll);
+    const pollIds = userVotedPolls.map((vote) => vote.Poll);
+    const includeActiveFilter = req.query.active === 'active';
+    const includeClosedFilter = req.query.active === 'closed';
 
-    // Send polls as response
-    res.status(200).json({
-      success: true,
-      polls,
+    // Fetch polls based on user and filter criteria
+    await getPollsByCriteria(req, res, {
+      includeActiveFilter,
+      includeClosedFilter,
+      pollIds
     });
   } catch (error) {
     sendErrorResponse(res, 500, error.message);

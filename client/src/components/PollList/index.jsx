@@ -34,17 +34,13 @@ const PollList = ({ feeds, setFeeds, loading, hasMore, role, customMessage }) =>
                         </CSSTransition>
                     ))}
             </TransitionGroup>
-            {(loading && hasMore) && (
+            {(loading && hasMore) ? (
                 <div className='flex justify-center items-center'>
                     <Spinner />
                 </div>
-            )}
-            {(!hasMore && feeds.length > 0) && (
-                <h1 className='text-center text-base lg:text-xl font-semibold'>You have Reached the end</h1>
-            )}
-            {(!hasMore && feeds.length === 0 && !loading) && (
+            ) : (feeds.length === 0) ? (
                 <h1 className='text-center text-base lg:text-xl font-semibold'>{message}</h1>
-            )}
+            ) : <h1 className='text-center text-base lg:text-xl font-semibold'>You have Reached the end</h1>}
         </div>
     );
 }
