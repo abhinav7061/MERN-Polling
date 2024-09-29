@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import styles from '../../styles'
 import SimpleSpinLoader from '../Loader/SpinLoader';
 import { Link } from 'react-router-dom';
 import ErrorMessage2 from '../ErrorMessage/ErrorMessage2';
+import { UserContext } from '../../contexts/UserContext';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const UserDescription = ({ userId, children }) => {
+    const { userInfo } = useContext(UserContext);
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null)
@@ -45,9 +47,9 @@ const UserDescription = ({ userId, children }) => {
                 <div className='flex'>
                     <Link to={`/poll/profile/${user._id}`}>
                         <img
-                            src={`${apiUrl}/profile-image/${user.avatar.url}`}
+                            src={user.avatar.url}
                             alt="profile image"
-                            title={`See ${user.name}'s profile`}
+                            title={`See ${userInfo._id == userId ? "Your" : `${user.name}'s`} profile`}
                             className="rounded-full object-top object-cover bg-slate-300 w-7 h-7 sm:h-12 sm:w-12"
                         />
                     </Link>

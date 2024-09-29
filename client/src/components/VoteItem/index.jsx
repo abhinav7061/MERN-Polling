@@ -261,7 +261,7 @@ function VoteItem({ pollData, deletePollCallback }) {
                                     key={index}
                                     className={`rounded-full bg-white md:p-[3px] p-[1px] image-${index} ${arr.length === 1 ? 'mr-1' : null}`}
                                 >
-                                    <img src={`${apiUrl}/profile-image/${voter.avatar.url}` || defaultUserSvg} alt={`Voter ${index + 1}`} className="rounded-full object-top object-cover bg-slate-300 sm:w-6 sm:h-6 w-4 h-4" />
+                                    <img src={voter.avatar.url} alt={`Voter ${index + 1}`} className="rounded-full object-top object-cover bg-slate-300 sm:w-6 sm:h-6 w-4 h-4" />
                                 </div>
                             ))
                         }

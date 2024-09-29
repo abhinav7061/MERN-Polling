@@ -1,68 +1,76 @@
 const cloudinary = require('cloudinary').v2;
-const fs = require('fs');
+const { Readable } = require('stream');
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_SECRET
-})
-
-exports.uploadProfileImageToCloudinary = async (image, user_id) => {
+exports.uploadProfileImageToCloudinary = async (avatar, folder, public_id = null) => {
     try {
-        // Upload image to Cloudinary
-        const cloudinaryResponse = await cloudinary.uploader.upload_stream({
+        // Convert buffer to a readable stream
+        const stream = Readable.from(avatar.buffer);
+        const uploadOptions = {
             resource_type: 'image',
-            public_id: `user_profile_pictures/${user_id}`, // Set a unique identifier for each user
-            folder: 'user_profile_pictures',
+            folder,
             overwrite: true,
-        }, (error, result) => {
-            if (error) {
-                throw error;
-            }
-        }).end(image.buffer);
+        };
+
+        if (public_id) {
+            uploadOptions.public_id = public_id.split('/').pop();
+        }
+
+        // Upload image to Cloudinary
+        const cloudinaryResponse = await new Promise((resolve, reject) => {
+            const streamLoad = cloudinary.uploader.upload_stream(
+                uploadOptions,
+                (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
+                }
+            );
+            stream.pipe(streamLoad);
+        });
+
         return cloudinaryResponse;
     } catch (error) {
         console.log({ 'Error while uploading image': error });
     }
 }
 
-exports.unlinkPreviousImage = async (directory, url) => {
+// Generate the optimized URL with transformations
+exports.generateOptimizedUrl = (public_id, version) => {
+    const optimizedUrl = cloudinary.url(public_id, {
+        fetch_format: 'auto',
+        quality: 'auto',
+        crop: 'auto',
+        gravity: 'auto',
+        width: 500,
+        height: 500,
+        secure: true,
+        version
+    });
+    return optimizedUrl;
+}
+
+exports.deleteImageFromCloudinary = async (public_id) => {
     try {
-        // Construct the previous file path based on the user ID (ignoring extension)
-        console.log({ directory });
-        const previousFilePath = `${directory}/${url}.*`;
-
-        // Get an array of files that match the pattern
-        const matchingFiles = fs.readdirSync(directory).filter(file => new RegExp(`${url}.*`).test(file));
-
-        // Delete each matching file
-        matchingFiles.forEach(file => {
-            fs.unlinkSync(`${directory}/${file}`);
+        cloudinary.api.delete_resources_by_prefix(`polling/profile_images/${public_id}`, function (error, result) {
+            console.log({ result, error });
         });
     } catch (error) {
-        console.log({ 'Error while deleting previous image': error });
+        console.log(error);
     }
 }
 
-exports.uploadImageToOwnServer = (image, userId) => {
+exports.checkIsImageAvailableOnCloudinary = async (public_id) => {
     try {
-        const { originalname, path } = image;
-
-        // Extract directory from the original path
-        const directory = path.substring(0, path.lastIndexOf('/'));
-
-        // Extract file extension
-        const parts = originalname.split('.');
-        const ext = parts[parts.length - 1];
-
-        // Move uploaded image to desired location and rename it with the user id
-        const newPath = userId ? `${directory}/${userId}.${ext}` : `${path}.${ext}`;
-
-        // Rename the file
-        fs.renameSync(path, newPath);
-
-        return userId ? `${userId}.${ext}` : `${image.filename}.${ext}`;
+        await cloudinary.api.resource(`polling/profile_images/${public_id}`, function (error, result) {
+            if (error) {
+                console.log('Image not found, it has been deleted.');
+            } else {
+                console.log('Image still exists:', result);
+            }
+        });
     } catch (error) {
-        console.log({ 'Error while uploading image': error });
+        console.log(error);
     }
-};
+}
