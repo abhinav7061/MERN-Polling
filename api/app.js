@@ -10,7 +10,7 @@ app.use(express.json()); //middleware to understand json
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 const cors = require("cors");
-app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_URL }));
 
 // //importing routes
 const user = require("./Router/userRoutes");
