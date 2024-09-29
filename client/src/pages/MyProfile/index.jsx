@@ -164,13 +164,13 @@ const MyProfile = () => {
 	return (
 		<>
 			<div className='flex justify-around items-center flex-col xl:flex-row'>
-				{loading && <div className='absolute w-full h-full z-10 flex justify-center items-center'><Spinner /></div>}
-				<form className='rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full sm:w-auto lg:w-2/3' onSubmit={handleSubmit}>
+				<form className='relative rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full sm:w-auto lg:w-2/3' onSubmit={handleSubmit}>
+					{loading && <div className='absolute bg-black/20 top-0 right-0 left-0 bottom-0 rounded-3xl w-full h-full z-10 flex justify-center items-center'><Spinner /></div>}
 					{
 						!enableChangingAvatar ? (
 							<div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex items-center gap-2'>
 								<div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '>
-									<img src={avatarChanged ? URL.createObjectURL(user.avatar) : `${apiUrl}/profile-image/${userInfo.avatar.url}`} alt='Profile pic' className=' group-hover:opacity-40 transition-opacity duration-300  object-top object-cover  h-48 w-48' />
+									<img src={avatarChanged ? URL.createObjectURL(user.avatar) : userInfo.avatar.url} alt='Profile pic' className=' group-hover:opacity-40 transition-opacity duration-300  object-top object-cover  h-48 w-48' />
 									<button type='button' onClick={changeImage} className='absolute text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold'>change Image</button></div>
 								{avatarChanged && <button type='button' className='bg-slate-400 h-6 px-3 py-1 flex items-center justify-center rounded-md' style={{ whiteSpace: 'nowrap' }} onClick={revertImage}>Revert Image</button>}
 							</div>

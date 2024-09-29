@@ -98,7 +98,7 @@ const Profile = () => {
                 <div className='rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full sm:w-auto lg:w-2/3'>
                     <div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex items-center gap-2'>
                         <div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '>
-                            <img src={`${apiUrl}/profile-image/${user.avatar.url}`} alt='Profile pic' className='transition-opacity duration-300  object-top object-cover  h-48 w-48' />
+                            <img src={user.avatar.url} alt='Profile pic' className='transition-opacity duration-300  object-top object-cover  h-48 w-48' />
                         </div>
                     </div>
                     <div className='flex items-center gap-10 my-5 relative'>

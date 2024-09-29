@@ -51,7 +51,7 @@ export default function Sidebar({ children }) {
                 {userInfo && (
                     <div className={`border-t p-3 flex`} title={!expanded ? userInfo.name : ''}>
                         <Link to='my_profile' className="w-10 h-10 rounded-md flex justify-center items-center bg-blue-400 text-white overflow-hidden">
-                            <img src={`${apiUrl}/profile-image/${userInfo.avatar.url}`} alt={`${userInfo.name}`} className="w-10 h-10 object-top object-cover " />
+                            <img src={userInfo.avatar.url} alt={`${userInfo.name}`} className="w-10 h-10 object-top object-cover " />
                         </Link>
                         <div className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? "ml-3" : "w-0"} `}>
                             <div className="leading-4">

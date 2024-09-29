@@ -4,12 +4,10 @@ const Vote = require("../Models/VoteSchema");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const validator = require("validator");
-const cloudinary = require("cloudinary");
 const { sendErrorResponse } = require("../middlewares/erroHandle");
 const { sendEmail } = require("../middlewares/sendEmail");
 const crypto = require("crypto");
-const { uploadImageToOwnServer, unlinkPreviousImage } = require('../helper/uploads')
-const defaultUserSvg = "defaultUserSvg.svg"
+const { uploadProfileImageToCloudinary, generateOptimizedUrl } = require('../helper/uploads')
 const { roundToDecimalPlaces } = require('../helper/functions')
 
 exports.registerUser = async (req, res) => {
@@ -36,13 +34,13 @@ exports.registerUser = async (req, res) => {
     if (user) return sendErrorResponse(res, 400, "This email is in use. Use another one or try to login with the same email");
 
     let ProfileImageUrl;
+    let public_id;
 
     // If an avatar is provided, upload it to the server
     if (avatar) {
-      ProfileImageUrl = uploadImageToOwnServer(avatar);
-    } else {
-      // If no avatar is provided, use a default image
-      ProfileImageUrl = defaultUserSvg;
+      const result = await uploadProfileImageToCloudinary(avatar, 'Polling/profile_images');
+      public_id = result.public_id
+      ProfileImageUrl = generateOptimizedUrl(result.public_id, result.version);
     }
 
     // Create a new user with the provided information
@@ -52,7 +50,7 @@ exports.registerUser = async (req, res) => {
       password,
       myStatus,
       avatar: {
-        public_id: ProfileImageUrl,
+        public_id,
         url: ProfileImageUrl,
       },
     });
@@ -280,7 +278,7 @@ exports.updateProfile = async (req, res) => {
 
     const avatar = req.file;
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(userId);
 
     // Update user information if provided in the request
     if (name) user.name = name;
@@ -289,15 +287,10 @@ exports.updateProfile = async (req, res) => {
 
     // Update user avatar if a new avatar is provided
     if (avatar) {
-      // Check if the current avatar is not the default one and unlink the previous image
-      if (user.avatar.url !== defaultUserSvg) {
-        unlinkPreviousImage(avatar.path.substring(0, avatar.path.lastIndexOf('/')), user.avatar.url);
-        // unlinkPreviousImage(avatar.destination, user.avatar.url);
-      }
-
-      // Upload the new profile image and update the user's avatar URL
-      const profileImage = uploadImageToOwnServer(avatar, userId);
-      user.avatar.url = profileImage;
+      const result = await uploadProfileImageToCloudinary(avatar, 'Polling/profile_images', user.avatar?.public_id);
+      const optimizedUrl = generateOptimizedUrl(result.public_id, result.version);
+      user.avatar.url = optimizedUrl;
+      user.avatar.public_id = result.public_id;
     }
 
     // Save the updated user information
