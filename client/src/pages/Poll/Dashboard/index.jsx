@@ -47,44 +47,39 @@ const Dashoard = () => {
         getDashoard();
     }, [])
 
-    if (errorMessage) {
+    if (loading) {
+        return <div className='flex justify-center'><LargeSpinLoader /></div>;
+    } else if (errorMessage) {
         return <div className='min-h-screen flex items-center justify-center'><ErrorMessage heading="Error fetching the dashoard" message={errorMessage} action={getDashoard} /></div>
     }
 
     return (
-        <div>
-            {
-                loading ? (
-                    <div className='flex justify-center'><LargeSpinLoader /></div>
-                ) : (
-                    <div className='py-8 overflow-x-hidden'>
-                        <h1 className={`${styles.heading2} mb-5`}>Polls Overview</h1>
-                        {/* div for showing the polls information  */}
-                        <div className='flex flex-col justify-between xl:flex-row items-center gap-5'>
-                            <div>
-                                <div className='flex sm:flex-col md:flex-row gap-5 mb-6'>
-                                    <Link to='/poll/my-poll' state={{ active: 'active' }}><Card2 num={dashboardData.activePolls} title='Active Polls' color='green' /></Link>
-                                    <Link to='/poll/my-poll' state={{ active: 'closed' }}><Card2 num={dashboardData.totalPollsCreated.totalNumber - dashboardData.activePolls} title='Closed Polls' color='red' /></Link>
-                                </div>
-                                <Link to='/poll/my-poll' state={{ active: 'all' }}><Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} /></Link>
-                            </div>
-                            <div className='mx-3 w-60 sm:w-80 md:w-96 h-64 sm:h-80 flex-grow flex items-center justify-center bg-white p-4 rounded-lg shadow-md'><BarChart data={dashboardData.pollChartData} label='Total Polls' /></div>
-                        </div>
-                        <h1 className={`${styles.heading2} my-5`}>Votes Overview</h1>
-                        {/* div for showing the votes information  */}
-                        <div className='flex flex-col justify-between xl:flex-row items-center gap-5'>
-                            <div>
-                                <div className='flex sm:flex-col md:flex-row gap-5 mb-5'>
-                                    <Link to='/poll/my-vote' state={{ active: 'active' }}><Card2 num={dashboardData.activePollVotes} title='Active Votes' color='green' /></Link>
-                                    <Link to='/poll/my-vote' state={{ active: 'closed' }}><Card2 num={dashboardData.lifetimeVotes.totalNumber - dashboardData.activePollVotes} title='Closed Vote' color='red' /></Link>
-                                </div>
-                                <Link to='/poll/my-vote' state={{ active: 'all' }}><Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} /></Link>
-                            </div>
-                            <div className='mx-3 w-60 sm:w-80 md:w-96 h-64 sm:h-80 flex-grow flex items-center justify-center bg-white p-4 rounded-lg shadow-md'><LineChart data={dashboardData.voteChartData} label='Total Votes' /></div>
-                        </div>
-                    </div>)
-            }
-        </div>
+        <div className='py-5 sm:py-0 overflow-x-hidden'>
+            <h1 className={`${styles.heading2} mb-5`}>Polls Overview</h1>
+            {/* div for showing the polls information  */}
+            <div className='flex flex-col justify-between xl:flex-row items-center gap-5'>
+                <div className='w-full xl:w-auto'>
+                    <div className='flex sm:flex-col md:flex-row gap-5 mb-6'>
+                        <Link to='/poll/my-poll' state={{ active: 'active' }} className='w-full'><Card2 num={dashboardData.activePolls} title='Active Polls' color='green' /></Link>
+                        <Link to='/poll/my-poll' state={{ active: 'closed' }} className='w-full'><Card2 num={dashboardData.totalPollsCreated.totalNumber - dashboardData.activePolls} title='Closed Polls' color='red' /></Link>
+                    </div>
+                    <Link to='/poll/my-poll' state={{ active: 'all' }} className='w-full'><Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='Total Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} /></Link>
+                </div>
+                <div className='w-full flex-grow h-80 flex items-center justify-center p-4 rounded-lg shadow-md bg-white'><div className='w-60 sm:w-80 md:w-96 flex-grow h-full'><BarChart data={dashboardData.pollChartData} label='Total Polls' /></div></div>
+            </div>
+            <h1 className={`${styles.heading2} my-5`}>Votes Overview</h1>
+            {/* div for showing the votes information  */}
+            <div className='flex flex-col justify-between xl:flex-row items-center gap-5'>
+                <div className='w-full xl:w-auto'>
+                    <div className='flex sm:flex-col md:flex-row gap-5 mb-5'>
+                        <Link to='/poll/my-vote' state={{ active: 'active' }} className='w-full'><Card2 num={dashboardData.activePollVotes} title='Active Votes' color='green' /></Link>
+                        <Link to='/poll/my-vote' state={{ active: 'closed' }} className='w-full'><Card2 num={dashboardData.lifetimeVotes.totalNumber - dashboardData.activePollVotes} title='Closed Vote' color='red' /></Link>
+                    </div>
+                    <Link to='/poll/my-vote' state={{ active: 'all' }} className='w-full'><Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='Total Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} /></Link>
+                </div>
+                <div className='w-full flex-grow h-80 flex items-center justify-center p-4 rounded-lg shadow-md bg-white'><div className='w-60 sm:w-80 md:w-96 flex-grow h-full'><LineChart data={dashboardData.voteChartData} label='Total Votes' /></div></div>
+            </div>
+        </div >
     )
 }
 

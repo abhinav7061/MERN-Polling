@@ -95,19 +95,19 @@ const Profile = () => {
     return (
         <>
             <div className='flex justify-around items-center flex-col xl:flex-row'>
-                <div className='rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full sm:w-auto lg:w-2/3'>
+                <div className='rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full xl:w-2/3'>
                     <div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex items-center gap-2'>
                         <div className='relative flex justify-center items-center group rounded-full h-48 w-48 overflow-hidden '>
                             <img src={user.avatar.url} alt='Profile pic' className='transition-opacity duration-300  object-top object-cover  h-48 w-48' />
                         </div>
                     </div>
-                    <div className='flex items-center gap-10 my-5 relative'>
-                        <h1 className={`font-bold ${styles.heading4}`}>{user.name}</h1>
+                    <div className='flex items-center justify-center flex-wrap gap-x-10 my-5 relative'>
+                        <h1 className={`font-bold whitespace-nowrap ${styles.heading4}`}>{user.name}</h1>
                         <textarea
                             type="text"
                             name='myStatus'
                             value={user.myStatus}
-                            className='outline-none text-[12px] lg:text-[16px] resize-none py-1 rounded-md border-2 border-transparent focus:border-slate-500 lg:px-3 sm:px-1'
+                            className='outline-none text-[12px] lg:text-[16px] flex-grow resize-none py-1 rounded-md border-2 border-transparent focus:border-slate-500 lg:px-3 sm:px-1 text-center'
                             onChange={handleChange}
                             disabled={true}
                         />
@@ -135,12 +135,12 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
-                {dasLoading ? <Spinner /> : <div className='ml-5 sm:flex flex-col items-center gap-6 md:gap-8 mt-8 xl:mt-0 hidden'>
-                    <Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title={`${user.name}'s Total Polls`} color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} />
-                    <Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title={`${user.name}'s Total Votes`} color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} />
+                {dasLoading ? <Spinner /> : <div className='xl:ml-5 items-center gap-6 md:gap-8 mt-8 xl:mt-0 flex flex-col lg:flex-row w-full xl:flex-col xl:w-auto'>
+                    <Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='My Total Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} className='w-full' />
+                    <Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='My Total Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} className='w-full' />
                 </div>}
             </div>
-            <div className='flex gap-12 w-full mt-12 lg:flex-row flex-col'>
+            <div className='flex gap-12 w-full mt-12 xl:flex-row flex-col pb-5 sm:pb-0'>
                 <Followers userId={userId} userName={user.name} />
                 <Followings userId={userId} userName={user.name} />
             </div>

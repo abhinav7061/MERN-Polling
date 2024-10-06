@@ -12,6 +12,7 @@ import { Spinner } from '../../components/Loader/SpinLoader';
 import { polling, vote } from '../../assets';
 import Followers from '../../components/Followers/index.jsx';
 import Followings from '../../components/Followings/index.jsx';
+import ErrorMessage from '../../components/ErrorMessage/index.jsx';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -164,7 +165,7 @@ const MyProfile = () => {
 	return (
 		<>
 			<div className='flex justify-around items-center flex-col xl:flex-row'>
-				<form className='relative rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full sm:w-auto lg:w-2/3' onSubmit={handleSubmit}>
+				<form className='rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full xl:w-2/3' onSubmit={handleSubmit}>
 					{loading && <div className='absolute bg-black/20 top-0 right-0 left-0 bottom-0 rounded-3xl w-full h-full z-10 flex justify-center items-center'><Spinner /></div>}
 					{
 						!enableChangingAvatar ? (
@@ -177,17 +178,19 @@ const MyProfile = () => {
 						) : (
 							<DragDropImage onImageSelect={handleImageSelection} clicked={clicked} setClicked={setClicked} />
 						)}
-					<div className='flex items-center gap-10 my-5 relative'>
-						<h1 className={`font-bold ${styles.heading4}`}>My Profile</h1>
-						<textarea
-							type="text"
-							name='myStatus'
-							value={user.myStatus}
-							onChange={handleChange}
-							className='outline-none text-[12px] lg:text-[16px] resize-none py-1 rounded-md border-2 border-transparent focus:border-slate-500 lg:px-3 sm:px-1'
-							disabled={enableChangingStatus ? false : true}
-						/>
-						<div className='px-1 cursor-pointer absolute hover:text-red-600 rounded-sm hover:bg-slate-400 h-6 w-6 right-[-20px] lg:right-0' onClick={() => setEnableChangingStatus(prev => !prev)}><ion-icon name="pencil-outline"></ion-icon></div>
+					<div className='flex items-center justify-center flex-wrap gap-5 my-5 relative'>
+						<h1 className={`font-bold ${styles.heading4} whitespace-nowrap`}>My Profile</h1>
+						<div className='flex items-center flex-grow'>
+							<textarea
+								type="text"
+								name='myStatus'
+								value={user.myStatus}
+								onChange={handleChange}
+								className='outline-none text-[12px] lg:text-[16px] flex-grow resize-none py-1 rounded-md border focus:border-2 focus:border-slate-500 lg:px-3 sm:px-1 text-center'
+								disabled={enableChangingStatus ? false : true}
+							/>
+							<div className='px-1 cursor-pointer hover:text-red-600 rounded-sm hover:bg-slate-400 h-6 w-6 right-[-20px] lg:right-0' onClick={() => setEnableChangingStatus(prev => !prev)}><ion-icon name="pencil-outline"></ion-icon></div>
+						</div>
 					</div>
 					<div className=' rounded-xl p-3 bg-slate-50'>
 						<div className='flex flex-wrap items-center my-3'>
@@ -219,12 +222,12 @@ const MyProfile = () => {
 					</div>
 					{isUserChanged && <Button type="submit" title='Save changes' styles=' px-5 py-1 mb-3' />}
 				</form>
-				{dasLoading ? <Spinner /> : <div className='ml-5 sm:flex flex-col items-center gap-6 md:gap-8 mt-8 xl:mt-0 hidden'>
-					<Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='My Total Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} />
-					<Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='My Total Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} />
+				{dasLoading ? <Spinner /> : <div className='xl:ml-5 items-center gap-6 md:gap-8 mt-8 xl:mt-0 flex flex-col lg:flex-row w-full xl:flex-col xl:w-auto'>
+					<Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='My Total Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} className='w-full' />
+					<Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='My Total Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} className='w-full' />
 				</div>}
 			</div>
-			<div className='flex gap-12 w-full mt-12 lg:flex-row flex-col'>
+			<div className='flex gap-12 w-full mt-12 xl:flex-row flex-col pb-5 sm:pb-0'>
 				<Followers userId={userInfo._id} />
 				<Followings userId={userInfo._id} />
 			</div>
