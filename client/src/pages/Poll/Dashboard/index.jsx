@@ -65,7 +65,7 @@ const Dashoard = () => {
                     </div>
                     <Link to='/poll/my-poll' state={{ active: 'all' }} className='w-full'><Card img={polling} num={dashboardData.totalPollsCreated.totalNumber} title='Total Polls' color={dashboardData.totalPollsCreated.growth ? 'green' : 'red'} progress={dashboardData.totalPollsCreated.growthPercentage} indicator={dashboardData.totalPollsCreated.growth ? incrementProgress : decrementProgress} /></Link>
                 </div>
-                <div className='w-full flex-grow h-80 flex items-center justify-center p-4 rounded-lg shadow-md bg-white'><div className='w-60 sm:w-80 md:w-96 flex-grow h-full'><BarChart data={dashboardData.pollChartData} label='Total Polls' /></div></div>
+                <div className='w-full flex-grow h-80 flex items-center justify-center p-4 rounded-lg shadow-md bg-white'><div className='w-60 sm:w-80 md:w-96 flex-grow h-full'><BarChart data={dashboardData.pollChartData} label='Total Polls' xAxisTitle='Date' yAxisTitle='Number of polls created' /></div></div>
             </div>
             <h1 className={`${styles.heading2} my-5`}>Votes Overview</h1>
             {/* div for showing the votes information  */}
@@ -77,7 +77,7 @@ const Dashoard = () => {
                     </div>
                     <Link to='/poll/my-vote' state={{ active: 'all' }} className='w-full'><Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='Total Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} /></Link>
                 </div>
-                <div className='w-full flex-grow h-80 flex items-center justify-center p-4 rounded-lg shadow-md bg-white'><div className='w-60 sm:w-80 md:w-96 flex-grow h-full'><LineChart data={dashboardData.voteChartData} label='Total Votes' /></div></div>
+                <div className='w-full flex-grow h-80 flex items-center justify-center p-4 rounded-lg shadow-md bg-white'><div className='w-60 sm:w-80 md:w-96 flex-grow h-full'><LineChart data={dashboardData.voteChartData} label='Total Vote' xAxisTitle='Dates' yAxisTitle='Number of votes done by me' /></div></div>
             </div>
         </div >
     )

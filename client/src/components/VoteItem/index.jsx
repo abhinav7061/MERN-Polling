@@ -14,6 +14,8 @@ import PulseLoader from "../Loader/PulseLoader";
 import { MediumSpinLoader, SmallSpinLoader } from "../Loader/SpinLoader";
 import { formatDistanceToNow } from 'date-fns';
 import formatRelativeDate from "../../utilities/relativeDate";
+import VisualizeVotes from "./VisualizeVotes";
+import MainActionBtn from "./MainActionBtn";
 const LazyComments = React.lazy(() => import('../Comments'));
 
 // Define the API URL using Vite environment variable
@@ -147,6 +149,10 @@ function VoteItem({ pollData, deletePollCallback }) {
 
     // Function to submit a vote
     const submitVote = (e, selectedOptionId) => {
+        if (timeLeft === -1) {
+            toast("Poll has ended!", { type: "warning" });
+            return;
+        }
         setIsLoading(true);
         setLoading(true);
         if (voted === false) {
@@ -294,15 +300,11 @@ function VoteItem({ pollData, deletePollCallback }) {
                 </div>
             </div>
             <div className="h-0 border-t border-gray-400 my-1" />
-            {/* Like and Comment buttons */}
+            {/* Main Action Button */}
             <div className="flex justify-between text-slate-600 font-semibold">
-                <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`} onClick={handleLike} style={{
-                    color: `${liked ? 'blue' : ''}`
-                }}>
-                    <img className="w-3 md:w-5 mr-1 md:mr-3 transition-all duration-1000" src={liked ? likedThumb : like} style={liked ? { WebkitTransform: 'scaleX(-1)', transform: 'scaleX(-1)' } : {}} />
-                    <h5>Like</h5>
-                </div>
-                <div className={`${styles.heading5} flex justify-center items-center w-1/2 p-2 rounded-md hover:bg-slate-200 cursor-pointer`} onClick={() => setCommentInputField(prev => !prev)}><img src={comment} alt="" className="w-3 md:w-5 mr-1 md:mr-3" />Comment</div>
+                <MainActionBtn icon={<img className="w-3 md:w-5 transition-all duration-1000" src={liked ? likedThumb : like} style={liked ? { WebkitTransform: 'scaleX(-1)', transform: 'scaleX(-1)' } : {}} />} title="Like" onClick={handleLike} className={liked ? 'text-blue-600' : ''} />
+                <MainActionBtn icon={<ion-icon name="chatbubble-ellipses"></ion-icon>} onClick={() => setCommentInputField(prev => !prev)} title='Comment' />
+                <VisualizeVotes data={feedData.options} title={feedData.title} voted={voted} ended={timeLeft === -1} isPollCreator={feedData.author == userInfo._id} />
             </div>
             {commentInputField &&
                 (<Suspense fallback={<><SmallSpinLoader /></>}>

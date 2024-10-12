@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -8,8 +8,11 @@ import {
     Title,
     Tooltip,
     Legend,
+    Filler
 } from 'chart.js';
 import { Line } from 'react-chartjs-2'
+import clampText, { wrapText } from '../../utilities/clampText';
+import useMediaQuery from '../../Hooks/useMediaQuery';
 
 ChartJS.register(
     CategoryScale,
@@ -18,10 +21,12 @@ ChartJS.register(
     LineElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    Filler
 );
 
-const LineChart = ({ data, label }) => {
+const LineChart = ({ data, label, title, footer, xAxisTitle, yAxisTitle, borderColor = 'rgba(255, 99, 132, 1)', backgroundColor = 'rgba(255, 99, 132, 0.2)' }) => {
+    const isSmallScreen = useMediaQuery("(max-width: 500px)");
     const options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -30,21 +35,71 @@ const LineChart = ({ data, label }) => {
                 position: 'top',
             },
             title: {
-                display: true,
-                text: label,
+                display: title,
+                text: title,
+            },
+            tooltip: {
+                callbacks: {
+                    footer,
+                }
             }
         },
+        animations: {
+            radius: {
+                duration: 500,
+                easing: 'linear',
+                loop: (context) => context.active
+            }
+        },
+        hoverRadius: 8,
+        interaction: {
+            mode: 'nearest',
+            intersect: false,
+            axis: 'x'
+        },
+        scales: {
+            x: {
+                display: true,
+                title: {
+                    display: true,
+                    text: xAxisTitle,
+                },
+                ticks: {
+                    autoSkip: false,
+                    callback: function (value) {
+                        return clampText(this.getLabelForValue(value), isSmallScreen ? 7 : 15);
+                    }
+                }
+            },
+            y: {
+                display: true,
+                title: {
+                    display: true,
+                    text: yAxisTitle,
+                },
+                ticks: {
+                    beginAtZero: true,
+                    callback: function (value) {
+                        if (value % 1 === 0 && value > 0) {
+                            return value;
+                        }
+                    }
+                }
+            },
+        }
     };
 
     const lineChartData = {
-        labels: data.map((entry, index) => entry.label || index),
+        labels: data.map((entry) => wrapText(entry.label, isSmallScreen ? 50 : 75) || ''),
         datasets: [
             {
                 label: label,
                 data: data.map((entry) => entry.count),
-                borderColor: 'rgba(255, 99, 132, 1)',
+                borderColor,
+                backgroundColor,
                 borderWidth: 1,
-                fill: false,
+                fill: true,
+                tension: 0.4,
             },
         ],
     };

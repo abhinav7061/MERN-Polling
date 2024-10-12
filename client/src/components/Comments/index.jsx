@@ -192,11 +192,11 @@ const Comments = ({ pollId }) => {
           />
 
           {/* Submit button inside the container, positioned in the corner */}
-          <input
+          <button
             type="submit"
-            value="Post"
-            className={`absolute bottom-4 right-3 bg-slate-300 text-black hover:bg-sky-400 hover:text-white rounded-md px-2 md:px-3 py-1 cursor-pointer duration-500 transition-colors ${styles.smHeading}`}
-          />
+            className={`absolute bottom-4 right-3 bg-slate-300 text-black hover:bg-sky-400 hover:text-white rounded-md px-3 py-1.5 cursor-pointer duration-500 transition-colors ${styles.smHeading} ${styles.flexCenter}`}
+            title='comment'
+          ><ion-icon name="send"></ion-icon></button>
         </div>
       </form>
       {errorMessage ? <ErrorMessage heading="Error Fetching Comments" message={errorMessage} action={getComments} /> : checkComments ? <div className=' w-full flex justify-center items-center'><Spinner /></div> : (comments.length > 0) ? (
