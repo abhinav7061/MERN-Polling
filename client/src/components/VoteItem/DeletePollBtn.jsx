@@ -40,7 +40,7 @@ const DeletePollBtn = ({ pollId, deletePollCallback }) => {
     return (
         <>
             <button
-                className="hover:text-red-500 flex gap-1 items-center px-2 py-1 hover:bg-red-100 rounded-md"
+                className="hover:text-red-500 flex gap-1 items-center px-2 py-1 hover:bg-red-100 rounded-md w-full"
                 title="Delete Poll"
                 onClick={() => setShowPrompt(true)}
             >

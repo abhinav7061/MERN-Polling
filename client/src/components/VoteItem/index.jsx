@@ -16,6 +16,7 @@ import { formatDistanceToNow } from 'date-fns';
 import formatRelativeDate from "../../utilities/relativeDate";
 import VisualizeVotes from "./VisualizeVotes";
 import MainActionBtn from "./MainActionBtn";
+import ShareBtn from "./ShareBtn";
 const LazyComments = React.lazy(() => import('../Comments'));
 
 // Define the API URL using Vite environment variable
@@ -305,6 +306,7 @@ function VoteItem({ pollData, deletePollCallback }) {
                 <MainActionBtn icon={<img className="w-3 md:w-5 transition-all duration-1000" src={liked ? likedThumb : like} style={liked ? { WebkitTransform: 'scaleX(-1)', transform: 'scaleX(-1)' } : {}} />} title="Like" onClick={handleLike} className={liked ? 'text-blue-600' : ''} />
                 <MainActionBtn icon={<ion-icon name="chatbubble-ellipses"></ion-icon>} onClick={() => setCommentInputField(prev => !prev)} title='Comment' />
                 <VisualizeVotes data={feedData.options} title={feedData.title} voted={voted} ended={timeLeft === -1} isPollCreator={feedData.author == userInfo._id} />
+                <ShareBtn url={`http://localhost:5173/poll/posts/${feedData._id}`} />
             </div>
             {commentInputField &&
                 (<Suspense fallback={<><SmallSpinLoader /></>}>

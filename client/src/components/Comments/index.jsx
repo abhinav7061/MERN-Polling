@@ -8,12 +8,15 @@ import styles from '../../styles';
 import { login } from '../../assets';
 import ErrorMessage from '../ErrorMessage';
 import animation from './index.module.css'
+import { useLocation } from 'react-router-dom';
 
 // Define the API URL using Vite environment variable
 const apiUrl = import.meta.env.VITE_API_URL;
 const limit = 3;
 
 const Comments = ({ pollId }) => {
+  const location = useLocation();
+  console.log(location);
   const [errorMessage, setErrorMessage] = useState(null)
   const [comments, setComments] = useState([]);
   const [hasMore, setHasMore] = useState(true);
@@ -200,7 +203,7 @@ const Comments = ({ pollId }) => {
         </div>
       </form>
       {errorMessage ? <ErrorMessage heading="Error Fetching Comments" message={errorMessage} action={getComments} /> : checkComments ? <div className=' w-full flex justify-center items-center'><Spinner /></div> : (comments.length > 0) ? (
-        <div className="my-3 border border-slate-800 rounded-lg py-3 px-5 max-h-96 overflow-auto" ref={containerRef}>
+        <div className={`my-3 py-3 ${location.pathname.includes('/poll/posts/') ? '' : 'max-h-96 border border-slate-800 rounded-lg px-5'} overflow-auto`} ref={containerRef}>
           <div className={`flex justify-between mb-4 ${styles.heading5}`}><p>Comments</p> <p className="cursor-pointer">Most Relevent</p></div>
           <TransitionGroup>
             {comments.map((comment, index) => (

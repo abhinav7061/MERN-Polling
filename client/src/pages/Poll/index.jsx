@@ -8,7 +8,7 @@ import Container from '../../components/Container';
 import { FollowingsContextProvider } from '../../contexts/FollowingsContext';
 import { FollowersContextProvider } from '../../contexts/FollowersContext';
 
-const Poll = () => {
+const PollLayout = () => {
     const location = useLocation();
     return (
         <FollowingsContextProvider>
@@ -30,4 +30,4 @@ const Poll = () => {
     )
 }
 
-export default Poll
+export default PollLayout

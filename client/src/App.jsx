@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { Layout, Home, NoPage, Login, Signup, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, SavedPoll, MyFeeds, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser } from './modules'
+import { Layout, Home, NoPage, Login, Signup, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, SavedPoll, MyFeeds, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser } from './modules'
 // const Poll = lazy(() => import('./pages/Poll'))
 import './App.css'
 function App() {
@@ -12,11 +12,15 @@ function App() {
             <Route index element={<Home />} />
             <Route path='login' element={<Login />} />
             <Route path='register' element={<Signup />} />
-            <Route path='poll' element={<IsAuthenticatedUser><Poll /></IsAuthenticatedUser>} >
+            <Route path='poll' element={<IsAuthenticatedUser><PollLayout /></IsAuthenticatedUser>} >
               {/* Routing for internal polls. For the sidebar */}
               <Route
                 index
                 element={<IsAuthenticatedUser><MyFeeds /></IsAuthenticatedUser>}
+              />
+              <Route
+                path='posts/:pollId'
+                element={<IsAuthenticatedUser><Poll /></IsAuthenticatedUser>}
               />
               <Route
                 path='dashboard'
