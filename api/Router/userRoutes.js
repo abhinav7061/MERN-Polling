@@ -16,6 +16,7 @@ const {
   deleteProfile,
   myProfile,
   getDashboard,
+  verifyResetToken,
 } = require("../Controller/userController");
 const { isAuthenticatedUser, isAdmin } = require("../middlewares/auth");
 const multer = require('multer');
@@ -34,6 +35,7 @@ router.route("/:id").get(isAuthenticatedUser, getUserDetails);
 router.route("/profile/update").put(isAuthenticatedUser, upload.single('avatar'), updateProfile);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/password/forgot").post(forgotPassword);
+router.route("/verify-reset-token/:token").get(verifyResetToken);
 router.route("/password/reset/:token").put(resetPassword)
 router.route("/role-update/:id").put(updateRole)
 router.route("/delete-profile/:id").delete(isAuthenticatedUser, isAdmin, deleteProfile)

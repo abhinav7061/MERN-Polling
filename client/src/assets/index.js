@@ -1,6 +1,7 @@
 import menu from "./menu.svg";
 import close from "./close.svg";
 import login from "./login.svg"
+import lock from "./lock.png"
 import register from "./register.svg";
 import polling from './polling.png';
 import vote from './vote.png';
@@ -20,6 +21,7 @@ export {
     menu,
     close,
     login,
+    lock,
     register,
     polling,
     vote,
