@@ -10,6 +10,7 @@ const crypto = require("crypto");
 const { uploadProfileImageToCloudinary, generateOptimizedUrl } = require('../helper/uploads')
 const { roundToDecimalPlaces } = require('../helper/functions');
 const getResetPasswordHTMLTemplate = require("../mails/resetPasswordTemplate");
+const { getEmailVerificationOtpHtml } = require("../mails/emailVerificationOtpTemplate");
 
 exports.registerUser = async (req, res) => {
   try {
@@ -32,8 +33,35 @@ exports.registerUser = async (req, res) => {
     }
 
     let user = await User.findOne({ email });
-    if (user) return sendErrorResponse(res, 400, "This email is in use. Use another one or try to login with the same email");
-
+    if (user && user.isVerified) return sendErrorResponse(res, 400, "This email is in use. Use another one or try to login.");
+    if (user && !user.isVerified) {
+      if (user.otp && user.otpExpires > Date.now()) {
+        return sendErrorResponse(res, 400, 'You had registered with this account, but not verified. Verify now!', {
+          needVerification: true,
+          user,
+        });
+      } else {
+        const OTP = user.generateOTP();
+        await user.save();
+        try {
+          const validFor = process.env.OTP_VALID_TIME || 5;
+          await sendEmail({
+            email: user.email,
+            subject: "Verification OTP",
+            html: getEmailVerificationOtpHtml(OTP, user.name, validFor)
+          });
+        } catch (error) {
+          user.otp = undefined;
+          user.otpExpires = undefined;
+          await user.save();
+          return sendErrorResponse(res, 500, 'You had already created an account with this email, But your account is not verified. Having trouble to send verification mail.');
+        }
+        return sendErrorResponse(res, 400, 'You had registered with this account, but not verified. Verify now!', {
+          needVerification: true,
+          user,
+        });
+      }
+    }
     let ProfileImageUrl;
     let public_id;
 
@@ -55,20 +83,25 @@ exports.registerUser = async (req, res) => {
         url: ProfileImageUrl,
       },
     });
+    const OTP = user.generateOTP();
+    await user.save();
+    try {
+      const validFor = process.env.OTP_VALID_TIME || 5;
+      await sendEmail({
+        email: user.email,
+        subject: "Verification OTP",
+        html: getEmailVerificationOtpHtml(OTP, user.name, validFor)
+      });
+    } catch (error) {
+      user.otp = undefined;
+      user.otpExpires = undefined;
+      await user.save();
+      return sendErrorResponse(res, 500, 'You has been created, But due ti technical issue we could not send verification mail. Try verifying email later.');
+    }
 
-    // Generate a token for the new user
-    const token = user.generateToken();
-
-    // Set cookie options for the token
-    const options = {
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-    };
-
-    // Respond with success and user information, along with the token in a cookie
-    res.status(200).cookie("token", token, options).json({
+    res.status(200).json({
       success: true,
-      message: "Registered Successfully",
+      message: "Registered Successfully. Account Verification Mail Has Been Send",
       user,
     });
   } catch (error) {
@@ -77,24 +110,84 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+exports.verifyAccount = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return sendErrorResponse(res, 404, "User not found");
+    if (user.isVerified) return sendErrorResponse(res, 400, "Account already verified");
+    if (user.otpExpires < Date.now()) return sendErrorResponse(res, 400, "OTP has expired");
+    if (user.otp != otp) return sendErrorResponse(res, 400, "Invalid OTP");
+
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    const token = user.generateToken();
+    const options = {
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    };
+    res.status(200).cookie("token", token, options).json({
+      success: true,
+      message: "Account verified successfully",
+      user,
+    });
+  } catch (error) {
+    console.log(error)
+    sendErrorResponse(res, 500, "An error occurred while verifying the account");
+  }
+}
+
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email) return sendErrorResponse(res, 400, "Email is required");
-    if (!password) return sendErrorResponse(res, 400, "Password is required");
-    const user = await User.findOne({ email });
-    if (!user) return sendErrorResponse(res, 404, "User not found");
     if (!validator.isEmail(email))
       return sendErrorResponse(res, 400, "Invalid Email");
+    if (!password) return sendErrorResponse(res, 400, "Password is required");
+    const user = await User.findOne({ email });
+    if (!user) return sendErrorResponse(res, 404, "Wrong Credentials");
     const isPasswordMatch = await user.matchPassword(password);
     if (!isPasswordMatch)
-      return sendErrorResponse(res, 401, "Invalid password");
-    let { token } = req.cookies;
-    if (token) return sendErrorResponse(res, 400, "you are already logged in");
+      return sendErrorResponse(res, 404, "Wrong Credentials");
+    if (!user.isVerified) {
+      if (user.otp && user.otpExpires > Date.now()) {
+        return sendErrorResponse(res, 400, 'Verify Your Account using the mail sent to you', {
+          needVerification: true,
+          email: user.email
+        });
+      } else {
+        const OTP = user.generateOTP();
+        await user.save();
+        try {
+          const validFor = process.env.OTP_VALID_TIME || 5;
+          await sendEmail({
+            email: user.email,
+            subject: "Email Verification OTP",
+            html: getEmailVerificationOtpHtml(OTP, user.name, validFor)
+          });
+        } catch (error) {
+          user.otp = undefined;
+          user.otpExpires = undefined;
+          await user.save();
+          console.log({ "Sending otp error in login user": error });
+          return sendErrorResponse(res, 500, 'Your Account is not verified. Having trouble to send verification mail.');
+        }
+        return sendErrorResponse(res, 400, 'Firstly verify Your Account using the mail sent to you', {
+          needVerification: true,
+          email: user.email,
+        });
+      }
+    }
+
     token = user.generateToken();
     const options = {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
     };
     res.status(200).cookie("token", token, options).json({
       success: true,
@@ -102,9 +195,63 @@ exports.loginUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message);
+    console.error(error);
+    sendErrorResponse(res, 500, "An error occurred during login");
   }
 };
+
+exports.resendVerificationOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return sendErrorResponse(res, 401, 'Invalid email');
+    if (user.isVerified) return sendErrorResponse(res, 400, "Account already verified");
+    if (user.otp && user.otpExpires > Date.now()) {
+      const remainingTime = Math.floor((user.otpExpires - Date.now()) / (60 * 1000));
+      return sendErrorResponse(res, 400, `OTP has already been sent to ${user.email}. Try again in ${remainingTime} minutes.`);
+    }
+
+    const OTP = user.generateOTP();
+    await user.save();
+    try {
+      const validFor = process.env.OTP_VALID_TIME || 5;
+      await sendEmail({
+        email: user.email,
+        subject: "Verification OTP",
+        html: getEmailVerificationOtpHtml(OTP, user.name, validFor)
+      });
+    } catch (error) {
+      user.otp = undefined;
+      user.otpExpires = undefined;
+      await user.save();
+      return sendErrorResponse(res, 500, 'Failed to send verification email');
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `OTP resent to ${user.email}`,
+    });
+  } catch (error) {
+    console.log(error);
+    sendErrorResponse(res, 500, 'Failed to resend verification OTP');
+  }
+};
+
+exports.resendVerificationOtpTimeLeft = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return sendErrorResponse(res, 400, "No account with this email");
+    if (user.isVerified) return sendErrorResponse(res, 400, "This email already has verified");
+    const expiryTime = new Date(user.otpExpires);
+    const now = new Date();
+    const waitFor = Math.floor((expiryTime.getTime() - now.getTime()) / 1000);
+    return res.status(200).json({ success: true, waitFor });
+  } catch (error) {
+    console.log(error)
+    sendErrorResponse(res,)
+  }
+}
 
 exports.logoutUser = async (req, res) => {
   try {
@@ -478,19 +625,8 @@ exports.getDashboard = async (req, res) => {
         },
       },
       {
-        $lookup: {
-          from: 'polls',
-          localField: 'Poll',
-          foreignField: '_id',
-          as: 'poll',
-        },
-      },
-      {
-        $unwind: '$poll',
-      },
-      {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$poll.createdAt' } },
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
           count: { $sum: 1 },
         },
       },
@@ -514,19 +650,8 @@ exports.getDashboard = async (req, res) => {
         },
       },
       {
-        $lookup: {
-          from: 'polls',
-          localField: 'Poll',
-          foreignField: '_id',
-          as: 'poll',
-        },
-      },
-      {
-        $unwind: '$poll',
-      },
-      {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$poll.endDate' } },
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$endDate' } },
           count: { $sum: 1 },
         },
       },

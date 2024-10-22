@@ -9,7 +9,7 @@ router.route("/updatePoll/:id").put(isAuthenticatedUser, updatePoll)
 router.route("/delete/:id").delete(isAuthenticatedUser, deletePoll)
 router.route("/like-dislike/:id").put(isAuthenticatedUser, likeDislikePoll)
 router.route("/myPolls").get(isAuthenticatedUser, myPolls)
-router.route("/getPoll/:id").get(getPoll)
-router.route("/allPolls").get(getAllPolls)
+router.route("/getPoll/:id").get(isAuthenticatedUser, getPoll)
+router.route("/allPolls").get(isAuthenticatedUser, getAllPolls)
 
 module.exports = router

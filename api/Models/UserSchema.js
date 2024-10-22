@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "user"
     },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -49,7 +53,9 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordExpire: {
         type: Date
-    }
+    },
+    otp: String,
+    otpExpires: Date,
 });
 
 userSchema.pre("save", async function (next) {
@@ -75,6 +81,18 @@ userSchema.methods.generateResetPasswordToken = function () {
 
     return resetToken;
 }
+
+userSchema.methods.generateOTP = function () {
+    const otp = crypto.randomInt(0, 1000000).toString().padStart(6, '0');
+    this.otp = otp;
+    expiryTime = Date.now() + (process.env.OTP_VALID_TIME || 5) * 60 * 1000
+    if (!isNaN(expiryTime)) {
+        this.otpExpires = expiryTime;
+    } else {
+        this.otpExpires = Date.now() + 5 * 60 * 1000;
+    }
+    return otp;
+};
 
 const User = mongoose.model("User", userSchema);
 

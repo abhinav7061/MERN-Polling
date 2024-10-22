@@ -1,6 +1,6 @@
 import { register } from '../../assets';
 import styles from '../../styles';
-import Button from '../../components/Button';
+import CircleLoader from '../../components/Loader/CircleLoader';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useFormik } from 'formik'
@@ -13,10 +13,11 @@ import { UserContext } from '../../contexts/UserContext';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
-    const { userInfo, setUserInfo } = useContext(UserContext);
+    const { userInfo } = useContext(UserContext);
     const navigate = useNavigate();
     const [avatar, setAvatar] = useState(null);
     const [preview, setPreview] = useState(false)
+    const [loading, setLoading] = useState(false)
     const initialValues = {
         name: "",
         email: "",
@@ -24,6 +25,7 @@ const Signup = () => {
         cpassword: "",
     }
     const getRegister = async ({ name, email, password, avatar }) => {
+        setLoading(true);
         try {
             const dataForm = new FormData();
             dataForm.set('name', name);
@@ -33,18 +35,22 @@ const Signup = () => {
             const res = await fetch(`${apiUrl}/user/register`, {
                 method: "POST",
                 body: dataForm,
-                credentials: 'include',
             });
             const data = await res.json();
-            if (res.ok && data.success) {
-                setUserInfo(data.user)
-                toast.success("Signup successfully");
-                navigate('/login');
+            if (data.success || data.needVerification) {
+                toast.info(data.message || "Signup successful. Please verify your email.");
+                resetForm();
+                setAvatar(null)
+                setPreview(false);
+                navigate('/verify-email', { state: { email: email } });
             } else {
                 toast.error(data.message);
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            toast.error("An error occurred during signup");
+        } finally {
+            setLoading(false);
         }
     }
     const handleImageSelection = (selectedFile) => {
@@ -52,14 +58,11 @@ const Signup = () => {
         setPreview(true);
     };
 
-    const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
+    const { values, errors, touched, handleBlur, handleChange, handleSubmit, resetForm } = useFormik({
         initialValues,
         validationSchema: signupSchema,
-        onSubmit: (values, action) => {
+        onSubmit: (values) => {
             getRegister({ ...values, avatar });
-            setAvatar(null)
-            setPreview(false);
-            action.resetForm();
         }
     })
     const [clicked, setClicked] = useState(false)
@@ -188,7 +191,13 @@ const Signup = () => {
                             </div>
                             {/* Submit Button */}
                             <div className='my-6' >
-                                <Button styles={`w-full py-1`} title={'Signup'} type="submit" />
+                                <button
+                                    type="submit"
+                                    className={`font-poppins flex justify-center items-center gap-2 font-bold text-primary bg-blue-gradient rounded-md outline-none  p-2 md:px-4 w-full ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                                    disabled={loading}
+                                >
+                                    {loading ? <CircleLoader title="Signing Up..." /> : "Sign Up"}
+                                </button>
                             </div>
                         </form>
                         {/* for other authentication method like github linkdin etc */}

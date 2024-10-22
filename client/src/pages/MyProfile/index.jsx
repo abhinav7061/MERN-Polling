@@ -30,32 +30,32 @@ const MyProfile = () => {
 	const [dasLoading, setDasLoading] = useState(true);
 	const [errorMessage, setErrorMessage] = useState(null)
 
-	useEffect(() => {
-		const getDashoard = async () => {
-			setErrorMessage(null);
-			setDasLoading(true);
-			try {
-				const res = await fetch(`${apiUrl}/user/dashboard/${userInfo._id}`, {
-					method: 'GET',
-					headers: {
-						"Content-Type": "application/json"
-					},
-					credentials: 'include',
-				})
-				const data = await res.json();
-				if (res.ok) {
-					setDashboardData(data);
-				} else {
-					throw new Error(data?.message || "Server Error");
-				}
-			}
-			catch (error) {
-				console.log('Error while getting your dashboard', error);
-				setErrorMessage(error.message);
-			} finally {
-				setDasLoading(false);
+	const getDashoard = async () => {
+		setErrorMessage(null);
+		setDasLoading(true);
+		try {
+			const res = await fetch(`${apiUrl}/user/dashboard/${userInfo._id}`, {
+				method: 'GET',
+				headers: {
+					"Content-Type": "application/json"
+				},
+				credentials: 'include',
+			})
+			const data = await res.json();
+			if (res.ok) {
+				setDashboardData(data);
+			} else {
+				throw new Error(data?.message || "Server Error");
 			}
 		}
+		catch (error) {
+			console.log('Error while getting your dashboard', error);
+			setErrorMessage(error.message);
+		} finally {
+			setDasLoading(false);
+		}
+	}
+	useEffect(() => {
 		getDashoard();
 	}, [])
 

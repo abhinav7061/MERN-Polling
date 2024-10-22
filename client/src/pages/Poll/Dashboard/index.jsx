@@ -47,6 +47,10 @@ const Dashoard = () => {
         getDashoard();
     }, [])
 
+    useEffect(() => {
+        console.log(dashboardData?.voteChartData)
+    }, [dashboardData])
+
     if (loading) {
         return <div className='flex justify-center'><LargeSpinLoader /></div>;
     } else if (errorMessage) {

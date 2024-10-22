@@ -18,6 +18,7 @@ const Home = lazyLoad("./pages/Home");
 const NoPage = lazyLoad("./pages/NoPage");
 const Login = lazyLoad("./pages/Login");
 const Signup = lazyLoad("./pages/Signup");
+const VerifyEmail = lazyLoad("./pages/VerifyEmail");
 const ForgotPassword = lazyLoad("./pages/ForgotPassword");
 const ResetPassword = lazyLoad("./pages/ResetPassword");
 const PollLayout = lazyLoad("./pages/Poll");
@@ -34,4 +35,4 @@ const MyProfile = lazyLoad('./pages/MyProfile')
 const IsAuthenticatedUser = lazyLoad('./components/IsAuthenticatedUser');
 const Profile = lazyLoad('./pages/Profile')
 
-export { NoPage, Layout, Home, Login, Signup, ForgotPassword, ResetPassword, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, SavedPoll, MyFeeds, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser }
+export { NoPage, Layout, Home, Login, Signup, VerifyEmail, ForgotPassword, ResetPassword, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, SavedPoll, MyFeeds, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser }

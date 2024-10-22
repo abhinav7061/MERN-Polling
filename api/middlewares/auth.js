@@ -19,6 +19,9 @@ exports.isAuthenticatedUser = async (req, res, next) => {
     if (!user) {
       return sendErrorResponse(res, 404, "User not found");
     }
+    if (!user.isVerified) {
+      return sendErrorResponse(res, 404, "Verify Your Account");
+    }
     req.user = user;
     next();
   } catch (error) {

@@ -1,5 +1,6 @@
 // Import necessary dependencies and styles
 import React, { useState, useContext, useEffect, Suspense } from "react";
+import { useLocation } from "react-router-dom";
 import "./index.css";
 import styles from "../../styles";
 import { defaultUserSvg, doubleTick, like, likedThumb, comment, login } from "../../assets";
@@ -27,6 +28,7 @@ function VoteItem({ pollData, deletePollCallback }) {
 
     // Access user information from the context
     const { userInfo } = useContext(UserContext);
+    const location = useLocation();
 
     // State variables for managing component state
     const [feedData, setFeedData] = useState(pollData);
@@ -35,7 +37,7 @@ function VoteItem({ pollData, deletePollCallback }) {
     const [timeLeft, setTimeLeft] = useState(getLeftTime(feedData.endDate));
     const [loading, setLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [commentInputField, setCommentInputField] = useState(false);
+    const [commentInputField, setCommentInputField] = useState(location.pathname.includes('/poll/posts/'));
     const [liked, setLiked] = useState(false);
     const [votedData, setVotedData] = useState(null);
 
@@ -294,7 +296,7 @@ function VoteItem({ pollData, deletePollCallback }) {
             <div className={`flex justify-between mt-3 ${styles.heading6}`}>
                 <div className="flex items-center"><div className="p-1 bg-blue-300 rounded-full mr-2"><img src={like} alt="" className="w-3 h-3" /></div>{feedData.likes.length}</div>
                 <div className="flex">
-                    {/* <h1>{formatDistanceToNow(new Date(feedData.startDate), { addSuffix: true })}</h1> */}
+                    <h1>{formatDistanceToNow(new Date(feedData.startDate), { addSuffix: true })}</h1>
                     {/* <h1>{formatRelativeDate(new Date(feedData.startDate))}</h1> */}
                     <div className="md:mx-3 mx-1">&#x2022;</div>
                     <span onClick={() => setCommentInputField(prev => !prev)}><CommentsCount pollId={pollData._id} /></span>

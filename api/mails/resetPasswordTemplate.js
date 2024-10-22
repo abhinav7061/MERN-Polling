@@ -16,7 +16,9 @@ const getResetPasswordHTMLTemplate = (userName, RESET_PASSWORD_URL) => {
                             <table cellpadding="0" cellspacing="0" border="0">
                                 <tr>
                                     <td style="padding-right: 0px;padding-left: 0px;" align="center">
-                                        <img src="${process.env.COMPANY_LOGO}" alt="Company Logo" style="max-width: 100px;">
+                                        <a href=${process.env.FRONTEND_URL} target="_blank">
+                                            <img src="${process.env.COMPANY_LOGO}" alt="Company Logo" style="max-width: 100px;">
+                                        </a>
                                     </td>
                                 </tr>
                             </table>

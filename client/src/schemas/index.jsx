@@ -45,3 +45,14 @@ export const resetPasswordSchema = Yup.object().shape({
         .required('Confirm password is required')
         .oneOf([Yup.ref('newPassword'), null], 'Passwords must match')
 });
+
+// shema for the verify account
+export const verifyAccountSchema = Yup.object().shape({
+    email: Yup.string()
+        .email('Invalid email address')
+        .required('Email address is required'),
+    otp: Yup.string()
+        .required('OTP is required')
+        .matches(/^\d+$/, 'OTP should not have any characters other than digits')
+        .length(6, 'OTP must be exactly 6 digits'),
+});

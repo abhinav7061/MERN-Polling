@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '../../styles';
-import Button from '../../components/Button';
+import CircleLoader from '../../components/Loader/CircleLoader';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { login } from '../../assets';
@@ -12,6 +12,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = () => {
     const { setUserInfo, userInfo } = useContext(UserContext);
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
     const initialValues = {
         email: '',
@@ -19,6 +20,7 @@ const Login = () => {
         remember_me: false, //if it is set to true then remember options will auto checked
     }
     const getLogin = async ({ email, password }) => {
+        setLoading(true);
         try {
             const res = await fetch(`${apiUrl}/user/login`, {
                 method: "POST",
@@ -33,15 +35,21 @@ const Login = () => {
                 toast.success("Logged-in successfully");
                 setUserInfo(data.user)
                 navigate('/poll');
+                resetForm()
+            } else if (data.needVerification) {
+                toast.info(data.message);
+                navigate('/verify-email', { state: { email: data.email } });
             } else {
                 toast.error(data.message);
             }
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
 
-    const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
+    const { values, errors, touched, handleBlur, handleChange, handleSubmit, resetForm } = useFormik({
         initialValues,
         validationSchema: loginSchema,
         onSubmit: (values) => {
@@ -54,7 +62,7 @@ const Login = () => {
             toast.warning("You are already logged in");
             navigate('/poll');
         }
-    })
+    }, [userInfo])
 
     return (
 
@@ -139,7 +147,13 @@ const Login = () => {
                             </div>
                             {/* Submit Button */}
                             <div className='my-6' >
-                                <Button styles={`w-full py-1`} title={'Login'} type="submit" />
+                                <button
+                                    type="submit"
+                                    className={`font-poppins flex justify-center items-center gap-2 font-bold text-primary bg-blue-gradient rounded-md outline-none  p-2 md:px-4 w-full ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                                    disabled={loading}
+                                >
+                                    {loading ? <CircleLoader title="Login..." /> : "Login"}
+                                </button>
                             </div>
                         </form>
                         {/* for other authentication method like github linkdin etc */}
