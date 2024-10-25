@@ -114,7 +114,7 @@ function VoteItem({ pollData, deletePollCallback }) {
     // Function to get the details of a poll by its ID
     const getPoll = async (pollId) => {
         try {
-            const res = await fetch(`${apiUrl}/poll/getPoll/${pollId}`);
+            const res = await fetch(`${apiUrl}/poll/getPoll/${pollId}`, { credentials: 'include' });
             const data = await res.json();
             if (data.success) {
                 setFeedData(data.poll);
@@ -217,7 +217,7 @@ function VoteItem({ pollData, deletePollCallback }) {
     // Render the VoteItem component
     return (
         <>
-            {loading && <div className="absolute w-full h-full z-10 loading"><MediumSpinLoader /></div>}
+            {loading && <div className="absolute top-[11px] left-[25px] right-0 bottom-0 w-full h-full z-10 loading"><MediumSpinLoader /></div>}
             {/* User information and action buttons */}
             <UserDescription userId={feedData.author}>
                 {/* Display edit and delete buttons for the poll owner */}
@@ -308,10 +308,10 @@ function VoteItem({ pollData, deletePollCallback }) {
                 <MainActionBtn icon={<img className="w-3 md:w-5 transition-all duration-1000" src={liked ? likedThumb : like} style={liked ? { WebkitTransform: 'scaleX(-1)', transform: 'scaleX(-1)' } : {}} />} title="Like" onClick={handleLike} className={liked ? 'text-blue-600' : ''} />
                 <MainActionBtn icon={<ion-icon name="chatbubble-ellipses"></ion-icon>} onClick={() => setCommentInputField(prev => !prev)} title='Comment' />
                 <VisualizeVotes data={feedData.options} title={feedData.title} voted={voted} ended={timeLeft === -1} isPollCreator={feedData.author == userInfo._id} />
-                <ShareBtn url={`http://localhost:5173/poll/posts/${feedData._id}`} />
+                <ShareBtn url={`${window.location.protocol}//${window.location.host}/poll/posts/${feedData._id}`} />
             </div>
             {commentInputField &&
-                (<Suspense fallback={<><SmallSpinLoader /></>}>
+                (<Suspense fallback={<div className="w-full flex justify-center"><SmallSpinLoader /></div>}>
                     <div className="my-3">
                         <LazyComments pollId={pollData._id} />
                     </div>

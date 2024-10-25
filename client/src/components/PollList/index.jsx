@@ -13,7 +13,7 @@ const PollList = ({ feeds, setFeeds, loading, hasMore, role, customMessage }) =>
     };
 
     return (
-        <div className='flex flex-col flex-1'>
+        <div className='flex flex-col flex-1 items-center'>
             <TransitionGroup>
                 {feeds.length > 0 &&
                     feeds.map((feed) => (
@@ -28,7 +28,7 @@ const PollList = ({ feeds, setFeeds, loading, hasMore, role, customMessage }) =>
                             }}
                         >
                             <div
-                                className={`bg-white rounded-[10px] overflow-hidden mb-4 px-2 py-1 md:px-6 md:py-2 relative ${styles.poll_item}`}>
+                                className={`bg-white rounded-[10px] max-w-3xl overflow-hidden mb-2 sm:mb-4 px-2 py-1 md:px-6 md:py-2 relative ${styles.poll_item}`}>
                                 <VoteItem pollData={feed} role={role} deletePollCallback={deletePoll} />
                             </div>
                         </CSSTransition>

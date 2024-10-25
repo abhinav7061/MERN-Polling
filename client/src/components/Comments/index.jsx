@@ -16,7 +16,6 @@ const limit = 3;
 
 const Comments = ({ pollId }) => {
   const location = useLocation();
-  console.log(location);
   const [errorMessage, setErrorMessage] = useState(null)
   const [comments, setComments] = useState([]);
   const [hasMore, setHasMore] = useState(true);
@@ -43,7 +42,6 @@ const Comments = ({ pollId }) => {
   // Use the containerRef for the scroll event listener
   useEffect(() => {
     const container = containerRef.current;
-    console.log(container);
     if (container) {
       container.addEventListener('scroll', handleScroll);
       return () => {
@@ -220,7 +218,7 @@ const Comments = ({ pollId }) => {
                 <div className={`rounded-md bg-slate-100 p-1 sm:p-3 ${comments.length - 1 === index ? '' : "mb-5"} ${animation.comment_item}`}>
                   <div className="flex items-center">
                     <div className="flex-1">
-                      <UserDescription userId={comment.commentedBy} />
+                      <UserDescription userId={comment.commentedBy} imageClassName='w-7 h-7 sm:w-9 sm:h-9' />
                     </div>
                     {/* Display edit and delete buttons for the comment owner */}
                     {(userInfo && userInfo._id === comment.commentedBy) && (<>

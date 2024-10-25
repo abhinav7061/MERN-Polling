@@ -19,7 +19,7 @@ const MyPolls = () => {
     }
 
     return (
-        <div className='flex lg:flex-row gap-6 flex-col-reverse'>
+        <div className='flex xl:flex-row gap-6 flex-col-reverse'>
             <PollList feeds={feeds} setFeeds={setFeeds} loading={loading} hasMore={hasMore} role='feeds' customMessage={searchPlaceholder ? `There are no feed/poll which contains '${searchPlaceholder}'` : 'You have ZERO poll'} />
             <SearchSort
                 search={search}

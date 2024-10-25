@@ -14,12 +14,11 @@ const Poll = () => {
     const [pollData, setPollData] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const pollId = params.pollId;
-    console.log(params)
     const fetchData = async () => {
         setLoading(true);
         setErrorMsg(null)
         try {
-            const data = await getData(`${apiUrl}/poll/getPoll/${pollId}`);
+            const data = await getData(`${apiUrl}/poll/getPoll/${pollId}`, { credentials: 'include' });
             console.log(data);
             setPollData(data.poll);
         } catch (error) {
@@ -36,8 +35,8 @@ const Poll = () => {
         return <ErrorMessage heading='Error fetching the poll' message={errorMsg} action={fetchData} />
     }
     return (
-        <div className='w-full flex justify-center'>
-            {loading ? <Spinner /> : <div className='bg-white rounded-[10px] overflow-hidden mb-4 px-2 py-1 md:px-6 md:py-2 relative max-w-[750px]'><VoteItem pollData={pollData} deletePollCallback={() => { navigate('/poll') }} /></div>}
+        <div className='w-full flex justify-center border'>
+            {loading ? <Spinner /> : <div className='bg-white rounded-[10px] overflow-hidden mb-4 px-2 py-1 md:px-6 md:py-2 relative max-w-[750px] flex-grow'><VoteItem pollData={pollData} deletePollCallback={() => { navigate('/poll') }} /></div>}
         </div>
     )
 }

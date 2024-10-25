@@ -7,9 +7,7 @@ const MainActionBtn = ({ icon, title, onClick, className }) => {
             <span className="flex text-sm md:text-2xl">
                 {icon}
             </span>
-            <h5 className='lg:hidden xl:block'>
                 {title}
-            </h5>
         </div>
     )
 }

@@ -93,7 +93,7 @@ const Profile = () => {
     }
 
     return (
-        <>
+        <div className='pt-10 sm:pt-0 px-3 sm:px-0'>
             <div className='flex justify-around items-center flex-col xl:flex-row'>
                 <div className='rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full xl:w-2/3'>
                     <div className='rounded-xl border-[2px]  border-dashed border-stone-300 p-3 flex items-center gap-2'>
@@ -105,34 +105,11 @@ const Profile = () => {
                         <h1 className={`font-bold whitespace-nowrap ${styles.heading4}`}>{user.name}</h1>
                         <textarea
                             type="text"
-                            name='myStatus'
                             value={user.myStatus}
                             className='outline-none text-[12px] lg:text-[16px] flex-grow resize-none py-1 rounded-md border-2 border-transparent focus:border-slate-500 lg:px-3 sm:px-1 text-center'
                             onChange={handleChange}
                             disabled={true}
                         />
-                    </div>
-                    <div className=' rounded-xl p-3 bg-slate-50'>
-                        <div className='flex flex-wrap items-center my-3'>
-                            <label htmlFor="name" className='ml-2 font-semibold mr-5' style={{ whiteSpace: 'nowrap' }}>Name:</label>
-                            <input
-                                type="text"
-                                name='name'
-                                value={user.name}
-                                className='outline-none my-[2px] px-3 py-1 rounded-md border-2 focus:border-slate-500 w-full overflow-scroll'
-                                onChange={handleChange}
-                                disabled={true} />
-                        </div>
-                        <div className='flex flex-wrap items-center my-3'>
-                            <label htmlFor="email" className='ml-2 font-semibold mr-5' style={{ whiteSpace: 'nowrap' }}>Email:</label>
-                            <input
-                                type="email"
-                                name='email'
-                                value={user.email}
-                                className='outline-none my-[2px] px-3 py-1 rounded-md border-2 focus:border-slate-500 w-full overflow-scroll'
-                                onChange={handleChange}
-                                disabled={true} />
-                        </div>
                     </div>
                 </div>
                 {dasLoading ? <Spinner /> : <div className='xl:ml-5 items-center gap-6 md:gap-8 mt-8 xl:mt-0 flex flex-col lg:flex-row w-full xl:flex-col xl:w-auto'>
@@ -140,11 +117,11 @@ const Profile = () => {
                     <Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='My Total Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} className='w-full' />
                 </div>}
             </div>
-            <div className='flex gap-12 w-full mt-12 xl:flex-row flex-col pb-5 sm:pb-0'>
+            <div className='flex gap-6 sm:gap-9 lg:gap-12 w-full mt-6 sm:mt-9 lg:mt-12 xl:flex-row flex-col pb-5 sm:pb-0'>
                 <Followers userId={userId} userName={user.name} />
                 <Followings userId={userId} userName={user.name} />
             </div>
-        </>
+        </div>
     )
 }
 

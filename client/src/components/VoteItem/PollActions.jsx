@@ -76,7 +76,7 @@ const PollActions = ({ author, pollId, deletePollCallback }) => {
     };
 
     useEffect(() => {
-        setLoading(checkSavesLoading && checkFollowingLoading);
+        setLoading(checkSavesLoading || checkFollowingLoading);
     }, [checkSavesLoading, checkFollowingLoading])
 
     return (
@@ -95,7 +95,7 @@ const PollActions = ({ author, pollId, deletePollCallback }) => {
                     isFollower ? <Unfollow userId={userInfo._id} userToUnfollowId={author} callback={handleUnfollowing} /> : <Follow userToFollow={author} callback={handleFollowing} />
                 }</>
                 }
-                <button className={`flex gap-1 items-center px-2 py-1 rounded-md ${copied ? 'hover:bg-green-100 hover:text-green-600' : 'hover:bg-lime-100 hover:text-lime-600'} whitespace-nowrap`} onClick={() => handleCopy(`http://localhost:5173/poll/posts/${pollId}`)}>
+                <button className={`flex gap-1 items-center px-2 py-1 rounded-md ${copied ? 'hover:bg-green-100 hover:text-green-600' : 'hover:bg-lime-100 hover:text-lime-600'} whitespace-nowrap`} onClick={() => handleCopy(`${window.location.protocol}//${window.location.host}/poll/posts/${pollId}`)}>
                     {copied ? <><ion-icon name="checkmark-circle"></ion-icon>Link Copied!</> : <><ion-icon name="link-outline"></ion-icon>Copy Link</>}
                 </button>
 

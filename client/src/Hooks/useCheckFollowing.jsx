@@ -9,7 +9,7 @@ const useCheckFollowing = ({ followerId, followingId }) => {
     const checkFollowing = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${apiUrl}/followers_followings/checkFollowing?followerId=${encodeURIComponent(followerId)}&followingId=${encodeURIComponent(followingId)}`);
+            const response = await fetch(`${apiUrl}/followers_followings/checkFollowing?followerId=${encodeURIComponent(followerId)}&followingId=${encodeURIComponent(followingId)}`, { credentials: 'include' });
             const data = await response.json();
             if (data.success) {
                 setIsFollower(data.following);

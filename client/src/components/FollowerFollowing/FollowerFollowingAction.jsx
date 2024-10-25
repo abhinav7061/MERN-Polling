@@ -91,7 +91,7 @@ const FollowerFollowingAction = ({ userId, userName, profileUserId }) => {
     }
 
     useEffect(() => {
-        setLoading(loading1 && loading2);
+        setLoading(loading1 || loading2);
         setActions(getActions);
     }, [isLoggedInUserFollowsUser, isUserFollowsLoggedInUser, loading1, loading2])
 

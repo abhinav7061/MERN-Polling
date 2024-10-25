@@ -8,6 +8,7 @@ import { useFormik } from 'formik'
 import { loginSchema } from '../../schemas';
 import { UserContext } from '../../contexts/UserContext';
 import { useContext } from 'react';
+import DemeLogin from './DemoLogin';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = () => {
@@ -66,7 +67,8 @@ const Login = () => {
 
     return (
 
-        <div className={`flex md:flex-row flex-col-reverse border bg-white border-sky-400 mx-2 my-4 md:m-20 rounded-2xl overflow-hidden`}>
+        <div className={`flex md:flex-row flex-col-reverse border bg-white border-sky-400 mx-2 my-4 md:m-20 rounded-2xl relative`}>
+            <DemeLogin userLogin={(email, password) => getLogin({ email, password })} AdminLogin={(email, password) => getLogin({ email, password })} />
             <div className={`flex-1 ${styles.flexStart} flex-col xl:px-0 sm:px-16 px-6 p-16`}>
                 {/* div for login form  */}
                 <div className="w-full flex flex-col items-center">

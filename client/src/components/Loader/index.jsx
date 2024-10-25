@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { logo } from '../../assets';
 
 const Loader = () => {
     const style = {
@@ -9,11 +10,20 @@ const Loader = () => {
         width: '100%',
         backgroundColor: '#000',
         color: '#fff',
-        fontSize: 44,
-    }
+        overflow: 'hidden'
+    };
+
+    const imgStyle = {
+        animation: 'scaleToFull 3s ease-in-out infinite',
+        width: '200px',
+        height: '200px',
+    };
+
     return (
-        <div style={style}>Loading...</div>
-    )
-}
+        <div style={style}>
+            <img src={logo} style={imgStyle} />
+        </div>
+    );
+};
 
 export default Loader;

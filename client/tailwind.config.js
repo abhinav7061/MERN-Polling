@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {},
+    screens: {
+      'xs': '500px',
+      ...require('tailwindcss/defaultTheme').screens,
+    }
   },
   plugins: [],
 }

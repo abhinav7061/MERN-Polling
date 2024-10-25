@@ -58,7 +58,7 @@ const Dashoard = () => {
     }
 
     return (
-        <div className='py-5 sm:py-0 overflow-x-hidden'>
+        <div className='pb-5 pt-10 sm:pt-0 px-3 sm:px-0 sm:pb-0 overflow-x-hidden'>
             <h1 className={`${styles.heading2} mb-5`}>Polls Overview</h1>
             {/* div for showing the polls information  */}
             <div className='flex flex-col justify-between xl:flex-row items-center gap-5'>

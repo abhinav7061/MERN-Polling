@@ -7,7 +7,7 @@ import { UserContext } from '../../contexts/UserContext';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-const UserDescription = ({ userId, children }) => {
+const UserDescription = ({ userId, children, imageClassName, nameClassName }) => {
     const { userInfo } = useContext(UserContext);
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true);
@@ -45,17 +45,17 @@ const UserDescription = ({ userId, children }) => {
         <div className="flex md:p-3 p-1 justify-between items-center">
             {errorMessage ? <ErrorMessage2 message={'Error fetching the user'} action={getUser} /> : loading ? <SimpleSpinLoader /> : (<>
                 <div className='flex'>
-                    <Link to={`/poll/profile/${user._id}`}>
+                    <Link to={`/poll/profile/${user._id}`} className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 ${imageClassName}`}>
                         <img
                             src={user.avatar.url}
                             alt="profile image"
                             title={`See ${userInfo._id == userId ? "Your" : `${user.name}'s`} profile`}
-                            className="rounded-full object-top object-cover bg-slate-300 w-7 h-7 sm:h-12 sm:w-12"
+                            className="rounded-full object-top object-cover bg-slate-300 w-full h-full"
                         />
                     </Link>
-                    <div className="leading-3 md:leading-5 md:ml-3 sm:ml-2 ml-1">
-                        <h4 className={`${styles.heading5} font-semibold line-clamp-1`}>{user.name || 'Anonymous User'}</h4>
-                        <span className={`${styles.heading6} text-gray-600 line-clamp-1`}>{user.email || 'No Email Available'}</span>
+                    <div className="md:ml-3 sm:ml-2 ml-1 max-w-[250px] lg:max-w-[350px]">
+                        <h4 className={`text-sm sm:text-base font-semibold line-clamp-1 ${nameClassName}`}>{user.name || 'Anonymous User'}</h4>
+                        <span className={`${styles.smHeading} text-gray-600 line-clamp-1 font-thin`}>{user.myStatus || ''}</span>
                     </div>
                 </div>
                 {children}

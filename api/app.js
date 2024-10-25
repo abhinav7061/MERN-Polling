@@ -3,8 +3,9 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const app = express();
+const path = require('path');
 const ErrorHandling = require("./middlewares/error");
-
+const mongoose = require('mongoose')
 dotenv.config({ path: "config/config.env" });
 app.use(express.json()); //middleware to understand json
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,7 +19,7 @@ const poll = require("./Router/pollRoutes");
 const vote = require("./Router/voteRoutes");
 const comment = require("./Router/commentRoutes");
 const followerFollowing = require("./Router/followerFollowingRoutes");
-const savePoll = require("./Router/savePollRoutes")
+const savePoll = require("./Router/savePollRoutes");
 
 // //using routes
 app.use("/api/v1/user", user);
@@ -28,6 +29,13 @@ app.use("/api/v1/comment", comment);
 app.use("/api/v1/followers_followings", followerFollowing);
 app.use("/api/v1/save-poll", savePoll);
 app.use('/api/v1/profile-image', express.static(__dirname + '/uploads/profile_image')); // route to  serve the static file(profile image in this project)
+// app.use(express.static(path.join(__dirname, '/dist')));
+
+
+// // Catch-all route to serve the React app
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '/dist/index.html'));
+// });
 
 //using error middlewares
 app.use(ErrorHandling);

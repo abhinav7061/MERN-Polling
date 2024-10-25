@@ -285,7 +285,7 @@ exports.myProfile = async (req, res) => {
 
 exports.getUserDetails = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select('name myStatus avatar');
     if (!user) return sendErrorResponse(res, 404, "User not found");
     res.status(200).json({
       success: true,

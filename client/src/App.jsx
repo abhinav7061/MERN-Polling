@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { Layout, Home, NoPage, Login, Signup, VerifyEmail, ForgotPassword, ResetPassword, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, DeletePoll, MyPolls, MyVotes, SavedPoll, MyFeeds, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser } from './modules'
+import { Layout, Home, NoPage, Login, Signup, VerifyEmail, ForgotPassword, ResetPassword, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, MyPolls, MyVotes, SavedPoll, MyFeeds, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser } from './modules'
 // const Poll = lazy(() => import('./pages/Poll'))
 import './App.css'
 function App() {
@@ -36,10 +36,6 @@ function App() {
               <Route
                 path='edit-poll/:id'
                 element={<IsAuthenticatedUser><EditPoll /></IsAuthenticatedUser>}
-              />
-              <Route
-                path='delete-poll/:id'
-                element={<IsAuthenticatedUser><DeletePoll /></IsAuthenticatedUser>}
               />
               <Route
                 path="my-poll"

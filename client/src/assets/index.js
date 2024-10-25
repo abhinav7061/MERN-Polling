@@ -14,6 +14,7 @@ import doubleTick from './doubleTick.png'
 import like from './like.svg'
 import likedThumb from './likedThumb.svg'
 import comment from './comment.svg'
+import sparkle from './sparkle.svg'
 import incrementProgress from './incrementProgress.png'
 import decrementProgress from './decrementProgress.png'
 
@@ -34,6 +35,7 @@ export {
     like,
     likedThumb,
     comment,
+    sparkle,
     incrementProgress,
     decrementProgress,
 }

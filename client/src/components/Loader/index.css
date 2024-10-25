@@ -13,11 +13,11 @@
   font-size: 12px;
   text-indent: 999em;
   overflow: hidden;
-  animation: spin 3s infinite steps(12);
+  animation: spin 1.5s infinite steps(18);
 }
 
 .small.progress {
-  font-size: 6px;
+  font-size: 4px;
 }
 
 .large.progress {
@@ -34,32 +34,32 @@
   left: 2.25em;
   /* (container width - part width)/2  */
   width: .5em;
-  height: 1.5em;
+  height: 1.3em;
   border-radius: .2em;
-  background: #eee;
-  box-shadow: 0 3.5em #eee;
+  background: #bdbcbc;
+  box-shadow: 0 3.5em #d4d4d4;
   /* container height - part height */
   transform-origin: 50% 2.5em;
   /* container height / 2 */
 }
 
 .progress:before {
-  background: #ccc;
+  background: #b3b2b2;
 }
 
 .progress:after {
   transform: rotate(-45deg);
-  background: #777;
+  background: #2c2c2c;
 }
 
 .progress>div:before {
   transform: rotate(-90deg);
-  background: #999;
+  background: #666666;
 }
 
 .progress>div:after {
   transform: rotate(-135deg);
-  background: #bbb;
+  background: #868686;
 }
 
 .lds-spinner {
@@ -221,5 +221,17 @@
 
   100% {
     transform: translate(24px, 0);
+  }
+}
+
+@keyframes scaleToFull {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(8);
+    opacity: 0;
   }
 }

@@ -27,14 +27,15 @@ const CreatePoll = () => {
                 body: JSON.stringify({ title, description, options, endDate })
             });
             const data = await res.json();
-            if (res.status === 400 || data.success === false) {
-                toast.error(data.message);
-            } else {
+            if (data.success) {
                 toast.success("Your poll has been created successfully");
                 navigate('/poll')
+            } else {
+                toast.error(data.message || "Error Creating poll");
             }
         } catch (error) {
             console.log("Error while creating the poll", error);
+            toast.error("Error creating poll");
         }
     }
 
@@ -42,10 +43,10 @@ const CreatePoll = () => {
         createPoll(question, description, optionList, endDate);
     }
     return (
-        <>
+        <div className='pt-10 sm:pt-0 px-3 sm:px-0'>
             <h1 className={`${styles.heading2} mb-6`}>Create Free Poll With PollLab</h1>
             <PollEditor handleSubmit={handleSubmit} initialData={initialData} reset type='Create' />
-        </>
+        </div>
     )
 }
 

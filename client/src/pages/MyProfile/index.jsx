@@ -163,9 +163,9 @@ const MyProfile = () => {
 	}
 
 	return (
-		<>
+		<div className=' pt-10 sm:pt-0 px-3 sm:px-0'>
 			<div className='flex justify-around items-center flex-col xl:flex-row'>
-				<form className='rounded-3xl bg-white sm:p-6 p-3 flex flex-col items-center w-full xl:w-2/3' onSubmit={handleSubmit}>
+				<form className='rounded-3xl relative bg-white sm:p-6 p-3 flex flex-col items-center w-full xl:w-2/3' onSubmit={handleSubmit}>
 					{loading && <div className='absolute bg-black/20 top-0 right-0 left-0 bottom-0 rounded-3xl w-full h-full z-10 flex justify-center items-center'><Spinner /></div>}
 					{
 						!enableChangingAvatar ? (
@@ -227,11 +227,11 @@ const MyProfile = () => {
 					<Card img={vote} num={dashboardData.lifetimeVotes.totalNumber} title='My Total Votes' color={dashboardData.lifetimeVotes.growth ? 'green' : 'red'} progress={dashboardData.lifetimeVotes.growthPercentage} indicator={dashboardData.lifetimeVotes.growth ? incrementProgress : decrementProgress} className='w-full' />
 				</div>}
 			</div>
-			<div className='flex gap-12 w-full mt-12 xl:flex-row flex-col pb-5 sm:pb-0'>
+			<div className='flex gap-6 sm:gap-9 lg:gap-12 w-full mt-6 sm:mt-9 lg:mt-12 xl:flex-row flex-col pb-5 sm:pb-0'>
 				<Followers userId={userInfo._id} />
 				<Followings userId={userInfo._id} />
 			</div>
-		</>
+		</div>
 	)
 }
 
