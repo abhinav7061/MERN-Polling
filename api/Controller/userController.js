@@ -128,7 +128,6 @@ exports.verifyAccount = async (req, res) => {
     const options = {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
     };
     res.status(200).cookie("token", token, options).json({
       success: true,
@@ -187,7 +186,6 @@ exports.loginUser = async (req, res) => {
     const options = {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
     };
     res.status(200).cookie("token", token, options).json({
       success: true,
