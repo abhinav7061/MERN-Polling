@@ -115,7 +115,6 @@ const MyProfile = () => {
 			dataForm.set('avatar', avatar);
 			const res = await fetch(`${apiUrl}/user/profile/update`, {
 				method: "PUT",
-				method: 'GET',
 				headers: {
 					"Content-Type": "application/json",
 					"Authorization": `Bearer ${getLocalValue('token')}`,
