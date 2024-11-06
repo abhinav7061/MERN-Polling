@@ -3,6 +3,7 @@ import styles from '../../../styles'
 import { toast } from 'sonner';
 import PollEditor from '../PollEditor';
 import { useNavigate } from 'react-router-dom';
+import getLocalValue from '../../../utilities/handleLocalStorage';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const CreatePoll = () => {
@@ -21,7 +22,8 @@ const CreatePoll = () => {
             const res = await fetch(`${apiUrl}/poll/createPoll`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
                 body: JSON.stringify({ title, description, options, endDate })

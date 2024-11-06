@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
+import getLocalValue from '../utilities/handleLocalStorage';
 const apiUrl = import.meta.env.VITE_API_URL;
 const FollowersContext = createContext();
 
@@ -14,7 +15,14 @@ export const FollowersContextProvider = ({ children }) => {
         setFollowersLoading(true);
         setFetchFollowersErrorMessage(null);
         try {
-            const res = await fetch(`${apiUrl}/followers_followings/followers/${userId}?page=${page}&&pageSize=${pageSize}`, { credentials: 'include' });
+            const res = await fetch(`${apiUrl}/followers_followings/followers/${userId}?page=${page}&&pageSize=${pageSize}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
+                },
+                credentials: 'include'
+            });
             const data = await res.json();
             if (res.ok && data.success) {
                 setFollowers(prev => [...prev, ...data.followers]);

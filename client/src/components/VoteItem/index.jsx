@@ -18,6 +18,7 @@ import formatRelativeDate from "../../utilities/relativeDate";
 import VisualizeVotes from "./VisualizeVotes";
 import MainActionBtn from "./MainActionBtn";
 import ShareBtn from "./ShareBtn";
+import getLocalValue from "../../utilities/handleLocalStorage";
 const LazyComments = React.lazy(() => import('../Comments'));
 
 // Define the API URL using Vite environment variable
@@ -66,7 +67,8 @@ function VoteItem({ pollData, deletePollCallback }) {
             const res = await fetch(`${apiUrl}/vote/checkVote/${pollId}`, {
                 method: 'GET',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             })
@@ -91,6 +93,7 @@ function VoteItem({ pollData, deletePollCallback }) {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include'
             })
@@ -114,7 +117,14 @@ function VoteItem({ pollData, deletePollCallback }) {
     // Function to get the details of a poll by its ID
     const getPoll = async (pollId) => {
         try {
-            const res = await fetch(`${apiUrl}/poll/getPoll/${pollId}`, { credentials: 'include' });
+            const res = await fetch(`${apiUrl}/poll/getPoll/${pollId}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
+                },
+                credentials: 'include'
+            });
             const data = await res.json();
             if (data.success) {
                 setFeedData(data.poll);
@@ -130,7 +140,8 @@ function VoteItem({ pollData, deletePollCallback }) {
             const res = await fetch(`${apiUrl}/vote/${pollId}`, {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 body: JSON.stringify({ selectedOptionId }),
                 credentials: 'include',
@@ -169,7 +180,8 @@ function VoteItem({ pollData, deletePollCallback }) {
             const res = await fetch(`${apiUrl}/vote/${pollId}`, {
                 method: 'DELETE',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             })
@@ -195,7 +207,8 @@ function VoteItem({ pollData, deletePollCallback }) {
             const res = await fetch(`${apiUrl}/poll/like-dislike/${feedData._id}`, {
                 method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             })

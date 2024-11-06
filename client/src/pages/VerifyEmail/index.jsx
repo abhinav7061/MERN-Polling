@@ -10,6 +10,7 @@ import { UserContext } from '../../contexts/UserContext';
 import { useContext } from 'react';
 import ResendOTP from '../../components/ResendOTP';
 import CircleLoader from '../../components/Loader/CircleLoader';
+import { setLocalValue } from '../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -40,6 +41,7 @@ const VerifyEmail = () => {
             if (response.ok) {
                 toast.success('Account verified successfully');
                 setUserInfo(data.user);
+                setLocalValue('token', data.token);
                 navigate('/poll');
             } else {
                 toast.error(data.message || 'Failed to verify account');

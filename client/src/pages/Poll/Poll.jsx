@@ -4,6 +4,7 @@ import VoteItem from '../../components/VoteItem';
 import { getData } from '../../utilities/apiCall';
 import { Spinner } from '../../components/Loader/SpinLoader';
 import ErrorMessage from '../../components/ErrorMessage';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -18,7 +19,14 @@ const Poll = () => {
         setLoading(true);
         setErrorMsg(null)
         try {
-            const data = await getData(`${apiUrl}/poll/getPoll/${pollId}`, { credentials: 'include' });
+            const data = await getData(`${apiUrl}/poll/getPoll/${pollId}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
+                },
+                credentials: 'include'
+            });
             console.log(data);
             setPollData(data.poll);
         } catch (error) {

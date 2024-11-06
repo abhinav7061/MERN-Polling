@@ -9,6 +9,7 @@ import { loginSchema } from '../../schemas';
 import { UserContext } from '../../contexts/UserContext';
 import { useContext } from 'react';
 import DemeLogin from './DemoLogin';
+import { setLocalValue } from '../../utilities/handleLocalStorage';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = () => {
@@ -35,6 +36,7 @@ const Login = () => {
             if (data.success && res.ok) {
                 toast.success("Logged-in successfully");
                 setUserInfo(data.user)
+                setLocalValue('token', data.token);
                 navigate('/poll');
                 resetForm()
             } else if (data.needVerification) {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { UserContext } from '../../contexts/UserContext';
 import styles from '../../styles';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -13,12 +14,14 @@ const LogoutBtn = () => {
         try {
             const res = await fetch(`${apiUrl}/user/logout`, {
                 method: 'POST',
+                body: JSON.stringify({ token: getLocalValue('token') }),
                 credentials: 'include',
             });
             const data = await res.json();
             if (res.ok) {
                 toast.success("Logged out successfully");
                 setUserInfo(null);
+                localStorage.removeItem("token");
                 navigate('/');
                 console.log("logout successfully");
             } else {

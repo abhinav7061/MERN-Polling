@@ -5,6 +5,7 @@ import styles from '../../../styles';
 import { Spinner } from '../../../components/Loader/SpinLoader';
 import { toast } from 'sonner';
 import ErrorMessage from '../../../components/ErrorMessage';
+import getLocalValue from '../../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -28,7 +29,8 @@ const EditPoll = () => {
             const res = await fetch(`${apiUrl}/poll/updatePoll/${pollId}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
                 body: JSON.stringify({ title, description, options, endDate })

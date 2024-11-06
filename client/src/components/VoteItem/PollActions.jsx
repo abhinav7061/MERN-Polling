@@ -10,6 +10,7 @@ import DropDown from '../DropDown/DropDown';
 import useCheckFollowing from '../../Hooks/useCheckFollowing';
 import { toast } from 'sonner';
 import SaveUnsavePoll from '../SaveUnsavePoll';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -27,7 +28,14 @@ const PollActions = ({ author, pollId, deletePollCallback }) => {
         setCheckSavesLoading(true);
         setErrorMessage(null);
         try {
-            const response = await fetch(`${apiUrl}/save-poll/isSaved/${pollId}`, { credentials: 'include' });
+            const response = await fetch(`${apiUrl}/save-poll/isSaved/${pollId}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
+                },
+                credentials: 'include'
+            });
             const data = await response.json();
             if (response.ok && data.success) {
                 setIsSaved(data.isSaved);

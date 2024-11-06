@@ -10,6 +10,7 @@ import styles from '../../../styles'
 import './index.css'
 import { UserContext } from '../../../contexts/UserContext'
 import ErrorMessage from '../../../components/ErrorMessage'
+import getLocalValue from '../../../utilities/handleLocalStorage'
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -26,7 +27,8 @@ const Dashoard = () => {
             const res = await fetch(`${apiUrl}/user/dashboard/${userInfo._id}`, {
                 method: 'GET',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             })

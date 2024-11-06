@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'sonner';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 // Define the API URL using Vite environment variable
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -13,7 +14,8 @@ const Follow = ({ userToFollow, callback, heading = 'Follow', title, className }
             const response = await fetch(`${apiUrl}/followers_followings/follow/${userToFollow}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             });

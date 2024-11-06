@@ -8,6 +8,7 @@ import styles from '../styles';
 import { UserContext } from '../contexts/UserContext';
 import { LargeSpinLoader } from '../components/Loader/SpinLoader';
 import Container from '../components/Container';
+import getLocalValue from '../utilities/handleLocalStorage';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Layout = () => {
@@ -21,7 +22,12 @@ const Layout = () => {
     const getUser = async () => {
         try {
             const res = await fetch(`${apiUrl}/user/me`, {
-                credentials: 'include',
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
+                },
+                credentials: 'include'
             });
             const data = await res.json();
             if (data.success && res.ok) {

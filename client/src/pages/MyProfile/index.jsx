@@ -13,6 +13,7 @@ import { polling, vote } from '../../assets';
 import Followers from '../../components/Followers/index.jsx';
 import Followings from '../../components/Followings/index.jsx';
 import ErrorMessage from '../../components/ErrorMessage/index.jsx';
+import getLocalValue from '../../utilities/handleLocalStorage.js';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -37,7 +38,8 @@ const MyProfile = () => {
 			const res = await fetch(`${apiUrl}/user/dashboard/${userInfo._id}`, {
 				method: 'GET',
 				headers: {
-					"Content-Type": "application/json"
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${getLocalValue('token')}`,
 				},
 				credentials: 'include',
 			})
@@ -73,7 +75,12 @@ const MyProfile = () => {
 		setLoading(true);
 		try {
 			const res = await fetch(`${apiUrl}/user/me`, {
-				credentials: 'include',
+				method: 'GET',
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${getLocalValue('token')}`,
+				},
+				credentials: 'include'
 			});
 			const data = await res.json();
 			if (data.success && res.ok) {
@@ -108,6 +115,11 @@ const MyProfile = () => {
 			dataForm.set('avatar', avatar);
 			const res = await fetch(`${apiUrl}/user/profile/update`, {
 				method: "PUT",
+				method: 'GET',
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${getLocalValue('token')}`,
+				},
 				body: dataForm,
 				credentials: 'include',
 			});

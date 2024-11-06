@@ -4,6 +4,7 @@ import SimpleSpinLoader from '../Loader/SpinLoader';
 import { Link } from 'react-router-dom';
 import ErrorMessage2 from '../ErrorMessage/ErrorMessage2';
 import { UserContext } from '../../contexts/UserContext';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -21,6 +22,7 @@ const UserDescription = ({ userId, children, imageClassName, nameClassName }) =>
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             });

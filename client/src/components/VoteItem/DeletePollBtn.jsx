@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import WarningPrompt from '../CustomPopup/WarningPrompt';
 import { toast } from 'sonner';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -12,6 +13,7 @@ const DeletePollBtn = ({ pollId, deletePollCallback }) => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             });

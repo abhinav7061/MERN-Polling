@@ -10,6 +10,7 @@ import Followings from '../../components/Followings/index.jsx';
 import { toast } from 'sonner';
 import { UserContext } from '../../contexts/UserContext';
 import ErrorMessage from '../../components/ErrorMessage';
+import getLocalValue from '../../utilities/handleLocalStorage.js';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -29,6 +30,11 @@ const Profile = () => {
         setLoading(true);
         try {
             const res = await fetch(`${apiUrl}/user/${userId}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
+                },
                 credentials: 'include',
             });
             const data = await res.json();
@@ -52,7 +58,8 @@ const Profile = () => {
             const res = await fetch(`${apiUrl}/user/dashboard/${userId}`, {
                 method: 'GET',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             })

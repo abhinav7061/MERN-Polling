@@ -4,7 +4,10 @@ const User = require("../Models/UserSchema");
 
 exports.isAuthenticatedUser = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    const token = (req.cookies && req.cookies.token) ||
+      (req.body && req.body.token) ||
+      (req.headers["authorization"] && req.headers["authorization"].replace("Bearer ", ""));
+
     if (!token) {
       return sendErrorResponse(res, 401, "Login first to access resources");
     }

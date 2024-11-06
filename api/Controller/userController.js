@@ -113,7 +113,7 @@ exports.registerUser = async (req, res) => {
 exports.verifyAccount = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('name email myStatus');
     if (!user) return sendErrorResponse(res, 404, "User not found");
     if (user.isVerified) return sendErrorResponse(res, 400, "Account already verified");
     if (user.otpExpires < Date.now()) return sendErrorResponse(res, 400, "OTP has expired");
@@ -133,6 +133,7 @@ exports.verifyAccount = async (req, res) => {
     res.status(200).cookie("token", token, options).json({
       success: true,
       message: "Account verified successfully",
+      token,
       user,
     });
   } catch (error) {
@@ -183,7 +184,7 @@ exports.loginUser = async (req, res) => {
       }
     }
 
-    token = user.generateToken();
+    const token = user.generateToken();
     const options = {
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       httpOnly: true,
@@ -192,6 +193,7 @@ exports.loginUser = async (req, res) => {
     res.status(200).cookie("token", token, options).json({
       success: true,
       message: "Loggedin Successfully",
+      token,
       user,
     });
   } catch (error) {
@@ -255,9 +257,6 @@ exports.resendVerificationOtpTimeLeft = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
-    const token = req.cookies.token;
-    if (!token)
-      return sendErrorResponse(res, 401, "you are already logged out");
     res
       .status(200)
       .cookie("token", null, { expires: new Date(Date.now()) })
@@ -285,7 +284,7 @@ exports.myProfile = async (req, res) => {
 
 exports.getUserDetails = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('name myStatus avatar');
+    const user = await User.findById(req.params.id);
     if (!user) return sendErrorResponse(res, 404, "User not found");
     res.status(200).json({
       success: true,

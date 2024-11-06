@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'sonner';
+import getLocalValue from '../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -9,7 +10,14 @@ const useCheckFollowing = ({ followerId, followingId }) => {
     const checkFollowing = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${apiUrl}/followers_followings/checkFollowing?followerId=${encodeURIComponent(followerId)}&followingId=${encodeURIComponent(followingId)}`, { credentials: 'include' });
+            const response = await fetch(`${apiUrl}/followers_followings/checkFollowing?followerId=${encodeURIComponent(followerId)}&followingId=${encodeURIComponent(followingId)}`, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
+                },
+                credentials: 'include'
+            });
             const data = await response.json();
             if (data.success) {
                 setIsFollower(data.following);

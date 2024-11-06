@@ -96,6 +96,7 @@
 // Importing necessary hooks from React
 import { useState, useEffect, useCallback } from 'react';
 import debounce from '../utilities/debounce';
+import getLocalValue from '../utilities/handleLocalStorage';
 
 // Custom hook for managing poll-related data
 const usePolls = (apiEndpoint) => {
@@ -119,11 +120,11 @@ const usePolls = (apiEndpoint) => {
         {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${getLocalValue('token')}`,
           },
-          credentials: 'include',
-        }
-      );
+          credentials: 'include'
+        });
       const data = await res.json();
 
       // Check if there are more polls to load

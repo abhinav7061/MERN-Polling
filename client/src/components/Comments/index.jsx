@@ -9,6 +9,7 @@ import { login } from '../../assets';
 import ErrorMessage from '../ErrorMessage';
 import animation from './index.module.css'
 import { useLocation } from 'react-router-dom';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 // Define the API URL using Vite environment variable
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -65,7 +66,7 @@ const Comments = ({ pollId }) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ comment: inputComment }),
+        body: JSON.stringify({ comment: inputComment, token: getLocalValue('token') }),
         credentials: 'include',
       })
       const data = await res.json();
@@ -127,7 +128,8 @@ const Comments = ({ pollId }) => {
       const res = await fetch(`${apiUrl}/comment/deleteComment/${commentId}`, {
         method: 'DELETE',
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${getLocalValue('token')}`,
         },
         credentials: 'include',
       })
