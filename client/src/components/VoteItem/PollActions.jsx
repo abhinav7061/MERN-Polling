@@ -93,13 +93,13 @@ const PollActions = ({ author, pollId, deletePollCallback }) => {
                 <ion-icon name="ellipsis-vertical"></ion-icon>
             </span>}
             dropDownElm={<span className={`absolute h-auto flex flex-col gap-1 ${styles.heading6} p-2 border border-slate-500 rounded-lg shadow-black shadow-sm right-4 bg-white z-50 `}>
-                {(userInfo && userInfo._id === author) && <span className="">
+                {(userInfo?._id === author || userInfo?.role === 'admin') && <span className="">
                     <Link to={`/poll/edit-poll/${pollId}`} className=" hover:text-blue-600 flex gap-1 items-center px-2 py-1 hover:bg-blue-100 rounded-md" title="Edit Poll" >
                         <ion-icon name="create-outline"></ion-icon> Edit
                     </Link>
                     <DeletePollBtn pollId={pollId} deletePollCallback={deletePollCallback} />
                 </span>}
-                {userInfo._id !== author && <>{
+                {userInfo?._id !== author && <>{
                     isFollower ? <Unfollow userId={userInfo._id} userToUnfollowId={author} callback={handleUnfollowing} /> : <Follow userToFollow={author} callback={handleFollowing} />
                 }</>
                 }

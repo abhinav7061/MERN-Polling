@@ -1,6 +1,9 @@
 const User = require("../Models/UserSchema");
 const Poll = require("../Models/PollSchema");
 const Vote = require("../Models/VoteSchema");
+const Comment = require('../Models/CommentSchema');
+const FollowerFollowing = require('../Models/FollowerFollowing');
+const SavePoll = require("../Models/SavePollSchema");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const validator = require("validator");
@@ -113,7 +116,7 @@ exports.registerUser = async (req, res) => {
 exports.verifyAccount = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const user = await User.findOne({ email }).select('name email myStatus');
+    const user = await User.findOne({ email }).select('name email myStatus otp otpExpires isVerified avatar');
     if (!user) return sendErrorResponse(res, 404, "User not found");
     if (user.isVerified) return sendErrorResponse(res, 400, "Account already verified");
     if (user.otpExpires < Date.now()) return sendErrorResponse(res, 400, "OTP has expired");
@@ -173,7 +176,6 @@ exports.loginUser = async (req, res) => {
           user.otp = undefined;
           user.otpExpires = undefined;
           await user.save();
-          console.log({ "Sending otp error in login user": error });
           return sendErrorResponse(res, 500, 'Your Account is not verified. Having trouble to send verification mail.');
         }
         return sendErrorResponse(res, 400, 'Firstly verify Your Account using the mail sent to you', {
@@ -295,9 +297,32 @@ exports.getUserDetails = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({});
+    const itemsPerPage = parseInt(req.query.itemsPerPage) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const search = req.query.search || '';
+    const role = req.query.role;
+
+    let query = {
+      $or: [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ]
+    };
+
+    if (role && role !== 'all') {
+      query.role = role;
+    }
+
+    const totalItems = await User.countDocuments(query);
+
+    const users = await User.find(query)
+      .skip((page - 1) * itemsPerPage)
+      .limit(itemsPerPage)
+      .select('-password');
+
     res.status(200).json({
       success: true,
+      totalItems,
       users,
     });
   } catch (error) {
@@ -485,16 +510,21 @@ exports.updateProfile = async (req, res) => {
 
 exports.updateRole = async (req, res) => {
   try {
+    const changeRoleTo = req.query.changeRoleTo;
+    const userId = req.params.id;
+    const reqUserId = req.user._id;
+    if (reqUserId.toString() == userId.toString()) return sendErrorResponse(res, 404, 'You cannot change your role');
+    if (reqUserId.toString() != '65465220b4b8929cb532e583') return sendErrorResponse(res, 404, 'You are not allowed to change role of this user')
     const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { role: "Admin" },
+      userId,
+      { role: changeRoleTo },
       { new: true }
     );
     if (!updatedUser) return sendErrorResponse(res, 404, "User not found");
     await updatedUser.save();
     res.status(200).json({
       success: true,
-      message: `${updatedUser.name} is now Admin`,
+      message: `${updatedUser.name} is now ${changeRoleTo}`,
     });
   } catch (error) {
     sendErrorResponse(res, 500, error.message);
@@ -502,17 +532,63 @@ exports.updateRole = async (req, res) => {
 };
 
 exports.deleteProfile = async (req, res) => {
+  // const session = await mongoose.startSession();
+  // session.startTransaction();
+  const deletedDocs = {};
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    // const user = await User.findById(userId).session(session); and session for all other transactions too
+    const reqUser = req.user
+    if (!user)
       return sendErrorResponse(res, 404, "User not found");
+    if ((reqUser.role !== 'admin' && reqUser._id.toString() !== userId.toString()))
+      return sendErrorResponse(res, 404, "You are not allowed to delete this user");
+    if (userId.toString() == '65465220b4b8929cb532e583')
+      return sendErrorResponse(res, 404, 'This account cannot be deleted');
+
+    deletedDocs.user = await User.deleteOne({ _id: userId });
+    deletedDocs.poll = await Poll.deleteMany({ author: userId });
+    deletedDocs.votes = await Vote.deleteMany({ User: userId });
+    deletedDocs.comments = await Comment.deleteMany({ commentedBy: userId });
+    deletedDocs.followerFollowing = await FollowerFollowing.deleteMany({ $or: [{ followerId: userId }, { followingId: userId }] });
+    deletedDocs.savedPoll = await SavePoll.deleteMany({ userId: userId });
+    // await session.commitTransaction();
+    // session.endSession();
+    if (reqUser._id.toString() === userId.toString()) {
+      return res.status(200)
+        .cookie("token", null, { expires: new Date(Date.now()) })
+        .json({
+          success: true,
+          message: "Your account has been deleted"
+        });
     }
-    await user.deleteOne();
+
     res.status(200).json({
       success: true,
       message: "Profile Deleted successfully",
     });
   } catch (error) {
+    // await session.abortTransaction();
+    // session.endSession();
+    if (deletedDocs.user) {
+      await User.insertMany(deletedDocs.user);
+    }
+    if (deletedDocs.poll) {
+      await Poll.insertMany(deletedDocs.poll);
+    }
+    if (deletedDocs.votes) {
+      await Vote.insertMany(deletedDocs.votes);
+    }
+    if (deletedDocs.comments) {
+      await SavePoll.insertMany(deletedDocs.comments);
+    }
+    if (deletedDocs.followerFollowing) {
+      await Vote.insertMany(deletedDocs.followerFollowing);
+    }
+    if (deletedDocs.savedPoll) {
+      await SavePoll.insertMany(deletedDocs.savedPoll);
+    }
     sendErrorResponse(res, 500, error.message);
   }
 };

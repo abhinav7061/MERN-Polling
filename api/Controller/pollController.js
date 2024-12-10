@@ -3,6 +3,8 @@ const { sendErrorResponse } = require("../middlewares/erroHandle")
 const Poll = require("../Models/PollSchema");
 const User = require("../Models/UserSchema");
 const Vote = require("../Models/VoteSchema");
+const Comment = require('../Models/CommentSchema');
+const SavePoll = require("../Models/SavePollSchema");
 
 exports.createPoll = async (req, res) => {
     try {
@@ -50,14 +52,15 @@ exports.updatePoll = async (req, res) => {
                 }
             }
         })
-        const poll = await Poll.findByIdAndUpdate(req.params.id, update, { new: true })
+        const pollId = req.params.id
+        const poll = await Poll.findByIdAndUpdate(pollId, update, { new: true })
         if (!poll) {
             return sendErrorResponse(res, 404, "Poll not found")
         }
 
-        // Find and delete all previous votes associated with the updated poll
-        // const votes = Vote.find({ Poll: pollId })
-        // await votes.deleteMany();
+        await Vote.deleteMany({ Poll: pollId });
+        await Comment.deleteMany({ onPoll: pollId });
+        await SavePoll.deleteMany({ pollId });
 
         res.status(200).json({
             success: true,
@@ -79,8 +82,9 @@ exports.deletePoll = async (req, res) => {
         }
 
         // Find and delete all votes associated with the deleted poll
-        const votes = Vote.find({ Poll: pollId })
-        await votes.deleteMany();
+        await Vote.deleteMany({ Poll: pollId });
+        await Comment.deleteMany({ onPoll: pollId });
+        await SavePoll.deleteMany({ pollId });
 
         res.status(200).json({
             success: true,
@@ -138,7 +142,14 @@ exports.getPoll = async (req, res) => {
 }
 
 exports.getAllPolls = async (req, res) => {
-    await getPollsByCriteria(req, res);
+    // Determine if active, closed, or all polls should be included
+    const includeActiveFilter = req.query.active === 'active';
+    const includeClosedFilter = req.query.active === 'closed';
+
+    await getPollsByCriteria(req, res, {
+        includeActiveFilter,
+        includeClosedFilter
+    });
 };
 
 // exports.myPolls is a controller function to handle requests to retrieve the current user's polls

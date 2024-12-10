@@ -111,6 +111,7 @@ const usePolls = (apiEndpoint) => {
   const [sort, setSort] = useState('newer');
   const [active, setActive] = useState('all');
   const [searchPlaceholder, setSearchPlaceholder] = useState(null);
+  const [lastActiveSorted, setLastActiveSorted] = useState('all');
 
   // Function to fetch polls from the server
   const getPolls = async () => {
@@ -175,6 +176,7 @@ const usePolls = (apiEndpoint) => {
   // Function to reset poll-related state variables and fetch new polls
   const resetPolls = () => {
     setSearchPlaceholder(search);
+    setLastActiveSorted(active);
     setSearch('');
     setFeeds([]);
     setHasMore(true);
@@ -203,6 +205,7 @@ const usePolls = (apiEndpoint) => {
     setActive,
     resetPolls,
     searchPlaceholder,
+    lastActiveSorted,
   };
 };
 

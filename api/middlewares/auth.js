@@ -4,9 +4,7 @@ const User = require("../Models/UserSchema");
 
 exports.isAuthenticatedUser = async (req, res, next) => {
   try {
-    const token = (req.cookies && req.cookies.token) ||
-      (req.body && req.body.token) ||
-      (req.headers["authorization"] && req.headers["authorization"].replace("Bearer ", ""));
+    const token = req?.cookies?.token || req?.body?.token || req?.headers["authorization"]?.replace("Bearer ", "");
 
     if (!token) {
       return sendErrorResponse(res, 401, "Login first to access resources");
@@ -18,9 +16,13 @@ exports.isAuthenticatedUser = async (req, res, next) => {
     }
 
     const user = await User.findById(decoded._id);
-    // console.log(user)
     if (!user) {
-      return sendErrorResponse(res, 404, "User not found");
+      return res.status(404)
+        .cookie("token", null, { expires: new Date(Date.now()) })
+        .json({
+          success: false,
+          message: "user not found",
+        });
     }
     if (!user.isVerified) {
       return sendErrorResponse(res, 404, "Verify Your Account");
@@ -35,7 +37,7 @@ exports.isAuthenticatedUser = async (req, res, next) => {
 
 exports.isAdmin = async (req, res, next) => {
   try {
-    if (req.user && req.user.role === "Admin") {
+    if (req.user && req.user.role === "admin") {
       next();
     } else {
       return sendErrorResponse(res, 403, "Access denied. Admin role required.");

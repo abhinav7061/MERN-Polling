@@ -45,7 +45,7 @@ export default function Sidebar({ children }) {
                         type="button"
                     >
                         {expanded ? <ion-icon name="arrow-back-circle-outline" aria-label="Collapse Sidebar"></ion-icon> : <span>
-                            <img src={userInfo.avatar.url} alt={`${userInfo.name}`} className="w-7 h-7 object-top object-cover sm:hidden" />
+                            <img src={userInfo?.avatar?.url} alt={`${userInfo?.name}`} className="w-7 h-7 object-top object-cover sm:hidden" />
                             <span className="hidden sm:flex">
                                 <ion-icon name="arrow-forward-circle-outline" aria-label="Expand Sidebar"></ion-icon>
                             </span>
@@ -60,7 +60,7 @@ export default function Sidebar({ children }) {
 
                 {/* User information and logout button */}
                 {userInfo && (
-                    <div className={`border-t p-3 flex ${expanded ? "" : "hidden sm:block"}`} title={!expanded ? userInfo.name : ''}>
+                    <div className={`border-t p-3 flex ${expanded ? "" : "hidden sm:block"}`} title={!expanded ? userInfo?.name : ''}>
                         <Link to='my_profile' className="w-10 h-10 rounded-md flex justify-center items-center bg-blue-400 text-white overflow-hidden" onClick={() => {
                             if (!isLargeScreen) {
                                 setExpanded(false)

@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../../styles';
 
-const SearchSort = ({ search, sort, setSearch, setSort, onSearchSortSubmit, children, searchPlaceholder }) => {
+const SearchSort = ({ search, sort, active, setSearch, setSort, setActive, onSearchSortSubmit, children, searchPlaceholder }) => {
     return (
         <form className={`xl:border-l xl:border-slate-400 flex xl:flex-col justify-between xl:justify-start xl:mb-0 xs:gap-3 gap-1 ${styles.heading6} h-auto xl:h-screen backdrop-blur-sm overflow-y-auto overflow-x-hidden sticky top-0 left-0  py-2 ps-10 pe-2 sm:ps-0 sm:pe-0 xl:ps-7`} onSubmit={onSearchSortSubmit}>
             {/* Input for search */}
@@ -17,12 +17,23 @@ const SearchSort = ({ search, sort, setSearch, setSort, onSearchSortSubmit, chil
             <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className={`xl:mt-4 ${styles.heading6} outline-none font-bold px-3 py-2 rounded-3xl bg-slate-400 cursor-pointer`}
+                className={`xl:mt-4 ${styles.heading6} outline-none font-bold max-w-[60px] md:max-w-full px-3 py-2 rounded-3xl bg-slate-400 cursor-pointer`}
             >
                 <option value="newer">Newer</option>
                 <option value="older">Older</option>
                 <option value="likes">Likes</option>
                 <option value="votes">Votes</option>
+            </select>
+
+            {/* Dropdown for poll active status */}
+            <select
+                value={active}
+                onChange={(e) => setActive(e.target.value)}
+                className={`xl:mt-4 ${styles.heading6} font-bold max-w-[60px] md:max-w-full px-3 py-2 rounded-3xl bg-slate-400`}
+            >
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="closed">Cloded</option>
             </select>
             {children}
 

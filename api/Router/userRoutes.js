@@ -42,10 +42,10 @@ router.route("/me").get(isAuthenticatedUser, myProfile);
 router.route("/:id").get(isAuthenticatedUser, getUserDetails);
 router.route("/profile/update").put(isAuthenticatedUser, demoRestrictionMiddleware, upload.single('avatar'), updateProfile);
 router.route("/password/update").put(isAuthenticatedUser, demoRestrictionMiddleware, updatePassword);
-router.route("/password/forgot").post(demoRestrictionMiddleware, forgotPassword);
-router.route("/verify-reset-token/:token").get(demoRestrictionMiddleware, verifyResetToken);
-router.route("/password/reset/:token").put(demoRestrictionMiddleware, resetPassword)
-router.route("/role-update/:id").put(demoRestrictionMiddleware, updateRole)
-router.route("/delete-profile/:id").delete(isAuthenticatedUser, demoRestrictionMiddleware, isAdmin, deleteProfile)
+router.route("/password/forgot").post(forgotPassword);
+router.route("/verify-reset-token/:token").get(verifyResetToken);
+router.route("/password/reset/:token").put(resetPassword)
+router.route("/role-update/:id").put(isAuthenticatedUser, demoRestrictionMiddleware, isAdmin, updateRole)
+router.route("/delete-profile/:id").delete(isAuthenticatedUser, demoRestrictionMiddleware, deleteProfile)
 
 module.exports = router;

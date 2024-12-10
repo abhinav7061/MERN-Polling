@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { sparkle } from '../../assets';
 
-const DemoLogin = ({ AdminLogin, userLogin }) => {
+const DemoLogin = ({ getLogin }) => {
     const [showDemo, setShowDemo] = useState(true)
     return (
         <>
@@ -24,14 +24,14 @@ const DemoLogin = ({ AdminLogin, userLogin }) => {
                         </span>
                         <div>
                             <button onClick={
-                                () => AdminLogin('pollab@pollab.pollab', 'pollab@pollab')
+                                () => getLogin('test@test.test', 'test@test')
                             } className="bg-yellow-100 font-mono font-semibold mt-4 mb-1 bg-blue-gradient text-black text-sm px-4 py-2 rounded-md flex">
                                 <div className='mr-2'><ion-icon name="arrow-redo"></ion-icon></div>
                                 Click here for Admin Demo</button>
                         </div>
                         <div>
                             <button onClick={
-                                () => userLogin('pollab@pollab.pollab', 'pollab@pollab')
+                                () => getLogin('pollab@pollab.pollab', 'pollab@pollab')
                             } className="bg-yellow-100 font-mono font-semibold bg-blue-gradient text-black text-sm px-4 py-2 rounded-md flex">
                                 <div className='mr-2'><ion-icon name="arrow-redo"></ion-icon></div>
                                 Click here for User Demo</button>

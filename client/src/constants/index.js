@@ -45,45 +45,64 @@ const navLinks = [
         linkTo: "/poll",
     },
 ]
+const getSideLinks = (userRole) => {
+    const sideLinks = [
+        {
+            id: 1,
+            icon_name: userRole === 'admin' ? 'rocket' : 'home',
+            text: 'My Feed',
+            linkTo: userRole === 'admin' ? `/poll/myfeeds` : `/poll`,
+        },
+        {
+            id: 2,
+            icon_name: 'speedometer',
+            text: 'Dashboard',
+            linkTo: "/poll/dashboard",
+        },
+        {
+            id: 3,
+            icon_name: 'create',
+            text: 'Create Poll',
+            linkTo: "/poll/create",
+        },
+        {
+            id: 4,
+            icon_name: 'stats-chart',
+            text: 'My Polls',
+            linkTo: "/poll/my-poll",
+        },
+        {
+            id: 5,
+            icon_name: 'thumbs-up',
+            text: 'My Votes',
+            linkTo: "/poll/my-vote",
+        },
+        {
+            id: 6,
+            icon_name: 'bookmarks',
+            text: 'Saved Polls',
+            linkTo: "/poll/saved-polls",
+        },
+    ];
 
-const sideLinks = [
-    {
-        id: 1,
-        icon_name: 'home',
-        text: 'My Feed',
-        linkTo: "/poll",
-    },
-    {
-        id: 2,
-        icon_name: 'speedometer',
-        text: 'Dashoard',
-        linkTo: "/poll/dashboard",
-    },
-    {
-        id: 3,
-        icon_name: 'create',
-        text: 'Create Poll',
-        linkTo: "/poll/create",
-    },
-    {
-        id: 4,
-        icon_name: 'stats-chart',
-        text: 'My Polls',
-        linkTo: "/poll/my-poll",
-    },
-    {
-        id: 5,
-        icon_name: 'thumbs-up',
-        text: 'My votes',
-        linkTo: "/poll/my-vote",
-    },
-    {
-        id: 6,
-        icon_name: 'bookmarks',
-        text: 'Saved Polls',
-        linkTo: "/poll/saved-polls",
-    },
-]
+    if (userRole === 'admin') {
+        sideLinks.unshift({
+            id: 7,
+            icon_name: 'home',
+            text: 'All Polls',
+            linkTo: `/poll`,
+        });
+        sideLinks.splice(2, 0, {
+            id: 8,
+            icon_name: 'people',
+            text: 'All Users',
+            linkTo: `/poll/all-users`,
+        })
+    }
+
+    return sideLinks;
+};
+
 
 const pollMessage = {
     'feeds': 'No Feeds Found',
@@ -91,4 +110,4 @@ const pollMessage = {
     'polls': 'You have ZERO poll'
 }
 
-export { footerLinks, navLinks, sideLinks, pollMessage }
+export { footerLinks, navLinks, getSideLinks, pollMessage }

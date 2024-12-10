@@ -1,9 +1,9 @@
 import PollPageTemplate from "../../components/PollPageTemplate";
 
-const MyPolls = () => {
+const AllPolls = () => {
     return (
         <PollPageTemplate apiRoute='poll/allPolls' />
     );
 };
 
-export default MyPolls;
+export default AllPolls;
