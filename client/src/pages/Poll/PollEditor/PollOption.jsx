@@ -1,22 +1,21 @@
 import React from "react";
 import { deletes } from "../../../assets";
 import styles from "../../../styles";
+
 export default function PollOption(props) {
     return (
-        <>
-            <li className="flex w-full">
-                <span
-                    onClick={() => {
-                        props.onSelect(props.id);
-                    }}
-                    className={` ${styles.flexCenter} w-8 rounded-md hover:bg-red-300 hover:border-slate-500 hover:border-2 px-2 py-1 cursor-pointer mr-6 bg-slate-300`}
-                    title="Click to delete this option"
-                >
-                    <img src={deletes} alt="X" />
-                </span>
-                <h1 className='mr-3'>{props.id + 1}.</h1>
-                {props.listText}
-            </li>
-        </>
+        <li className="flex items-center w-full py-2 px-3 bg-white shadow-md rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out">
+            <span
+                onClick={() => {
+                    props.onSelect(props.id);
+                }}
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-red-400 text-white hover:bg-red-600 transition-all duration-300 ease-in-out cursor-pointer mr-4"
+                title="Click to delete this option"
+            >
+                <img src={deletes} alt="Delete" className="w-4 h-4" />
+            </span>
+            <h1 className="text-gray-700 font-semibold mr-3">{props.id + 1}.</h1>
+            <span className="text-gray-600">{props.listText}</span>
+        </li>
     );
 }

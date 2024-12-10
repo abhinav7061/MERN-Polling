@@ -56,3 +56,17 @@ export const verifyAccountSchema = Yup.object().shape({
         .matches(/^\d+$/, 'OTP should not have any characters other than digits')
         .length(6, 'OTP must be exactly 6 digits'),
 });
+
+export const PollSchema = Yup.object({
+    question: Yup.string()
+        .transform(value => value.trim())
+        .min(3, 'Length of question should be min 3')
+        .required('Question is required'),
+    description: Yup.string()
+        .transform(value => value.trim())
+        .min(5, 'Description is required and length should be at least 5 characters')
+        .required('Description is required'),
+    optionList: Yup.array()
+        .min(2, 'Minimum two options are required')
+        .required('Options are required'),
+})

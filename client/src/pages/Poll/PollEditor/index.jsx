@@ -4,115 +4,143 @@ import PollOption from './PollOption';
 import { add } from '../../../assets';
 import Button from '../../../components/Button';
 import { toast } from 'sonner';
+import WarningPrompt from '../../../components/CustomPopup/WarningPrompt';
+import { useFormik } from 'formik';
+import { PollSchema } from '../../../schemas';
 
-const PollEditor = ({ handleSubmit, initialData, type, reset }) => {
-    const [question, setQuestion] = useState(initialData.question || '')
-    const [description, setDescription] = useState(initialData.description || '')
+
+const PollEditor = ({ handleSubmit, initialData = { question: "", description: "", optionList: [], endDate: "" }, type, reset }) => {
+    const [showPrompt, setShowPrompt] = useState(false);
     const [option, setOption] = useState('');
-    const [optionList, setOptionList] = useState(initialData.optionList || []);
-    const [endDate, setEndDate] = useState((initialData.endDate instanceof Date) ? (new Date(initialData.endDate)).toISOString().split('T')[0] : '')
-    const addList = () => {
-        if (option === "") return toast.error("You can not add a option blank");
-        if (optionList.includes(option)) return toast.error("You have already added this option");
-        setOptionList((olditems) => {
-            return [...olditems, option];
-        });
-        setOption("");
+    const [focusedField, setFocusedField] = useState(null);
+
+    const formik = useFormik({
+        initialValues: initialData,
+        validationSchema: PollSchema,
+        onSubmit: (values, { resetForm }) => {
+            handleSubmit(values);
+            if (reset) resetForm();
+        }
+    });
+
+    const addOption = () => {
+        if (option.trim() === "") return toast.error("You cannot add a blank option");
+        if (formik.values.optionList.includes(option.trim())) return toast.error("You have already added this option");
+        formik.setFieldValue('optionList', [...formik.values.optionList, option.trim()]);
+        setOption('');
     };
 
-    const deleteItem = (id) => {
-        if (optionList.length === 1) {
-            toast.warning('This is last option! Delete it?', {
-                action: {
-                    label: 'Yes',
-                    onClick: () => setOptionList((olditems) => {
-                        return olditems.filter((arrElement, index) => {
-                            return index !== id;
-                        });
-                    }),
-                },
-            });
+    const deleteOption = (index) => {
+        if (formik.values.optionList.length === 1) {
+            setShowPrompt(true);
         } else {
-            setOptionList((olditems) => {
-                return olditems.filter((arrElement, index) => {
-                    return index !== id;
-                });
-            })
+            formik.setFieldValue('optionList', formik.values.optionList.filter((_, idx) => idx !== index));
         }
     };
 
-    const sendPollData = (e) => {
-        e.preventDefault();
-        if (!question || question.length < 3) return toast.error("Length of question should be min 3");
-        if (!description || description.length < 5) return toast.error("Description is required and length should be at least 5 characters");
-        if (!optionList || optionList.length < 2) return toast.error("Minimum two options is required");
-        if (reset) {
-            setQuestion('');
-            setDescription("");
-            setOption("");
-            setOptionList([]);
-            setEndDate('');
+    const handleAcceptance = (accepted) => {
+        if (accepted) {
+            formik.setFieldValue('optionList', []);
         }
-        handleSubmit({ question, description, optionList, endDate })
+        setShowPrompt(false);
+    };
+
+    const handleInputOptionKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addOption();
+        }
     }
+
     return (
         <div className={`${styles.flexCenter}`}>
-            <form onSubmit={sendPollData} className={`${styles.flexCenter} ${styles.heading5} flex-col w-full sm:w-3/5 md:h-3/4 lg:w-1/2`}>
-                {/* textArea fot the taking input for the question */}
-                <textarea
-                    type="text"
-                    placeholder="Enter your question"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    className='w-full p-2 md:p-4 rounded-md mb-5'
-                />
-                {/* textArea fot the taking input for the description */}
-                <textarea
-                    type="text"
-                    placeholder="Enter your description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className='w-full p-2 md:p-4 rounded-md mb-5'
-                />
-                {/* div for adding the option */}
-                <div className='flex justify-between w-full items-cente'>
-                    <input
-                        type="text"
-                        placeholder="Enter your option"
-                        value={option}
-                        onChange={(e) => setOption(e.target.value)}
-                        className='w-4/5 p-2 md:py-3 md:px-4 rounded-md'
+            <form onSubmit={formik.handleSubmit} className={`${styles.flexCenter} ${styles.heading5} flex-col w-full sm:w-4/5`}>
+                <label className='w-full mb-5 relative'>
+                    <p className={`absolute select-none cursor-text transition-all duration-300 px-1 ${(focusedField === 'question' || formik.values.question != '') ? `-top-2 md:-top-2.5 left-3 bg-slate-100 ${styles.smHeading} ${formik.touched.question && formik.errors.question ? 'text-red-500' : 'text-blue-600'}` : 'text-slate-500 left-5 top-2.5'}`}>Enter your question</p>
+                    <textarea
+                        name="question"
+                        value={formik.values.question}
+                        onChange={formik.handleChange}
+                        onBlur={(e) => { setFocusedField(null); formik.handleBlur(e) }}
+                        onFocus={() => setFocusedField('question')}
+                        className={`w-full p-2 md:p-4 rounded-md outline-none border bg-slate-100 ${formik.touched.question && formik.errors.question ? 'border-red-500' : 'border-blue-600'}`}
                     />
-                    <button type='button' title='Click to add option' onClick={addList} className={` ${styles.flexCenter} md:w-12 sm:w-11 w-8 rounded-md hover:border-slate-500 hover:border-2 md:px-3 md:py-2 p-[5px]  bg-slate-300`}><img src={add} alt="Add Option" className=' object-contain' /></button>
+                    {formik.touched.question && formik.errors.question && <div className={`text-red-500 mt-1 ${styles.smHeading} font-thin`}>{formik.errors.question}</div>}
+                </label>
+                <label className='w-full mb-5 relative'>
+                    <p className={`absolute select-none cursor-text transition-all duration-300 px-1 ${(focusedField === 'description' || formik.values.description != '') ? `-top-2 md:-top-2.5 left-3 bg-slate-100 ${styles.smHeading} ${formik.touched.description && formik.errors.description ? 'text-red-500' : 'text-blue-600'}` : 'text-slate-500 left-5 top-2.5'}`}>Enter your description</p>
+                    <textarea
+                        name="description"
+                        value={formik.values.description}
+                        onChange={formik.handleChange}
+                        onBlur={(e) => { setFocusedField(null); formik.handleBlur(e) }}
+                        onFocus={() => setFocusedField('description')}
+                        className={`w-full p-2 md:p-4 rounded-md outline-none border bg-slate-100 ${formik.touched.description && formik.errors.description ? 'border-red-500' : 'border-blue-600'}`}
+                    />
+                    {formik.touched.description && formik.errors.description && <div className={`text-red-500 mt-1 ${styles.smHeading} font-thin`}>{formik.errors.description}</div>}
+                </label>
+
+                <div className='flex justify-between w-full items-center h-10 sm:h-[45px] md:h-[52px] lg:h-14'>
+                    <label className='relative w-4/5'>
+                        <p className={`absolute select-none cursor-text transition-all duration-300 px-1 ${(focusedField === 'option' || option.trim() !== '') ? `-top-2 md:-top-2.5 bg-slate-100 left-3 ${styles.smHeading} ${option.trim() === "" ? 'text-red-600' : 'text-blue-600'}` : 'text-slate-500 top-2.5 left-5'}`}>Enter your option</p>
+                        <input
+                            type="text"
+                            value={option}
+                            onFocus={() => setFocusedField('option')}
+                            onBlur={() => setFocusedField(null)}
+                            onChange={(e) => setOption(e.target.value)}
+                            onKeyDown={handleInputOptionKeyDown}
+                            className={`p-2 md:py-3 md:px-4 rounded-md outline-none border bg-slate-100 ${focusedField === "option" && option.trim() === "" ? 'border-red-500' : 'border-blue-600'} w-full`}
+                        />
+                    </label>
+                    <button type='button' title='Click to add option' onClick={addOption} className={`${styles.flexCenter} h-full aspect-square rounded-md hover:border-slate-500 hover:border-2 md:px-3 md:py-2 p-[5px] bg-slate-300`}>
+                        <img src={add} alt="Add Option" className='object-contain' />
+                    </button>
                 </div>
-                {/* div for the date */}
+
                 <div className='flex flex-wrap gap-3 py-4 w-full items-center font-semibold'>
-                    <label htmlFor="endDate">Select End Date:</label>
-                    <input type="date" name="endDate" id="endDate" value={endDate} onChange={e => setEndDate(e.target.value)} className='p-2 rounded-md text-slate-600  outline-none cursor-pointer' />
+                    <label htmlFor="endDate">
+                        <p className='inline-block mr-4'>Select End Date:</p>
+                        <input
+                            type="date"
+                            name="endDate"
+                            id="endDate"
+                            value={formik.values.endDate}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className='p-2 rounded-md text-slate-600 outline-none cursor-pointer'
+                        />
+                        {formik.touched.endDate && formik.errors.endDate && <div className={`text-red-500 mt-1 ${styles.smHeading} font-thin`}>{formik.errors.endDate}</div>}
+                    </label>
                 </div>
 
-                {/* This is for showing options */}
-                {optionList.length > 0 && (<div className='mt-6 w-full'>
-                    <h1 className='text-[26px] font-semibold'>Your options</h1>
-                    <ol className='my-6'>
-                        {optionList.map((each, index) => {
-                            return (
-                                <div className={`${index > 0 ? 'mt-2.5' : 'mt-0'} px-3 py-1 hover:bg-slate-200 flex items-center text-[20px] rounded-md font-semibold`} key={index}>
-                                    <PollOption
-                                        listText={each}
-                                        id={index}
-                                        onSelect={deleteItem}
-                                    />
-                                </div>
-                            );
-                        })}
-                    </ol>
-                    <Button type={'submit'} title={`${type} poll`} styles={'px-5 py-2'} />
-                </div>)}
+                {
+                    formik.values.optionList.length > 0 && (
+                        <div className='mt-6 w-full'>
+                            <h1 className='text-[26px] font-semibold'>Your options</h1>
+                            <ol className='my-6'>
+                                {formik.values.optionList.map((each, index) => (
+                                    <div className={`${index > 0 ? 'mt-2.5' : 'mt-0'} px-3 py-1 hover:bg-slate-200 flex items-center text-[20px] rounded-md font-semibold`} key={index}>
+                                        <PollOption listText={each} id={index} onSelect={() => deleteOption(index)} />
+                                    </div>
+                                ))}
+                            </ol>
+                            {formik.errors.optionList && <div className={`text-red-500 mb-1 ${styles.smHeading} font-thin`}>{formik.errors.optionList}</div>}
+                            <Button type={'submit'} title={`${type} poll`} styles={'px-5 py-2'} />
 
-            </form>
-        </div>
-    )
-}
+                        </div>
+                    )
+                }
+            </form >
 
-export default PollEditor
+            <WarningPrompt
+                visibility={showPrompt}
+                warningMessage='This is the last option, Are you sure you want to delete this?'
+                onClose={(val) => setShowPrompt(val)}
+                onAcceptance={handleAcceptance}
+            />
+        </div >
+    );
+};
+
+export default PollEditor;

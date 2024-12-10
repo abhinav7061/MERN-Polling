@@ -40,17 +40,24 @@ const EditPoll = () => {
                 toast.success("Your poll has been Updated successfully");
                 navigate(-1);
             } else {
-                throw new Error(data.message);
+                toast.warning(data?.message || "Error during updating poll");
             }
         } catch (error) {
             console.log('Error during editing your poll', error);
-            toast.error('Error updatin poll');
+            toast.error('Error during updating poll');
         }
     }
 
     const fetchData = async () => {
         try {
-            const res = await fetch(`${apiUrl}/poll/getPoll/${pollId}`);
+            const res = await fetch(`${apiUrl}/poll/getPoll/${pollId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getLocalValue('token')}`,
+                },
+                credentials: 'include'
+            });
             const data = await res.json();
             if (data.success) {
                 const fetchedData = data.poll;
@@ -78,14 +85,14 @@ const EditPoll = () => {
     }, [pollId]);
 
     if (errorMessage) {
-        return <div className='min-h-screen flex items-center justify-center'><ErrorMessage heading="Error fetching the dashoard" message={errorMessage} action={fetchData} /></div>
+        return <div className='min-h-screen flex items-center justify-center'><ErrorMessage heading="Error fetching the poll information" message={errorMessage} action={fetchData} /></div>
     }
 
     return (
-        <>
-            <h1 className={`${styles.heading2} mb-6`}>Create Free Poll With PollLab</h1>
-            {loading ? <div className='flex justify-center'><Spinner /></div> : <PollEditor handleSubmit={handleSubmit} initialData={initialData} reset type='Edit' />}
-        </>
+        <div className='pt-10 sm:pt-0 px-3 sm:px-0'>
+            <h1 className={`${styles.heading2} mb-6`}>Edit your Poll</h1>
+            {loading ? <div className='flex justify-center'><Spinner /></div> : <PollEditor handleSubmit={handleSubmit} initialData={initialData} type='Edit' />}
+        </div>
     )
 }
 

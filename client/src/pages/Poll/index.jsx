@@ -2,14 +2,18 @@ import React, { Suspense } from 'react'
 import styles from '../../styles'
 import Sidebar, { SidebarItem } from '../../Layout/Sidebar'
 import { NavLink, useLocation, Outlet } from 'react-router-dom'; // Import Outlet for nested routing
-import { sideLinks } from '../../constants';
+import { getSideLinks } from '../../constants';
 import { LargeSpinLoader } from '../../components/Loader/SpinLoader';
 import Container from '../../components/Container';
 import { FollowingsContextProvider } from '../../contexts/FollowingsContext';
 import { FollowersContextProvider } from '../../contexts/FollowersContext';
+import { useUserInfo } from '../../contexts/UserContext';
 
 const PollLayout = () => {
     const location = useLocation();
+    const { userInfo } = useUserInfo();
+    const sideLinks = getSideLinks(userInfo.role);
+
     return (
         <FollowingsContextProvider>
             <FollowersContextProvider>
