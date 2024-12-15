@@ -2,7 +2,7 @@ import { useState, useContext, useRef } from 'react'
 import { NavLink, useNavigate, Link } from 'react-router-dom'
 import styles from '../../styles'
 import { navLinks } from '../../constants'
-import { menu, close } from '../../assets'
+import { menu, close, logo } from '../../assets'
 import { UserContext } from '../../contexts/UserContext'
 import LogoutBtn from '../../components/Button/LogoutBtn'
 import useOutsideClick from '../../Hooks/useOutsideClick'
@@ -17,8 +17,11 @@ function Navbar() {
         <nav className={`${styles.paddingX} md:py-5 py-3 px-3 sticky top-0 bg-gray-900 z-[1000]`}>
             <div className="flex items-center justify-between">
                 <NavLink to="/" className="flex items-center">
-                    <img src="https://cdn-icons-png.flaticon.com/128/6432/6432236.png?track=ais" className="h-8 mr-1" alt="pollab" />
-                    <span className="self-center text-sm font-semibold text-white">PollLab</span>
+                    <img
+                        src={logo}
+                        className="overflow-hidden transition-all w-28"
+                        alt=""
+                    />
                 </NavLink>
                 {/* mapping all the navigation links for the desktop/ tablets screen */}
                 <div className="items-center hidden md:flex">
