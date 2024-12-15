@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { Layout, Home, NoPage, Login, Signup, VerifyEmail, ForgotPassword, ResetPassword, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, MyPolls, MyVotes, SavedPoll, MyFeeds, AllPolls, AllUsers, MyProfile, Profile, IsAuthenticatedUser } from './modules'
+import { Layout, Home, NoPage, Login, Signup, VerifyEmail, ForgotPassword, ResetPassword, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, MyPolls, MyVotes, SavedPoll, MyFeeds, AllPolls, AllUsers, MyProfile, Profile, IsAuthenticatedUser, InstallPrompt } from './modules'
 import { useUserInfo } from './contexts/UserContext';
 import './App.css'
 
@@ -7,6 +7,7 @@ function App() {
   const { userInfo } = useUserInfo();
   return (
     <>
+      <InstallPrompt />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
