@@ -35,6 +35,5 @@ const AllUsers = lazy(() => import('./pages/AllUsers/index.jsx'));
 const MyProfile = lazy(() => import('./pages/MyProfile'));
 const IsAuthenticatedUser = lazy(() => import('./components/IsAuthenticatedUser'));
 const Profile = lazy(() => import('./pages/Profile'));
-import InstallPrompt from './components/InstallPrompt';
 
-export { NoPage, Layout, Home, Login, Signup, VerifyEmail, ForgotPassword, ResetPassword, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, MyPolls, MyVotes, SavedPoll, MyFeeds, AllPolls, AllUsers, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser, InstallPrompt }
+export { NoPage, Layout, Home, Login, Signup, VerifyEmail, ForgotPassword, ResetPassword, PollLayout, Poll, Dashoard, CreatePoll, EditPoll, MyPolls, MyVotes, SavedPoll, MyFeeds, AllPolls, AllUsers, MyProfile, Profile, UserContextProvider, IsAuthenticatedUser }

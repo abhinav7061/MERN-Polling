@@ -9,6 +9,7 @@ import { UserContext } from '../contexts/UserContext';
 import { LargeSpinLoader } from '../components/Loader/SpinLoader';
 import Container from '../components/Container';
 import getLocalValue from '../utilities/handleLocalStorage';
+import InstallPrompt from '../components/InstallPrompt';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Layout = () => {
@@ -53,6 +54,7 @@ const Layout = () => {
                 ) : (
                     <div className={`${styles.boxWidth} flex flex-col min-h-screen`}>
                         {userInfo ? null : <Navbar />}
+                        <InstallPrompt />
                         <Toaster position="top-right" richColors closeButton='true' /> {/* this is the position for showing notification */}
                         <Suspense fallback={<Container><LargeSpinLoader /></Container>}>
                             <Outlet />
