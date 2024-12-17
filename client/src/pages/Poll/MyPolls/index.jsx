@@ -2,7 +2,7 @@ import PollPageTemplate from "../../../components/PollPageTemplate";
 
 const MyVotes = () => {
     return (
-        <PollPageTemplate apiRoute='vote/myVotes' />
+        <PollPageTemplate apiRoute='poll/myPolls' />
     );
 };
 
