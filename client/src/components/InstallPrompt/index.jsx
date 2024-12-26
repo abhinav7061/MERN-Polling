@@ -2,32 +2,21 @@ import React, { useState, useEffect } from 'react';
 
 const InstallPrompt = () => {
     const [deferredPrompt, setDeferredPrompt] = useState(null);
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(!localStorage.getItem('installPrompt'));
 
     const closeInstallPrompt = () => {
         setIsVisible(false);
-        const expiryDate = new Date();
-        expiryDate.setMonth(expiryDate.getMonth() + 1);
-        localStorage.setItem('installPromptDismissed', expiryDate.toISOString());
-    };
-
-    const checkInstallPromptDismissed = () => {
-        const dismissedUntil = localStorage.getItem('installPromptDismissed');
-        if (dismissedUntil) {
-            const expiryDate = new Date(dismissedUntil);
-            return expiryDate > new Date();
-        }
-        return false;
+        localStorage.setItem('installPrompt', 'true');
     };
 
     useEffect(() => {
         const handleBeforeInstallPrompt = (event) => {
-            if (checkInstallPromptDismissed()) {
-                return;
+            console.log({ event });
+            if (localStorage.getItem('installPrompt') === 'true') {
+                return false;
             }
             event.preventDefault();
             setDeferredPrompt(event);
-            setIsVisible(true);
         };
 
         if ('serviceWorker' in navigator) {
@@ -39,19 +28,8 @@ const InstallPrompt = () => {
         };
     }, []);
 
-    useEffect(() => {
-        const checkStandaloneMode = () => {
-            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-                setIsVisible(false);
-            } else if (!checkInstallPromptDismissed()) {
-                setIsVisible(true);
-            }
-        };
-
-        checkStandaloneMode();
-    }, []);
-
     const showInstallPrompt = () => {
+        console.log({ deferredPrompt });
         if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
@@ -60,7 +38,6 @@ const InstallPrompt = () => {
                     closeInstallPrompt();
                 } else {
                     console.log('User dismissed the install prompt');
-                    closeInstallPrompt();
                 }
                 setDeferredPrompt(null);
             });

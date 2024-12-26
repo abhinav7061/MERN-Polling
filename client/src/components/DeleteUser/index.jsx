@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { toast } from 'sonner'
 import WarningPrompt from '..//CustomPopup/WarningPrompt';
 import Button from '../Button';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -21,7 +22,7 @@ const DeleteUser = ({ userId, title = 'Delete Account', onSuccessUserDeleted }) 
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             })

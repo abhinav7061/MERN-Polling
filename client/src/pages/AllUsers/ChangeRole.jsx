@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { toast } from 'sonner'
 import WarningPrompt from '../../components/CustomPopup/WarningPrompt';
 import Button from '../../components/Button';
+import getLocalValue from '../../utilities/handleLocalStorage';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -22,7 +23,7 @@ const ChangeRole = ({ userId, currentRole, userName, onSuccessfullRoleChanged })
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${getLocalValue('token')}`,
                 },
                 credentials: 'include',
             })

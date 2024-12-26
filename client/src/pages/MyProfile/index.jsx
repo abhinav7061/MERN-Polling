@@ -116,7 +116,6 @@ const MyProfile = () => {
 			const res = await fetch(`${apiUrl}/user/profile/update`, {
 				method: "PUT",
 				headers: {
-					"Content-Type": "application/json",
 					"Authorization": `Bearer ${getLocalValue('token')}`,
 				},
 				body: dataForm,
@@ -134,9 +133,13 @@ const MyProfile = () => {
 			} else {
 				toast.error(data.message);
 			}
+			// console.log({ name, email, myStatus, avatar })
+			// console.log(dataForm);
 		} catch (error) {
 			console.log("Error while updating", error);
 			toast.error("Error while updating");
+		} finally {
+			setLoading(false);
 		}
 	}
 
