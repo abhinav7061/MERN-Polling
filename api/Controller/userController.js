@@ -341,7 +341,16 @@ exports.forgotPassword = async (req, res) => {
 
     const resetPasswordToken = await user.generateResetPasswordToken();
 
-    const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password/${resetPasswordToken}`;
+    const allowedOrigins = process.env.FRONTEND_URLS.split(',').map(url => url.trim());
+    const requestOrigin = req.get('origin');
+
+    const defaultFrontendUrl = allowedOrigins.find(url => url.includes('vercel.app')) || allowedOrigins[0];
+
+    const frontendUrl = allowedOrigins.includes(requestOrigin)
+      ? requestOrigin
+      : defaultFrontendUrl;
+
+    const resetPasswordUrl = `${frontendUrl}/reset-password/${resetPasswordToken}`;
 
     const message = `Click the below link to reset your password \n\n ${resetPasswordUrl} \n\n`;
     try {
